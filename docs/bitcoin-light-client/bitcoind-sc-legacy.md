@@ -31,4 +31,4 @@
 
 ## Diagram
 
-<div data-full-width="true"><figure><img src="https://github.com/adambor/SolLightning-readme/raw/main/flows/frombtc-diagram.drawio.png" alt=""><figcaption><p>Bitcoin on-chain -> Solana swap process (Intermediary = LP Node, Smart chain = Solana)</p></figcaption></figure></div>
+![Bitcoin on-chain -> Solana swap process (Intermediary = LP Node, Smart chain = Solana)](https://github.com/adambor/SolLightning-readme/raw/main/flows/frombtc-diagram.drawio.png)

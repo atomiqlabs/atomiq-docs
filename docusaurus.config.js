@@ -99,7 +99,7 @@ const config = {
         title: 'Atomiq',
         logo: {
           alt: 'Atomiq Logo',
-          src: 'img/logo.svg',
+          src: 'img/logo.png',
         },
         items: [
           {
@@ -134,11 +134,7 @@ const config = {
               {
                 label: 'Introduction',
                 to: '/',
-              },
-              {
-                label: 'Liquidity Providers',
-                to: '/liquidity-providers',
-              },
+              }
             ],
           },
           {
@@ -150,7 +146,7 @@ const config = {
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/atomaboratory',
+                href: 'https://x.com/atomiqlabs',
               },
             ],
           },

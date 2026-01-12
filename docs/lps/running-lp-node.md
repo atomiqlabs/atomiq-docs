@@ -9,12 +9,12 @@ LP node runs in docker containers & it is fully separated from your other progra
     * Mainnet requirements: 6GB of RAM, 1TB SSD storage
 * Machine either needs to have a public IP address and be accessible from the public internet or you need to use the [Pinggy tunnel](https://docs.atomiq.exchange/liquidity-provider-nodes-lps/pinggy-tunnel) to forward traffic to your local machine
 
-{% hint style="info" %}
-We can recommend using [Contabo ](https://contabo.com/en/vps)for VPS hosting, the following instances are recommended:
+:::info
+We can recommend using [Contabo](https://contabo.com/en/vps) for VPS hosting, the following instances are recommended:
 
-* Testnet: [Storage VPS 1](https://contabo.com/en/storage-vps/storage-vps-10) (€4.50 per month \wo VAT)
-* Mainnet: [Storage VPS 3](https://contabo.com/en/storage-vps/storage-vps-30) (€14.00 per month \wo VAT)&#x20;
-  {% endhint %}
+* Testnet: [Storage VPS 1](https://contabo.com/en/storage-vps/storage-vps-10) (€4.50 per month w/o VAT)
+* Mainnet: [Storage VPS 3](https://contabo.com/en/storage-vps/storage-vps-30) (€14.00 per month w/o VAT)
+:::
 
 ## Preparations
 
@@ -60,9 +60,9 @@ Unpack the archive
 sudo tar -xvzf atomiq-node.tar.gz
 ```
 
-{% hint style="warning" %}
+:::warning
 If you don't have a server with public ip address you need to [setup the Pinggy tunnel](https://docs.atomiq.exchange/liquidity-provider-nodes-lps/pinggy-tunnel) now. This creates a secure tunnel and allows your server to be accessible from the public internet - this is required such that your node is able to accept and respond to RFQ swap requests from clients.
-{% endhint %}
+:::
 
 Run the setup script - this will walk you through setting an environment (mainnet/testnet) and node's wallet
 
@@ -136,7 +136,8 @@ We need to wait for the bitcoin node to sync up to the network (download whole b
 
 We can monitor the status of the sync progress with the status command
 
-<pre class="language-json"><code class="lang-json">> status
+```json
+> status
 {
   "smartChains": {
     "SOLANA": {
@@ -154,17 +155,17 @@ We can monitor the status of the sync progress with the status command
   },
   "bitcoinRpc": {
     "status": "verifying blockchain",
-<strong>    "verificationProgress": "6.8971%",    &#x3C;---- We can see the sync up/verification progress here
-</strong>    "syncedHeaders": 2812116,
+    "verificationProgress": "6.8971%",    // <---- We can see the sync up/verification progress here
+    "syncedHeaders": 2812116,
     "syncedBlocks": 549068
   },
   "bitcoinWallet": {
     "status": "offline"
   },
   "lightningWallet": null,
-<strong>  "lpNodeStatus": "wait_btc_rpc"          &#x3C;---- We can see LP node status here, once it's "ready" the node is synced and ready to roll
-</strong>}
-</code></pre>
+  "lpNodeStatus": "wait_btc_rpc"          // <---- We can see LP node status here, once it's "ready" the node is synced and ready to roll
+}
+```
 
 ### Depositing funds
 
@@ -183,53 +184,54 @@ While the node is syncing we can already deposit funds to the node, using ‘get
 
 After funds are deposited to the wallets we can track the balance with the ‘getbalance’ command **(BTC balances only show up after bitcoin node is synced)**
 
-{% hint style="info" %}
+:::info
 The balances on the smart chains (Solana, Starknet, EVM, etc.) are split across wallet balances (these are not used for trading) - 'nonTradingWalletBalances' & trading vault balances (these are actively used for processing swaps) - 'tradingVaultBalances'
-{% endhint %}
+:::
 
-<pre class="language-json"><code class="lang-json">> getbalance
+```json
+> getbalance
 {
   "nonTradingWalletBalances": {
     "SOLANA": {
       "SOL": {
-<strong>        "balance": "1.494565198",
-</strong>        "decimals": 9
+        "balance": "1.494565198",
+        "decimals": 9
       }
     },
     "STARKNET": {
       "ETH": {
-<strong>        "balance": "0.000000000000000000",
-</strong>        "decimals": 18
+        "balance": "0.000000000000000000",
+        "decimals": 18
       },
       "STRK": {
-<strong>        "balance": "1120.053239098453593203",
-</strong>        "decimals": 18
+        "balance": "1120.053239098453593203",
+        "decimals": 18
       }
     }
   },
   "tradingVaultBalances": {
     "SOLANA": {
       "SOL": {
-<strong>        "balance": "0.000000000",
-</strong>        "decimals": 9
+        "balance": "0.000000000",
+        "decimals": 9
       }
     },
     "STARKNET": {
       "ETH": {
-<strong>        "balance": "0.000000000000000000",
-</strong>        "decimals": 18
+        "balance": "0.000000000000000000",
+        "decimals": 18
       },
       "STRK": {
-<strong>        "balance": "0.000000000000000000",
-</strong>        "decimals": 18
+        "balance": "0.000000000000000000",
+        "decimals": 18
       }
     }
   },
   "tradingBitcoinBalance": {
-<strong>    "error": "bitcoin wallet not ready"
-</strong>  }
+    "error": "bitcoin wallet not ready"
+  }
 }
-</code></pre>
+```
 
 To make the smart chains funds available for processing swaps we have to deposit them to the LP vault (this doesn’t have to be done with bitcoin assets) - repeat this for all the assets you want to be traded ‘deposit \<asset> \<amount>’. The assets are always specified in the following format: '\<chain>-\<asset ticker>', e.g. STARKNET-STRK or SOLANA-SOL
 
@@ -245,7 +247,8 @@ Transaction sent, signature: 4PxwU42k2xocYtspd8uAjNZahjU1YZSv6E4dXMziJRq9Ajd8ecj
 
 Now we can check that the assets are really deposited and used for trading
 
-<pre class="language-json"><code class="lang-json">> getbalance
+```json
+> getbalance
 {
   "nonTradingWalletBalances": {
     "SOLANA": {
@@ -268,8 +271,8 @@ Now we can check that the assets are really deposited and used for trading
   "tradingVaultBalances": {
     "SOLANA": {
       "SOL": {
-<strong>        "balance": "1.000000000",
-</strong>        "decimals": 9
+        "balance": "1.000000000",
+        "decimals": 9
       }
     },
     "STARKNET": {
@@ -278,8 +281,8 @@ Now we can check that the assets are really deposited and used for trading
         "decimals": 18
       },
       "STRK": {
-<strong>        "balance": "500.000000000000000000",
-</strong>        "decimals": 18
+        "balance": "500.000000000000000000",
+        "decimals": 18
       }
     }
   },
@@ -287,17 +290,18 @@ Now we can check that the assets are really deposited and used for trading
     "error": "bitcoin wallet not ready"
   }
 }
-</code></pre>
+```
 
-{% hint style="danger" %}
+:::danger
 **It is important that you always keep some balance of native chain token (SOL for Solana, STRK for Starknet) in your wallet (non-trading) - this is used to cover the transaction fees for executing the swaps. Keeping at least 0.2 SOL and 200 STRK is recommended.**
-{% endhint %}
+:::
 
 ### Waiting for sync
 
 For the LP node to start being operational you will have to wait till the underlying bitcoin node finishes synchronizing the bitcoin blockchain. You can check see the synchronization progress in the verification progress field. Once your node is synced up and ready the LP node status should show `"ready"`
 
-<pre class="language-json"><code class="lang-json">> status
+```json
+> status
 {
   "smartChains": {
     "SOLANA": {
@@ -315,17 +319,17 @@ For the LP node to start being operational you will have to wait till the underl
   },
   "bitcoinRpc": {
     "status": "ready",
-<strong>    "verificationProgress": "99.9994%",  &#x3C;---- Synchronization progress
-</strong>    "syncedHeaders": 2812116,
+    "verificationProgress": "99.9994%",  // <---- Synchronization progress
+    "syncedHeaders": 2812116,
     "syncedBlocks": 2812116
   },
   "bitcoinWallet": {
     "status": "ready"
   },
   "lightningWallet": null,
-<strong>  "lpNodeStatus": "ready"          &#x3C;---- We can see that our node is ready now!
-</strong>}
-</code></pre>
+  "lpNodeStatus": "ready"          // <---- We can see that our node is ready now!
+}
+```
 
 ### Testing the LP node
 
@@ -338,9 +342,13 @@ After the node is synced up we can test the node via the atomiq frontend, to do 
 }
 ```
 
-To make the atomiq frontend access your node you can use the following frontend URL and replace the <*your node URL*> with the URL obtained by executing the `geturl` command:
+To make the atomiq frontend access your node you can use the following frontend URL and replace `<your node URL>` with the URL obtained by executing the `geturl` command:
 
-**<https://app.atomiq.exchange/?UNSAFE\\_LP\\_URL=**[**\\><your node URL>**]\(#user-content-fn-1)[^1]
+```
+https://app.atomiq.exchange/?UNSAFE_LP_URL=<your node URL>
+```
+
+[^1]
 
 This will force the frontend to connect only to your LP node
 
@@ -372,9 +380,9 @@ We will now review your node (check if it is reachable & try swapping through it
 }
 ```
 
-{% hint style="success" %}
+:::tip
 Once your node is approved to be listed in the LP registry you will start processing user's swaps!
-{% endhint %}
+:::
 
 ## Updating
 
@@ -396,15 +404,13 @@ tar -zxvf atomiq-node.tar.gz update.bash && sudo ./update.bash
 
 Your atomiq node comes pre-configured with reasonable default, but in case you want to change the configuration you can find in `config/intermediary/config.yaml` (for mainnet) or `config-testnet/intermediary/config.yaml` (for testnet) folders.
 
-{% hint style="info" %}
+:::info
 You might want to change the RPC URLs, and use dedicated ones (from e.g. [Helius](https://www.helius.dev/) (Solana)- reasonable free tier, or [Alchemy](https://www.alchemy.com/rpc-api) (Starknet, EVM) - a reasonable pay-as-you go tier) - see the `SOLANA` and `STARKNET` section. Or change the minimums/maximums or fees charged for the swaps - see the `ONCHAIN` and `ONCHAIN_SPV` section.
-{% endhint %}
+:::
 
 Default mainnet configuration:
 
-{% code title="config.yaml" %}
-
-```yaml
+```yaml title="config.yaml"
 #Solana RPC
 SOLANA:
   #Solana RPC URL to use, it is recommended to use a dedicated RPC endpoint from e.g. Helius (recommended), Quicknode, etc.
@@ -583,7 +589,5 @@ PLUGINS:
   atomiq-archiver: "atomiq-archiver@latest"
   spv-vault-manager: "spv-vault-manager@latest"
 ```
-
-{% endcode %}
 
 [^1]: Replace with your node URL obtained from the geturl command on the LP node.

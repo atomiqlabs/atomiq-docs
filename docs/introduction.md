@@ -1,3 +1,8 @@
+---
+slug: /
+sidebar_position: 1
+---
+
 # Introduction
 
 atomiq.exchange is a fully trustless cross-chain decentralized exchange (DEX) allowing you to swap between Smart chain (Solana, Starknet, EVM, etc.) assets and Bitcoin, without having to trust any intermediary in the process.

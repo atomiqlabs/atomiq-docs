@@ -35,4 +35,4 @@
 
 ## Diagram
 
-<div data-full-width="true"><figure><img src="https://github.com/adambor/SolLightning-readme/raw/main/flows/frombtcln-diagram.drawio.png" alt=""><figcaption><p>Bitcoin Lightning -> Smart chain swap process (Intermediary = LP Node, Smart chain = Solana)</p></figcaption></figure></div>
+![Bitcoin Lightning -> Smart chain swap process (Intermediary = LP Node, Smart chain = Solana)](https://github.com/adambor/SolLightning-readme/raw/main/flows/frombtcln-diagram.drawio.png)

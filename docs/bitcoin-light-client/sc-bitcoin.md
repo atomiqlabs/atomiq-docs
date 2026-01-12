@@ -33,4 +33,4 @@
 
 ## Diagram
 
-<div data-full-width="true"><figure><img src="https://github.com/adambor/SolLightning-readme/raw/main/flows/tobtc-diagram.drawio.png" alt=""><figcaption><p>Smart chain -> Bitcoin on-chain swap process (Intermediary = LP Node)</p></figcaption></figure></div>
+![Smart chain -> Bitcoin on-chain swap process (Intermediary = LP Node)](https://github.com/adambor/SolLightning-readme/raw/main/flows/tobtc-diagram.drawio.png)

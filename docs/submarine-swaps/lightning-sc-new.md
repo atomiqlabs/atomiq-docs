@@ -23,9 +23,9 @@ The new swap protocol addresses the drawback of the legacy one, mainly around us
     * paying the funds to **payee** if a valid *secret S* is provided, such that *hash of secret H(S)* is equal to *payment hash P* & pays out the watchtower fee to whoever executes the claim transaction
     * refunding the **payer**, but only after *locktime T*
 
-{% hint style="info" %}
+:::info
 *locktime T* is determined by **LP node** based on lightning invoice's *min\_cltv\_delta* - the minimal timeout delta for last lightning network HTLC in chain (last hop of the lightning network payment) as **LP node** needs to have a knowledge of *secret S* before then to successfully receive a payment
-{% endhint %}
+:::
 
 6. **Watchtower** observes the HTLC created on the Smart chain and registers it internally for claiming
 
@@ -34,9 +34,9 @@ The new swap protocol addresses the drawback of the legacy one, mainly around us
 7. Upon confirmation of HTLC creation's transaction on the Smart chain, **payee** first verifies that it fits the agreed-to conditions (amount, watchtower fees, etc.) and then broadcasts the *secret S* over **Nostr**
 8. **Watchtower** will observe the **Nostr** message, construct an HTLC claim transaction, broadcasts it, claiming the funds from the HTLC to the **payee** & claiming the watchtower fee
 
-{% hint style="info" %}
-&#x20;If no watchtower claims on behalf of the user, the user can always claim by himself!
-{% endhint %}
+:::info
+If no watchtower claims on behalf of the user, the user can always claim by himself!
+:::
 
 9. **LP node** observes this transaction on the Smart chain and uses the revealed *secret S* to settle the lightning network payment.
 
@@ -46,4 +46,4 @@ The new swap protocol addresses the drawback of the legacy one, mainly around us
 
 ## Diagram
 
-<div data-full-width="true"><figure><img src="https://3413090771-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FQKYJLT6LdI5sTgcaMspD%2Fuploads%2FdvZRcSxefJ0stELFmsn5%2Fnostr-frombtcln-diagram.drawio.png?alt=media&#x26;token=d267eabd-97d4-4d74-88f4-f1a4e1e0cc80" alt=""><figcaption><p>Bitcoin Lightning -> Smart chain swap process (Intermediary = LP Node)</p></figcaption></figure></div>
+![Bitcoin Lightning -> Smart chain swap process (Intermediary = LP Node)](https://3413090771-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FQKYJLT6LdI5sTgcaMspD%2Fuploads%2FdvZRcSxefJ0stELFmsn5%2Fnostr-frombtcln-diagram.drawio.png?alt=media&token=d267eabd-97d4-4d74-88f4-f1a4e1e0cc80)

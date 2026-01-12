@@ -10,7 +10,7 @@ User and LP can then cooperatively sign a transaction that atomically (in a sing
 * commits to the withdrawal data (i.e. user gets 10 wBTC)
 * sends funds from user to the LP's wallet on the bitcoin side (i.e. LP gets 10 BTC)
 
-<figure><img src="https://3413090771-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FQKYJLT6LdI5sTgcaMspD%2Fuploads%2F62Omq5mEy0zkNn1beQp2%2Fnew%20swap%20design%20actual%20swap.drawio.png?alt=media&#x26;token=dcb10dff-5b4c-4034-9194-ba7175108ac1" alt=""><figcaption><p>Diagram showcasing a swap of 10 BTC -> 10 wBTC</p></figcaption></figure>
+![Diagram showcasing a swap of 10 BTC -> 10 wBTC](https://3413090771-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FQKYJLT6LdI5sTgcaMspD%2Fuploads%2F62Omq5mEy0zkNn1beQp2%2Fnew%20swap%20design%20actual%20swap.drawio.png?alt=media&token=dcb10dff-5b4c-4034-9194-ba7175108ac1)
 
 ## Watchtowers
 
@@ -20,9 +20,9 @@ Parties (permissionless - can be anyone), that are submitting withdrawal transac
 
 In case users want to get their funds sooner than the confirmations required in the vault, they can specify a fronting fee/tip in the additional transaction data. The liquidity fronters can then process the swaps sooner (sending the assets to the user) - e.g. with the btc transaction having just 1 confirmation, and later reclaim the value they fronted (+ fronting fee) from the vault - e.g. when the bitcoin transaction gains 3 confirmations.
 
-{% hint style="info" %}
+:::info
 Liquidity fronting is not yet available on mainnet nor testnet
-{% endhint %}
+:::
 
 ## Parties
 
@@ -65,4 +65,4 @@ Liquidity fronting is not yet available on mainnet nor testnet
 
 ## Diagram
 
-<div data-full-width="true"><figure><img src="https://3413090771-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FQKYJLT6LdI5sTgcaMspD%2Fuploads%2Fs5VzKGZWrzaFKodVI2ww%2Fnew%20swap%20flow%20diagram.drawio.png?alt=media&#x26;token=8cd5f6f2-4eb0-4f5a-960a-264fc24a319f" alt=""><figcaption></figcaption></figure></div>
+![New swap flow diagram](https://3413090771-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FQKYJLT6LdI5sTgcaMspD%2Fuploads%2Fs5VzKGZWrzaFKodVI2ww%2Fnew%20swap%20flow%20diagram.drawio.png?alt=media&token=8cd5f6f2-4eb0-4f5a-960a-264fc24a319f)
