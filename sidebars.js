@@ -37,8 +37,16 @@ const sidebars = {
         'submarine-swaps/lightning-sc-legacy',
       ],
     },
-
-
+    {
+      type: 'category',
+      label: 'SDK',
+      link: { type: 'doc', id: 'sdk-guide/index' },
+      items: [
+        'sdk-guide/quick-start',
+        'sdk-guide/swaps',
+        'sdk-guide/advanced',
+      ],
+    },
   ],
 };
 

@@ -19,5 +19,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Generated API docs (TypeDoc output)
-api/sdk/
+# Generated SDK docs (TypeDoc output)
+sdk/

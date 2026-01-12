@@ -25,14 +25,14 @@ const config = {
   },
 
   plugins: [
-    // Second docs instance for API Reference
+    // Second docs instance for SDK Reference (TypeDoc generated)
     [
       '@docusaurus/plugin-content-docs',
       {
-        id: 'api',
-        path: 'api',
-        routeBasePath: 'api',
-        sidebarPath: './api-sidebars.js',
+        id: 'sdk-reference',
+        path: 'sdk',
+        routeBasePath: 'sdk-reference',
+        sidebarPath: './sdk-sidebars.js',
       },
     ],
     // TypeDoc plugin generates SDK docs
@@ -42,7 +42,7 @@ const config = {
         id: 'sdk',
         entryPoints: ['../atomiq-sdk/src/index.ts'],
         tsconfig: '../atomiq-sdk/tsconfig.json',
-        out: 'api/sdk',
+        out: 'sdk',
         skipErrorChecking: true,
         sanitizeComments: true,
 
@@ -109,8 +109,8 @@ const config = {
             label: 'Documentation',
           },
           {
-            to: '/api',
-            label: 'SDK',
+            to: '/sdk-reference',
+            label: 'SDK Reference',
             position: 'left',
           },
           {
