@@ -21,4 +21,3 @@ yarn-error.log*
 
 # Generated API docs (TypeDoc output)
 api/sdk/
-api/sdk-lib/

@@ -49,22 +49,15 @@ const config = {
         parametersFormat: 'table',
         typeDeclarationFormat: 'table',
         sanitizeComments: true,
-      },
-    ],
-    // TypeDoc plugin generates SDK Library docs
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        id: 'sdk-lib',
-        entryPoints: ['../atomiq-sdk-lib/src/index.ts'],
-        tsconfig: '../atomiq-sdk-lib/tsconfig.json',
-        out: 'api/sdk-lib',
-        skipErrorChecking: true,
-        useCodeBlocks: true,
-        expandObjects: false,
-        parametersFormat: 'table',
-        typeDeclarationFormat: 'table',
-        sanitizeComments: true,
+        // Organization options
+        excludeInternal: true,           // Hide @internal items
+        excludePrivate: true,            // Hide private members
+        excludeNotDocumented: false,     // Keep undocumented for now
+        categorizeByGroup: true,         // Group by @category
+        navigation: {
+          includeCategories: true,
+          includeGroups: true,
+        },
       },
     ],
   ],
@@ -110,7 +103,7 @@ const config = {
           },
           {
             to: '/api/sdk',
-            label: 'SDK API',
+            label: 'SDK',
             position: 'left',
           },
           {
