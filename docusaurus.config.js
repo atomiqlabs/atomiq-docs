@@ -44,20 +44,27 @@ const config = {
         tsconfig: '../atomiq-sdk/tsconfig.json',
         out: 'api/sdk',
         skipErrorChecking: true,
-        useCodeBlocks: true,
-        expandObjects: false,
-        parametersFormat: 'table',
-        typeDeclarationFormat: 'table',
         sanitizeComments: true,
-        // Organization options
-        excludeInternal: true,           // Hide @internal items
-        excludePrivate: true,            // Hide private members
-        excludeNotDocumented: false,     // Keep undocumented for now
-        categorizeByGroup: true,         // Group by @category
+
+        // Hide internal/private
+        excludeInternal: true,
+        excludePrivate: true,
+
+        // Flatten structure - show categories, not Classes/Functions/Type Aliases
+        categorizeByGroup: true,
         navigation: {
           includeCategories: true,
-          includeGroups: true,
+          includeGroups: false,  // KEY: Remove Classes/Functions/Type Aliases grouping
         },
+
+        // Clean up page headers
+        hideGroupHeadings: true,   // Remove "Classes", "Functions" headings
+        hideBreadcrumbs: true,     // Simpler navigation
+
+        // Formatting
+        useCodeBlocks: true,
+        parametersFormat: 'table',
+        typeDeclarationFormat: 'table',
       },
     ],
   ],
@@ -102,7 +109,7 @@ const config = {
             label: 'Documentation',
           },
           {
-            to: '/api/sdk',
+            to: '/api',
             label: 'SDK',
             position: 'left',
           },
@@ -153,7 +160,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Atomiq Labs. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Atomiq Labs.`,
       },
       prism: {
         theme: prismThemes.github,

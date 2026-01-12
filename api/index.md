@@ -1,5 +1,4 @@
 ---
-slug: /api
 title: SDK API Reference
 sidebar_position: 0
 ---
