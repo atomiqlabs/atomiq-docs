@@ -1,0 +1,3 @@
+# Submarine swaps (lightning)
+
+Submarine swaps are based on a fact that lightning network payments are a form of hash-time locked contracts (HTLCs) -> in order to settle a bitcoin lightning network invoice, the receiving party must reveal a *secret S* with *hash H(S)* equal to *payment hash P* specified in the invoice. This fact can be used to create a similar hash time locked contract (HTLC) with same *hash P* on other chains to depend on sending/receiving of lightning network payment.
