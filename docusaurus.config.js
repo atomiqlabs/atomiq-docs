@@ -1,6 +1,25 @@
 // @ts-check
 import {themes as prismThemes} from 'prism-react-renderer';
 
+// Shared TypeDoc options for consistent formatting
+const sharedTypedocOptions = {
+  skipErrorChecking: true,
+  sanitizeComments: true,
+  plugin: ['typedoc-plugin-merge-modules'],
+  excludeInternal: true,
+  excludePrivate: true,
+  categorizeByGroup: false,
+  navigation: {
+    includeCategories: true,
+    includeGroups: false,
+  },
+  hideGroupHeadings: true,
+  hideBreadcrumbs: true,
+  useCodeBlocks: true,
+  parametersFormat: 'table',
+  typeDeclarationFormat: 'table',
+};
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Atomiq Docs',
@@ -25,51 +44,68 @@ const config = {
   },
 
   plugins: [
-    // Second docs instance for SDK Reference (TypeDoc generated)
+    // ============================================
+    // Single SDK Reference docs instance
+    // ============================================
     [
       '@docusaurus/plugin-content-docs',
       {
         id: 'sdk-reference',
-        path: 'sdk',
+        path: 'sdk-reference',
         routeBasePath: 'sdk-reference',
-        sidebarPath: './sdk-sidebars.js',
+        sidebarPath: './sidebars-sdk-reference.js',
       },
     ],
-    // TypeDoc plugin generates SDK docs
+
+    // ============================================
+    // TypeDoc: SDK
+    // ============================================
     [
       'docusaurus-plugin-typedoc',
       {
-        id: 'sdk',
+        id: 'typedoc-sdk',
         entryPoints: ['repos/atomiq-sdk/src/index.ts', 'repos/atomiq-sdk-lib/src/index.ts'],
         tsconfig: './typedoc.tsconfig.json',
-        out: 'sdk',
-        readme: './repos/atomiq-sdk/README.md',  // Use SDK README for overview page
-        skipErrorChecking: true,
-        sanitizeComments: true,
+        out: 'sdk-reference/sdk',
+        readme: './repos/atomiq-sdk/README.md',
+        ...sharedTypedocOptions,
+        mergeModulesMergeMode: 'project',
+      },
+    ],
 
-        // Merge modules plugin - flattens both SDK repos into single namespace
-        plugin: ['typedoc-plugin-merge-modules'],
-        mergeModulesMergeMode: 'project',  // Merge all modules into root
+    // ============================================
+    // TypeDoc: Chains
+    // ============================================
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'typedoc-chains',
+        entryPoints: [
+          'repos/atomiq-chain-solana/src/index.ts',
+          'repos/atomiq-chain-starknet/src/index.ts',
+          'repos/atomiq-chain-evm/src/index.ts',
+        ],
+        tsconfig: './typedoc.tsconfig.json',
+        out: 'sdk-reference/chains',
+        readme: 'none',
+        ...sharedTypedocOptions,
+        mergeModulesMergeMode: 'module',
+      },
+    ],
 
-        // Hide internal/private
-        excludeInternal: true,
-        excludePrivate: true,
-
-        // Flatten structure - show categories, not Classes/Functions/Type Aliases
-        categorizeByGroup: false,  // KEY: Categories at top level, not nested in groups
-        navigation: {
-          includeCategories: true,
-          includeGroups: false,  // Remove Classes/Functions/Type Aliases grouping
-        },
-
-        // Clean up page headers
-        hideGroupHeadings: true,   // Remove "Classes", "Functions" headings
-        hideBreadcrumbs: true,     // Simpler navigation
-
-        // Formatting
-        useCodeBlocks: true,
-        parametersFormat: 'table',
-        typeDeclarationFormat: 'table',
+    // ============================================
+    // TypeDoc: Storage
+    // ============================================
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        id: 'typedoc-storage',
+        entryPoints: ['repos/atomiq-storage-sqlite/src/index.ts'],
+        tsconfig: './typedoc.tsconfig.json',
+        out: 'sdk-reference/storage',
+        readme: 'none',
+        ...sharedTypedocOptions,
+        mergeModulesMergeMode: 'project',
       },
     ],
   ],
@@ -114,7 +150,7 @@ const config = {
             label: 'Documentation',
           },
           {
-            to: '/sdk-reference',
+            to: '/sdk-reference/sdk',
             label: 'SDK Reference',
             position: 'left',
           },

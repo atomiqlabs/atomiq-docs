@@ -7,7 +7,9 @@
       "@atomiqlabs/sdk-lib": ["./repos/atomiq-sdk-lib/src"],
       "@atomiqlabs/chain-solana": ["./repos/atomiq-chain-solana/src"],
       "@atomiqlabs/chain-starknet": ["./repos/atomiq-chain-starknet/src"],
-      "@atomiqlabs/chain-evm": ["./repos/atomiq-chain-evm/src"]
+      "@atomiqlabs/chain-evm": ["./repos/atomiq-chain-evm/src"],
+      "@atomiqlabs/storage-sqlite": ["./repos/atomiq-storage-sqlite/src"],
+      "@atomiqlabs/base": ["./repos/atomiq-sdk-lib/node_modules/@atomiqlabs/base/dist"]
     }
   },
   "include": [
@@ -15,6 +17,7 @@
     "repos/atomiq-sdk-lib/src/**/*",
     "repos/atomiq-chain-solana/src/**/*",
     "repos/atomiq-chain-starknet/src/**/*",
-    "repos/atomiq-chain-evm/src/**/*"
+    "repos/atomiq-chain-evm/src/**/*",
+    "repos/atomiq-storage-sqlite/src/**/*"
   ]
 }

@@ -20,7 +20,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Generated SDK docs (TypeDoc output)
-sdk/
+sdk-reference/
 
 .claude/settings.local.json
 repos/
