@@ -1,5 +1,39 @@
 // @ts-check
 
+/**
+ * Fix paths in TypeDoc-generated sidebar items
+ * Removes '../sdk/' prefix from doc IDs
+ */
+function fixPaths(items) {
+  return items.map(item => {
+    const fixed = { ...item };
+
+    // Fix direct doc id
+    if (fixed.type === 'doc' && fixed.id) {
+      fixed.id = fixed.id.replace(/^\.\.\/sdk\//, '');
+    }
+
+    // Fix link id
+    if (fixed.link && fixed.link.type === 'doc' && fixed.link.id) {
+      fixed.link = {
+        ...fixed.link,
+        id: fixed.link.id.replace(/^\.\.\/sdk\//, ''),
+      };
+    }
+
+    // Recursively fix nested items
+    if (fixed.items && Array.isArray(fixed.items)) {
+      fixed.items = fixPaths(fixed.items);
+    }
+
+    return fixed;
+  });
+}
+
+// Load and immediately transform the TypeDoc sidebar
+const typedocSidebar = require('./sdk/typedoc-sidebar.cjs');
+const fixedItems = fixPaths(typedocSidebar);
+
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
   sdkSidebar: [
@@ -8,50 +42,7 @@ const sidebars = {
       id: 'index',
       label: 'Overview',
     },
-    {
-      type: 'category',
-      label: 'Core',
-      collapsed: false,
-      items: [
-        { type: 'doc', id: 'classes/SwapperFactory', label: 'SwapperFactory' },
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Configuration',
-      items: [
-        { type: 'doc', id: 'type-aliases/TypedSwapperOptions', label: 'TypedSwapperOptions' },
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Storage',
-      items: [
-        { type: 'doc', id: 'classes/LocalStorageManager', label: 'LocalStorageManager' },
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Utilities',
-      items: [
-        { type: 'doc', id: 'functions/toHumanReadableString', label: 'toHumanReadableString()' },
-        { type: 'doc', id: 'functions/fromHumanReadableString', label: 'fromHumanReadableString()' },
-        { type: 'doc', id: 'functions/timeoutSignal', label: 'timeoutSignal()' },
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Types',
-      collapsed: true,
-      items: [
-        { type: 'doc', id: 'type-aliases/TypedSwapper', label: 'TypedSwapper' },
-        { type: 'doc', id: 'type-aliases/TypedTokens', label: 'TypedTokens' },
-        { type: 'doc', id: 'type-aliases/TypedChainTokens', label: 'TypedChainTokens' },
-        { type: 'doc', id: 'type-aliases/TypedChainTokenResolver', label: 'TypedChainTokenResolver' },
-        { type: 'doc', id: 'type-aliases/TypedTokenResolvers', label: 'TypedTokenResolvers' },
-        { type: 'doc', id: 'type-aliases/TypedSwap', label: 'TypedSwap' },
-      ],
-    },
+    ...fixedItems,
   ],
 };
 

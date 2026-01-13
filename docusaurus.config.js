@@ -41,7 +41,7 @@ const config = {
       {
         id: 'sdk',
         entryPoints: ['repos/atomiq-sdk/src/index.ts', 'repos/atomiq-sdk-lib/src/index.ts'],
-        tsconfig: ['repos/atomiq-sdk/tsconfig.json'],
+        tsconfig: ['./typedoc.tsconfig.json'],
         out: 'sdk',
         skipErrorChecking: true,
         sanitizeComments: true,

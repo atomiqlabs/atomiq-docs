@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@atomiqlabs/sdk": ["./repos/atomiq-sdk/src"],
+      "@atomiqlabs/sdk-lib": ["./repos/atomiq-sdk-lib/src"]
+    }
+  },
+  "include": [
+    "repos/atomiq-sdk/src/**/*",
+    "repos/atomiq-sdk-lib/src/**/*"
+  ]
+}
