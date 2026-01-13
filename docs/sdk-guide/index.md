@@ -2,9 +2,9 @@
 sidebar_position: 2
 ---
 
-# SDK
+# SDK Guide
 
-A TypeScript multichain client for Atomiq trustless cross-chain swaps. Enables trustless swaps between smart chains (Solana, EVM, Starknet, etc.) and Bitcoin (on-chain L1 and Lightning Network L2).
+The Atomiq SDK is a TypeScript multichain client for Atomiq trustless cross-chain swaps. It enables trustless swaps between smart chains (Solana, EVM, Starknet, etc.) and Bitcoin (on-chain L1 and Lightning Network L2).
 
 Example SDK integration in Node.js available [here](https://github.com/atomiqlabs/atomiq-sdk-demo).
 

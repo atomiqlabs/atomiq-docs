@@ -40,8 +40,8 @@ const config = {
       'docusaurus-plugin-typedoc',
       {
         id: 'sdk',
-        entryPoints: ['../atomiq-sdk/src/index.ts'],
-        tsconfig: '../atomiq-sdk/tsconfig.json',
+        entryPoints: ['repos/atomiq-sdk/src/index.ts', 'repos/atomiq-sdk-lib/src/index.ts'],
+        tsconfig: ['repos/atomiq-sdk/tsconfig.json'],
         out: 'sdk',
         skipErrorChecking: true,
         sanitizeComments: true,
