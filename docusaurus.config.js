@@ -43,18 +43,23 @@ const config = {
         entryPoints: ['repos/atomiq-sdk/src/index.ts', 'repos/atomiq-sdk-lib/src/index.ts'],
         tsconfig: './typedoc.tsconfig.json',
         out: 'sdk',
+        readme: './repos/atomiq-sdk/README.md',  // Use SDK README for overview page
         skipErrorChecking: true,
         sanitizeComments: true,
+
+        // Merge modules plugin - flattens both SDK repos into single namespace
+        plugin: ['typedoc-plugin-merge-modules'],
+        mergeModulesMergeMode: 'project',  // Merge all modules into root
 
         // Hide internal/private
         excludeInternal: true,
         excludePrivate: true,
 
         // Flatten structure - show categories, not Classes/Functions/Type Aliases
-        categorizeByGroup: true,
+        categorizeByGroup: false,  // KEY: Categories at top level, not nested in groups
         navigation: {
           includeCategories: true,
-          includeGroups: false,  // KEY: Remove Classes/Functions/Type Aliases grouping
+          includeGroups: false,  // Remove Classes/Functions/Type Aliases grouping
         },
 
         // Clean up page headers
