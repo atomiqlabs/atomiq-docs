@@ -9,7 +9,9 @@
       "@atomiqlabs/chain-starknet": ["./repos/atomiq-chain-starknet/src"],
       "@atomiqlabs/chain-evm": ["./repos/atomiq-chain-evm/src"],
       "@atomiqlabs/storage-sqlite": ["./repos/atomiq-storage-sqlite/src"],
-      "@atomiqlabs/base": ["./repos/atomiq-sdk-lib/node_modules/@atomiqlabs/base/dist"]
+      "@atomiqlabs/base": ["./repos/atomiq-sdk-lib/node_modules/@atomiqlabs/base/dist"],
+      "@atomiqlabs/storage-rn-async": ["./repos/atomiq-storage-rn-async/src"],
+      "@atomiqlabs/storage-memory-indexed-kv": ["./repos/atomiq-storage-memory-indexed-kv/src"]
     }
   },
   "include": [
@@ -18,6 +20,8 @@
     "repos/atomiq-chain-solana/src/**/*",
     "repos/atomiq-chain-starknet/src/**/*",
     "repos/atomiq-chain-evm/src/**/*",
-    "repos/atomiq-storage-sqlite/src/**/*"
+    "repos/atomiq-storage-sqlite/src/**/*",
+    "repos/atomiq-storage-rn-async/src/**/*",
+    "repos/atomiq-storage-memory-indexed-kv/src/**/*"
   ]
 }

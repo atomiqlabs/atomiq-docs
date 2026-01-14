@@ -18,6 +18,7 @@ const sharedTypedocOptions = {
   useCodeBlocks: true,
   parametersFormat: 'table',
   typeDeclarationFormat: 'table',
+  sort: ['visibility', 'alphabetical'],
 };
 
 /** @type {import('@docusaurus/types').Config} */
@@ -100,7 +101,7 @@ const config = {
       'docusaurus-plugin-typedoc',
       {
         id: 'typedoc-storage',
-        entryPoints: ['repos/atomiq-storage-sqlite/src/index.ts'],
+        entryPoints: ['repos/atomiq-storage-sqlite/src/index.ts', 'repos/atomiq-storage-rn-async/src/index.ts', 'repos/atomiq-storage-memory-indexed-kv/src/index.ts'],
         tsconfig: './typedoc.tsconfig.json',
         out: 'sdk-reference/storage',
         readme: 'none',
