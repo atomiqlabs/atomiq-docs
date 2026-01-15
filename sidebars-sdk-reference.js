@@ -78,6 +78,67 @@ function renameChainLabels(items) {
   });
 }
 
+/**
+ * Convert flat category names with "/" into nested category structures
+ * e.g., "EVM/Networks/Alpen" becomes EVM > Networks > Alpen
+ */
+function nestCategories(items) {
+  // Build a tree structure from flat categories
+  const result = [];
+  const categoryMap = new Map(); // Track created categories by path
+
+  for (const item of items) {
+    if (item.type === 'category' && item.label && item.label.includes('/')) {
+      // Split the path: "EVM/Networks/Alpen" -> ["EVM", "Networks", "Alpen"]
+      const parts = item.label.split('/');
+      const leafLabel = parts.pop(); // "Alpen"
+
+      // Find or create parent categories
+      let currentLevel = result;
+      let currentPath = '';
+
+      for (const part of parts) {
+        currentPath = currentPath ? `${currentPath}/${part}` : part;
+
+        // Check if this category already exists at current level
+        let existingCategory = currentLevel.find(
+          c => c.type === 'category' && c.label === part
+        );
+
+        if (!existingCategory) {
+          existingCategory = {
+            type: 'category',
+            label: part,
+            collapsed: true,
+            items: [],
+          };
+          currentLevel.push(existingCategory);
+          categoryMap.set(currentPath, existingCategory);
+        }
+
+        currentLevel = existingCategory.items;
+      }
+
+      // Add the leaf category with its items
+      currentLevel.push({
+        ...item,
+        label: leafLabel,
+      });
+    } else if (item.type === 'category' && item.items) {
+      // Recursively process nested items
+      result.push({
+        ...item,
+        items: nestCategories(item.items),
+      });
+    } else {
+      // Keep non-category items as-is
+      result.push(item);
+    }
+  }
+
+  return result;
+}
+
 // Load TypeDoc sidebars
 let sdkSidebar = [];
 let chainsSidebar = [];
@@ -97,7 +158,20 @@ try {
 
 // Fix paths for each section
 const fixedSdk = fixPaths(sdkSidebar, 'sdk');
-const fixedChains = renameChainLabels(flattenSrcLevel(fixPaths(chainsSidebar, 'chains')));
+const fixedChains = renameChainLabels(
+  flattenSrcLevel(
+    fixPaths(chainsSidebar, 'chains')
+  ).map(chain => {
+    // Apply nestCategories to each chain's items
+    if (chain.type === 'category' && chain.items) {
+      return {
+        ...chain,
+        items: nestCategories(chain.items),
+      };
+    }
+    return chain;
+  })
+);
 const fixedStorage = fixPaths(storageSidebar, 'storage');
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
