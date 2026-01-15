@@ -8,6 +8,7 @@ const sharedTypedocOptions = {
   plugin: ['typedoc-plugin-merge-modules'],
   excludeInternal: true,
   excludePrivate: true,
+  excludeExternals: true,
   categorizeByGroup: false,
   navigation: {
     includeCategories: true,
