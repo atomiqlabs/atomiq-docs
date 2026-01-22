@@ -64,6 +64,9 @@ function renameChainLabels(items) {
     'atomiq-chain-solana': 'Solana',
     'atomiq-chain-starknet': 'Starknet',
     'atomiq-chain-evm': 'EVM',
+    'atomiq-storage-sqlite': 'SQLite',
+    'atomiq-storage-rn-async': 'React Native Async',
+    'atomiq-storage-memory-indexed-kv': 'Memory Indexed KV',
   };
 
   return items.map(item => {
@@ -172,7 +175,11 @@ const fixedChains = renameChainLabels(
     return chain;
   })
 );
-const fixedStorage = fixPaths(storageSidebar, 'storage');
+const fixedStorage = renameChainLabels(
+  flattenSrcLevel(
+    fixPaths(storageSidebar, 'storage')
+  )
+);
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {

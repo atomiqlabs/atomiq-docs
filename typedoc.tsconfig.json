@@ -4,7 +4,6 @@
     "baseUrl": ".",
     "paths": {
       "@atomiqlabs/sdk": ["./repos/atomiq-sdk/src"],
-      "@atomiqlabs/sdk-lib": ["./repos/atomiq-sdk-lib/src"],
       "@atomiqlabs/chain-solana": ["./repos/atomiq-chain-solana/src"],
       "@atomiqlabs/chain-starknet": ["./repos/atomiq-chain-starknet/src"],
       "@atomiqlabs/chain-evm": ["./repos/atomiq-chain-evm/src"],
@@ -16,7 +15,6 @@
   },
   "include": [
     "repos/atomiq-sdk/src/**/*",
-    "repos/atomiq-sdk-lib/src/**/*",
     "repos/atomiq-chain-solana/src/**/*",
     "repos/atomiq-chain-starknet/src/**/*",
     "repos/atomiq-chain-evm/src/**/*",
