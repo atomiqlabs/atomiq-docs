@@ -149,9 +149,15 @@ const config = {
         items: [
           {
             type: 'docSidebar',
-            sidebarId: 'docsSidebar',
+            sidebarId: 'protocolSidebar',
             position: 'left',
-            label: 'Documentation',
+            label: 'Protocol',
+          },
+          {
+            type: 'docSidebar',
+            sidebarId: 'sdkTutorialsSidebar',
+            position: 'left',
+            label: 'SDK Tutorials',
           },
           {
             to: '/sdk-reference/sdk',

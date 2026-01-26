@@ -2,7 +2,8 @@
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
-  docsSidebar: [
+  // Protocol documentation (non-developer technical docs)
+  protocolSidebar: [
     'introduction',
     {
       type: 'category',
@@ -37,9 +38,13 @@ const sidebars = {
         'submarine-swaps/lightning-sc-legacy',
       ],
     },
+  ],
+
+  // SDK Tutorials (developer-focused)
+  sdkTutorialsSidebar: [
     {
       type: 'category',
-      label: 'SDK',
+      label: 'SDK Tutorials',
       link: { type: 'doc', id: 'sdk-guide/index' },
       items: [
         'sdk-guide/quick-start',

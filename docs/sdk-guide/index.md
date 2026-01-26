@@ -40,4 +40,4 @@ npm install @atomiqlabs/storage-sqlite@latest
 
 ## API Reference
 
-For detailed TypeScript API documentation, see the [SDK API Reference](/sdk-reference).
+For detailed TypeScript API documentation, see the [SDK API Reference](/sdk-reference/sdk).
