@@ -15,6 +15,7 @@
   },
   "include": [
     "repos/atomiq-sdk/src/**/*",
+    "repos/atomiq-base/src/**/*",
     "repos/atomiq-chain-solana/src/**/*",
     "repos/atomiq-chain-starknet/src/**/*",
     "repos/atomiq-chain-evm/src/**/*",
