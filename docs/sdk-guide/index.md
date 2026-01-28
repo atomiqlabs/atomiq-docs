@@ -1,42 +1,115 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 ---
 
 # SDK Guide
 
-The Atomiq SDK is a TypeScript multichain client for Atomiq trustless cross-chain swaps. It enables trustless swaps between smart chains (Solana, EVM, Starknet, etc.) and Bitcoin (on-chain L1 and Lightning Network L2).
+The Atomiq SDK is a TypeScript multichain client for trustless cross-chain swaps between smart chains (Solana, Starknet, EVM) and Bitcoin (on-chain L1 and Lightning Network L2).
 
-Example SDK integration in Node.js available [here](https://github.com/atomiqlabs/atomiq-sdk-demo).
+:::tip Demo Repository
+See complete working examples: [atomiq-sdk-demo](https://github.com/atomiqlabs/atomiq-sdk-demo)
+:::
 
-## Installation
+## Swap Type Matrix
+
+| From | To | Protocol | Settlement |
+|------|-----|----------|------------|
+| BTC L1 | Solana | Legacy (FromBTC) | Requires claim |
+| BTC L1 | Starknet/EVM | SPV (SpvFromBTC) | Auto-settled |
+| Lightning | Solana | Legacy (FromBTCLN) | Requires claim |
+| Lightning | Starknet/EVM | Auto (FromBTCLNAuto) | Auto-settled |
+| Solana/Starknet/EVM | BTC L1 | ToBTC | LP sends BTC |
+| Solana/Starknet/EVM | Lightning | ToBTCLN | LP sends LN |
+
+## Quick Installation
 
 ```bash
+# Core SDK
 npm install @atomiqlabs/sdk@latest
-```
 
-## Chain-Specific Connectors
-
-Install only the chain connectors your project requires:
-
-```bash
+# Chain connectors (install only what you need)
 npm install @atomiqlabs/chain-solana@latest
 npm install @atomiqlabs/chain-starknet@latest
 npm install @atomiqlabs/chain-evm@latest
-```
 
-## Node.js Storage
-
-For Node.js applications, install the SQLite storage adapter:
-
-```bash
+# Node.js storage (not needed in browser)
 npm install @atomiqlabs/storage-sqlite@latest
 ```
 
-## What's Next
+## Quick Example
 
-- [Quick Start](./quick-start) - Set up your first swapper instance
-- [Swap Examples](./swaps) - Code examples for all swap types
-- [Advanced Usage](./advanced) - Swap states, limits, helpers, and configuration options
+```typescript
+import {SwapperFactory, BitcoinNetwork, SwapAmountType} from "@atomiqlabs/sdk";
+import {SolanaInitializer} from "@atomiqlabs/chain-solana";
+
+// Create factory with desired chains
+const Factory = new SwapperFactory([SolanaInitializer] as const);
+const Tokens = Factory.Tokens;
+
+// Create swapper
+const swapper = Factory.newSwapper({
+  chains: {
+    SOLANA: { rpcUrl: "https://api.mainnet-beta.solana.com" }
+  },
+  bitcoinNetwork: BitcoinNetwork.MAINNET
+});
+
+// Initialize
+await swapper.init();
+
+// Create swap: SOL to Bitcoin Lightning
+const swap = await swapper.swap(
+  Tokens.SOLANA.SOL,
+  Tokens.BITCOIN.BTCLN,
+  undefined,
+  SwapAmountType.EXACT_OUT,
+  signer.getAddress(),
+  "lnbc10u1p..."  // Lightning invoice
+);
+
+// Execute
+const success = await swap.execute(signer, {
+  onSwapSettled: (txId) => console.log("Complete!", txId)
+});
+
+if (!success) {
+  await swap.refund(signer);
+}
+```
+
+## Documentation Sections
+
+### Getting Started
+- [Installation](./installation) - Install SDK and chain connectors
+- [Quick Start](./quick-start) - Set up your first swapper
+
+### Swap Tutorials
+- [BTC to Smart Chain](./swaps/btc-to-smart-chain) - Bitcoin L1 to Solana/Starknet/EVM
+- [Smart Chain to BTC](./swaps/smart-chain-to-btc) - Solana/Starknet/EVM to Bitcoin L1
+- [Lightning to Smart Chain](./swaps/lightning-to-smart-chain) - Lightning to smart chains
+- [Smart Chain to Lightning](./swaps/smart-chain-to-lightning) - Smart chains to Lightning
+- [LNURL Swaps](./swaps/lnurl-swaps) - Reusable payment addresses
+
+### Utilities
+- [Address Parser](./utilities/address-parser) - Parse any address format
+- [Wallet Balance](./utilities/wallet-balance) - Get spendable balances
+- [Supported Tokens](./utilities/supported-tokens) - Discover tokens
+- [Swap Types](./utilities/swap-types) - Inspect swap protocols
+
+### Swap Management
+- [Swap States](./swap-management/swap-states) - State machine documentation
+- [Historical Swaps](./swap-management/historical-swaps) - Retrieve past swaps
+- [Refunds](./swap-management/refunds) - Handle failed swaps
+- [Claiming](./swap-management/claiming) - Manual settlement
+
+### Advanced
+- [Manual Transactions](./advanced/manual-transactions) - Custom signing flows
+- [Configuration](./advanced/configuration) - Swapper options
+- [Events](./advanced/events) - Real-time updates
+- [Swap Limits](./advanced/swap-limits) - Amount constraints
+
+### Integrations
+- [Solana Pay](./integrations/solana-pay) - Wallet QR code integration
 
 ## API Reference
 

@@ -3,7 +3,7 @@
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
   // Protocol documentation (non-developer technical docs)
-  protocolSidebar: [
+  getStartedSidebar: [
     'introduction',
     {
       type: 'category',
@@ -41,15 +41,67 @@ const sidebars = {
   ],
 
   // SDK Tutorials (developer-focused)
-  sdkTutorialsSidebar: [
+  developersSidebar: [
     {
       type: 'category',
-      label: 'SDK Tutorials',
+      label: 'Developers',
       link: { type: 'doc', id: 'sdk-guide/index' },
       items: [
+        'sdk-guide/installation',
         'sdk-guide/quick-start',
-        'sdk-guide/swaps',
-        'sdk-guide/advanced',
+        {
+          type: 'category',
+          label: 'Swap Tutorials',
+          link: { type: 'doc', id: 'sdk-guide/swaps/index' },
+          items: [
+            'sdk-guide/swaps/btc-to-smart-chain',
+            'sdk-guide/swaps/smart-chain-to-btc',
+            'sdk-guide/swaps/lightning-to-smart-chain',
+            'sdk-guide/swaps/smart-chain-to-lightning',
+            'sdk-guide/swaps/lnurl-swaps',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Utilities',
+          link: { type: 'doc', id: 'sdk-guide/utilities/index' },
+          items: [
+            'sdk-guide/utilities/address-parser',
+            'sdk-guide/utilities/wallet-balance',
+            'sdk-guide/utilities/supported-tokens',
+            'sdk-guide/utilities/swap-types',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Swap Management',
+          link: { type: 'doc', id: 'sdk-guide/swap-management/index' },
+          items: [
+            'sdk-guide/swap-management/swap-states',
+            'sdk-guide/swap-management/historical-swaps',
+            'sdk-guide/swap-management/refunds',
+            'sdk-guide/swap-management/claiming',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Advanced',
+          link: { type: 'doc', id: 'sdk-guide/advanced/index' },
+          items: [
+            'sdk-guide/advanced/manual-transactions',
+            'sdk-guide/advanced/configuration',
+            'sdk-guide/advanced/events',
+            'sdk-guide/advanced/swap-limits',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Integrations',
+          link: { type: 'doc', id: 'sdk-guide/integrations/index' },
+          items: [
+            'sdk-guide/integrations/solana-pay',
+          ],
+        },
       ],
     },
   ],

@@ -149,15 +149,15 @@ const config = {
         items: [
           {
             type: 'docSidebar',
-            sidebarId: 'protocolSidebar',
+            sidebarId: 'getStartedSidebar',
             position: 'left',
-            label: 'Protocol',
+            label: 'Get Started',
           },
           {
             type: 'docSidebar',
-            sidebarId: 'sdkTutorialsSidebar',
+            sidebarId: 'developersSidebar',
             position: 'left',
-            label: 'SDK Tutorials',
+            label: 'Developers',
           },
           {
             to: '/sdk-reference/sdk',

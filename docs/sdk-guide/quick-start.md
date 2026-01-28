@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # Quick Start
@@ -28,7 +28,10 @@ import {SwapperFactory, TypedTokens} from "@atomiqlabs/sdk";
 const chains = [SolanaInitializer, StarknetInitializer, CitreaInitializer] as const;
 type SupportedChains = typeof chains;
 
+// Create the swapper factory
 const Factory = new SwapperFactory<SupportedChains>(chains);
+
+// Get the tokens for the supported chains
 const Tokens: TypedTokens<SupportedChains> = Factory.Tokens;
 ```
 
@@ -53,6 +56,9 @@ const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
   },
   bitcoinNetwork: BitcoinNetwork.TESTNET // or MAINNET, TESTNET4
 });
+
+// Initialize the swapper - see Swapper Initialization section for more details
+await swapper.init();
 ```
 
 :::info
@@ -78,7 +84,22 @@ const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
   swapStorage: chainId => new SqliteUnifiedStorage("CHAIN_"+chainId+".sqlite3"),
   chainStorageCtor: name => new SqliteStorageManager("STORE_"+name+".sqlite3"),
 });
+
+// Initialize the swapper - see Swapper Initialization section for more details
+await swapper.init();
 ```
+
+## Swapper Initialization
+
+Initialize the swapper once when your app starts. Ideally, you should create only one swapper instance for your entire app, and use that instance for all your swaps. This checks existing in-progress swaps and does initial LP discovery:
+
+```typescript
+// Browser setup or Node.js setup <...>
+
+// Initialize the swapper
+await swapper.init();
+```
+
 
 ## Setting Up Signers
 
@@ -134,14 +155,6 @@ const wallet = new BaseWallet(new SigningKey(evmKey));
 const evmWallet = new EVMSigner(wallet, wallet.address);
 ```
 
-## Initialization
-
-Initialize the swapper once when your app starts. This checks existing in-progress swaps and does initial LP discovery:
-
-```typescript
-await swapper.init();
-```
-
 ## Extract Chain-Specific Swapper
 
 For easier swaps between Bitcoin and a specific chain, extract a chain-specific swapper:
@@ -150,4 +163,46 @@ For easier swaps between Bitcoin and a specific chain, extract a chain-specific 
 const solanaSwapper = swapper.withChain<"SOLANA">("SOLANA");
 ```
 
-Now you're ready to execute swaps! See [Swap Examples](./swaps) for all swap types.
+## Your First Swap
+
+Here's a complete example of a Smart Chain to Lightning swap:
+
+```typescript
+import {SwapAmountType} from "@atomiqlabs/sdk";
+
+// Create a swap: SOL to Lightning
+const swap = await swapper.swap(
+  Tokens.SOLANA.SOL,              // From token
+  Tokens.BITCOIN.BTCLN,           // To Lightning
+  undefined,                      // Amount from invoice
+  SwapAmountType.EXACT_OUT,       // Invoice has fixed amount
+  solanaSigner.getAddress(),      // Source address
+  "lnbc10u1p..."                  // Lightning invoice
+);
+
+// Check quote details
+console.log("Input:", swap.getInput().toString());
+console.log("Output:", swap.getOutput().toString());
+console.log("Expires:", new Date(swap.getQuoteExpiry()));
+
+// Execute the swap
+const success = await swap.execute(solanaSigner, {
+  onSourceTransactionSent: (txId) => console.log("Tx sent:", txId),
+  onSwapSettled: (hash) => console.log("Payment sent!")
+});
+
+// Handle failure
+if (!success) {
+  await swap.refund(solanaSigner);
+}
+```
+
+## Next Steps
+
+Now you're ready to explore specific swap types:
+
+- [BTC to Smart Chain](./swaps/btc-to-smart-chain) - Bitcoin on-chain to Solana/Starknet/EVM
+- [Smart Chain to BTC](./swaps/smart-chain-to-btc) - Solana/Starknet/EVM to Bitcoin on-chain
+- [Lightning to Smart Chain](./swaps/lightning-to-smart-chain) - Lightning to smart chains
+- [Smart Chain to Lightning](./swaps/smart-chain-to-lightning) - Smart chains to Lightning
+- [LNURL Swaps](./swaps/lnurl-swaps) - Reusable payment addresses
