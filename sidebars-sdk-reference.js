@@ -176,6 +176,11 @@ for (const item of fixedAll) {
   }
 }
 
+// Unwrap "src" level from SDK items if it's the only top-level category
+if (sdkItems.length === 1 && sdkItems[0].type === 'category' && sdkItems[0].label === 'src') {
+  sdkItems = sdkItems[0].items || [];
+}
+
 // Apply transforms to chains and storage
 const fixedChains = renameChainLabels(
   flattenSrcLevel(chainItems).map(chain => {
