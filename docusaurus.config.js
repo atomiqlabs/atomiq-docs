@@ -60,53 +60,23 @@ const config = {
     ],
 
     // ============================================
-    // TypeDoc: SDK
+    // TypeDoc: All (SDK + Chains + Storage)
     // ============================================
     [
       'docusaurus-plugin-typedoc',
       {
-        id: 'typedoc-sdk',
-        entryPoints: ['repos/atomiq-sdk/src/index.ts'],
-        tsconfig: './typedoc.tsconfig.json',
-        out: 'sdk-reference/sdk',
-        readme: './repos/atomiq-sdk/README.md',
-        ...sharedTypedocOptions,
-        mergeModulesMergeMode: 'project',
-      },
-    ],
-
-    // ============================================
-    // TypeDoc: Chains
-    // ============================================
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        id: 'typedoc-chains',
+        id: 'typedoc-all',
         entryPoints: [
+          'repos/atomiq-sdk/src/index.ts',
           'repos/atomiq-chain-solana/src/index.ts',
           'repos/atomiq-chain-starknet/src/index.ts',
           'repos/atomiq-chain-evm/src/index.ts',
+          'repos/atomiq-storage-sqlite/src/index.ts',
+          'repos/atomiq-storage-rn-async/src/index.ts',
+          'repos/atomiq-storage-memory-indexed-kv/src/index.ts',
         ],
         tsconfig: './typedoc.tsconfig.json',
-        out: 'sdk-reference/chains',
-        readme: 'none',
-        ...sharedTypedocOptions,
-        mergeModulesMergeMode: 'module',
-      },
-    ],
-
-    // ============================================
-    // TypeDoc: Storage
-    // ============================================
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        id: 'typedoc-storage',
-        entryPoints: ['repos/atomiq-storage-sqlite/src/index.ts', 
-                      'repos/atomiq-storage-rn-async/src/index.ts', 
-                      'repos/atomiq-storage-memory-indexed-kv/src/index.ts'],
-        tsconfig: './typedoc.tsconfig.json',
-        out: 'sdk-reference/storage',
+        out: 'sdk-reference/api',
         readme: 'none',
         ...sharedTypedocOptions,
         mergeModulesMergeMode: 'module',
@@ -160,7 +130,7 @@ const config = {
             label: 'Developers',
           },
           {
-            to: '/sdk-reference/sdk',
+            to: '/sdk-reference/api',
             label: 'SDK Reference',
             position: 'left',
           },

@@ -142,29 +142,43 @@ function nestCategories(items) {
   return result;
 }
 
-// Load TypeDoc sidebars
-let sdkSidebar = [];
-let chainsSidebar = [];
-let storageSidebar = [];
+// Module names for classification
+const sdkModules = ['atomiq-sdk'];
+const chainModules = ['atomiq-chain-solana', 'atomiq-chain-starknet', 'atomiq-chain-evm'];
+const storageModules = ['atomiq-storage-sqlite', 'atomiq-storage-rn-async', 'atomiq-storage-memory-indexed-kv'];
 
+// Load unified TypeDoc sidebar
+let allSidebar = [];
 try {
-  sdkSidebar = require('./sdk-reference/sdk/typedoc-sidebar.cjs');
+  allSidebar = require('./sdk-reference/api/typedoc-sidebar.cjs');
 } catch (e) { /* not generated yet */ }
 
-try {
-  chainsSidebar = require('./sdk-reference/chains/typedoc-sidebar.cjs');
-} catch (e) { /* not generated yet */ }
+// Fix paths for the unified output
+const fixedAll = fixPaths(allSidebar, 'api');
 
-try {
-  storageSidebar = require('./sdk-reference/storage/typedoc-sidebar.cjs');
-} catch (e) { /* not generated yet */ }
+// Classify top-level items into SDK, Chains, and Storage
+let sdkItems = [];
+let chainItems = [];
+let storageItems = [];
 
-// Fix paths for each section
-const fixedSdk = fixPaths(sdkSidebar, 'sdk');
+for (const item of fixedAll) {
+  const label = item.label || '';
+  if (sdkModules.includes(label)) {
+    // For SDK, use the module's inner items directly (flatten module wrapper)
+    sdkItems = sdkItems.concat(item.items || []);
+  } else if (chainModules.includes(label)) {
+    chainItems.push(item);
+  } else if (storageModules.includes(label)) {
+    storageItems.push(item);
+  } else {
+    // Unknown modules go to SDK by default
+    sdkItems.push(item);
+  }
+}
+
+// Apply transforms to chains and storage
 const fixedChains = renameChainLabels(
-  flattenSrcLevel(
-    fixPaths(chainsSidebar, 'chains')
-  ).map(chain => {
+  flattenSrcLevel(chainItems).map(chain => {
     // Apply nestCategories to each chain's items
     if (chain.type === 'category' && chain.items) {
       return {
@@ -175,10 +189,9 @@ const fixedChains = renameChainLabels(
     return chain;
   })
 );
+
 const fixedStorage = renameChainLabels(
-  flattenSrcLevel(
-    fixPaths(storageSidebar, 'storage')
-  )
+  flattenSrcLevel(storageItems)
 );
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
@@ -189,11 +202,7 @@ const sidebars = {
       type: 'category',
       label: 'SDK',
       collapsed: false,
-      link: {
-        type: 'doc',
-        id: 'sdk/index',
-      },
-      items: fixedSdk,
+      items: sdkItems,
     },
 
     // Chains Section
