@@ -194,8 +194,8 @@ PR_CREATED → PR_PAID → CLAIM_COMMITED → CLAIM_CLAIMED (success)
 
 ## API Reference
 
-- [ToBTCSwapState](/sdk-reference/sdk/enumerations/ToBTCSwapState)
-- [FromBTCSwapState](/sdk-reference/sdk/enumerations/FromBTCSwapState)
-- [SpvFromBTCSwapState](/sdk-reference/sdk/enumerations/SpvFromBTCSwapState)
-- [FromBTCLNSwapState](/sdk-reference/sdk/enumerations/FromBTCLNSwapState)
-- [FromBTCLNAutoSwapState](/sdk-reference/sdk/enumerations/FromBTCLNAutoSwapState)
+- [ToBTCSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/ToBTCSwapState)
+- [FromBTCSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/FromBTCSwapState)
+- [SpvFromBTCSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/SpvFromBTCSwapState)
+- [FromBTCLNSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/FromBTCLNSwapState)
+- [FromBTCLNAutoSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/FromBTCLNAutoSwapState)

@@ -274,6 +274,6 @@ global.atomiqLogLevel = 3;
 
 ## API Reference
 
-- [SwapperFactory](/sdk-reference/sdk/classes/SwapperFactory)
-- [newSwapper](/sdk-reference/sdk/classes/SwapperFactory#newswapper)
-- [BitcoinNetwork](/sdk-reference/sdk/enumerations/BitcoinNetwork)
+- [SwapperFactory](/sdk-reference/api/atomiq-sdk/src/classes/SwapperFactory)
+- [newSwapper](/sdk-reference/api/atomiq-sdk/src/classes/SwapperFactory#newswapper)
+- [BitcoinNetwork](/sdk-reference/api/atomiq-sdk/src/enumerations/BitcoinNetwork)

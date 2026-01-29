@@ -235,7 +235,7 @@ try {
 
 ## API Reference
 
-- [isLNURLPay](/sdk-reference/sdk/functions/isLNURLPay) - Type guard for LNURL-pay
-- [isLNURLWithdraw](/sdk-reference/sdk/functions/isLNURLWithdraw) - Type guard for LNURL-withdraw
-- [LNURLPay](/sdk-reference/sdk/interfaces/LNURLPay) - LNURL-pay data interface
-- [LNURLWithdraw](/sdk-reference/sdk/interfaces/LNURLWithdraw) - LNURL-withdraw data interface
+- [isLNURLPay](/sdk-reference/api/atomiq-sdk/src/functions/isLNURLPay) - Type guard for LNURL-pay
+- [isLNURLWithdraw](/sdk-reference/api/atomiq-sdk/src/functions/isLNURLWithdraw) - Type guard for LNURL-withdraw
+- [LNURLPay](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLPay) - LNURL-pay data type
+- [LNURLWithdraw](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLWithdraw) - LNURL-withdraw data type

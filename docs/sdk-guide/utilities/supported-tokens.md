@@ -152,6 +152,6 @@ if (canSwap(Tokens.SOLANA.SOL, Tokens.BITCOIN.BTC)) {
 
 ## API Reference
 
-- [getSupportedTokens](/sdk-reference/sdk/classes/Swapper#getsupportedtokens) - Get input/output tokens
-- [getSwapCounterTokens](/sdk-reference/sdk/classes/Swapper#getswapcountertokens) - Get counter tokens
-- [getToken](/sdk-reference/sdk/classes/Swapper#gettoken) - Get token by identifier
+- [getSupportedTokens](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getsupportedtokens) - Get input/output tokens
+- [getSwapCounterTokens](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getswapcountertokens) - Get counter tokens
+- [getToken](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#gettoken) - Get token by identifier

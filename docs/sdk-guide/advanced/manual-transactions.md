@@ -279,10 +279,10 @@ async function signWithLedger(txns: SolanaTransaction[]) {
 
 ## API Reference
 
-- [txsCommit](/sdk-reference/sdk/classes/ToBTCSwap#txscommit)
-- [txsClaim](/sdk-reference/sdk/classes/FromBTCSwap#txsclaim)
-- [txsRefund](/sdk-reference/sdk/classes/ToBTCSwap#txsrefund)
-- [txsCommitAndClaim](/sdk-reference/sdk/classes/FromBTCLNSwap#txscommitandclaim)
-- [waitTillCommited](/sdk-reference/sdk/classes/ToBTCSwap#waittillcommited)
-- [waitTillClaimed](/sdk-reference/sdk/classes/FromBTCSwap#waittillclaimed)
-- [waitTillRefunded](/sdk-reference/sdk/classes/ToBTCSwap#waittillrefunded)
+- [txsCommit](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap#txscommit)
+- [txsClaim](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#txsclaim)
+- [txsRefund](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap#txsrefund)
+- [txsCommitAndClaim](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap#txscommitandclaim)
+- [waitTillCommited](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap#waittillcommited)
+- [waitTillClaimed](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#waittillclaimed)
+- [waitTillRefunded](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap#waittillrefunded)

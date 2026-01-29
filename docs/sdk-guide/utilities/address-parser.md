@@ -222,6 +222,6 @@ try {
 
 ## API Reference
 
-- [parseAddress](/sdk-reference/sdk-lib/functions/parseAddress) - Parse any address format
-- [isLNURLPay](/sdk-reference/sdk/functions/isLNURLPay) - Type guard for LNURL-pay
-- [isLNURLWithdraw](/sdk-reference/sdk/functions/isLNURLWithdraw) - Type guard for LNURL-withdraw
+- [identifyAddressType](/sdk-reference/api/atomiq-sdk/src/functions/identifyAddressType) - Identify and parse address format
+- [isLNURLPay](/sdk-reference/api/atomiq-sdk/src/functions/isLNURLPay) - Type guard for LNURL-pay
+- [isLNURLWithdraw](/sdk-reference/api/atomiq-sdk/src/functions/isLNURLWithdraw) - Type guard for LNURL-withdraw

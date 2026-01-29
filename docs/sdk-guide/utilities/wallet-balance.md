@@ -137,5 +137,5 @@ try {
 
 ## API Reference
 
-- [getSpendableBalance](/sdk-reference/sdk-lib/functions/getSpendableBalance) - Smart chain spendable balance
-- [getBitcoinSpendableBalance](/sdk-reference/sdk-lib/functions/getBitcoinSpendableBalance) - Bitcoin spendable balance
+- [SwapperUtils](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils) - Utility class with balance methods
+- [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) - Bitcoin wallet interface with spendable balance

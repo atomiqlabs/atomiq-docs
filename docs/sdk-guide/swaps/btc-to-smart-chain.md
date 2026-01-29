@@ -241,6 +241,6 @@ if (!settled) {
 
 ## API Reference
 
-- [SpvFromBTCSwap](/sdk-reference/sdk/classes/SpvFromBTCSwap) - Starknet/EVM swap class
-- [FromBTCSwap](/sdk-reference/sdk/classes/FromBTCSwap) - Solana swap class
-- [SwapAmountType](/sdk-reference/sdk/enumerations/SwapAmountType) - Amount type enum
+- [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) - Starknet/EVM swap class
+- [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap) - Solana swap class
+- [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum

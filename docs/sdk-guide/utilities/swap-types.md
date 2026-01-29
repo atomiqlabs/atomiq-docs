@@ -160,6 +160,5 @@ for (const from of fromTokens) {
 
 ## API Reference
 
-- [getSwapType](/sdk-reference/sdk/classes/Swapper#getswaptype) - Get swap type for token pair
-- [SwapType](/sdk-reference/sdk/enumerations/SwapType) - Swap type enum
-- [SwapTypeInfo](/sdk-reference/sdk/interfaces/SwapTypeInfo) - Swap type feature info
+- [getSwapType](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getswaptype) - Get swap type for token pair
+- [SwapType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapType) - Swap type enum

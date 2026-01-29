@@ -212,6 +212,6 @@ for (const swap of refundable) {
 
 ## API Reference
 
-- [ToBTCSwap](/sdk-reference/sdk/classes/ToBTCSwap) - Swap class for Smart Chain to BTC
-- [SwapAmountType](/sdk-reference/sdk/enumerations/SwapAmountType) - Amount type enum
-- [ToBTCSwapState](/sdk-reference/sdk/enumerations/ToBTCSwapState) - Swap states
+- [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap) - Swap class for Smart Chain to BTC
+- [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum
+- [ToBTCSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/ToBTCSwapState) - Swap states

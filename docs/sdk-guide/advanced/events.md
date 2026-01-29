@@ -219,5 +219,5 @@ swap.events.on("swapState", (swap) => {
 
 ## API Reference
 
-- [Swapper Events](/sdk-reference/sdk/classes/Swapper#on)
-- [ISwap Events](/sdk-reference/sdk/interfaces/ISwap#events)
+- [Swapper Events](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#on)
+- [ISwap Events](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#events)

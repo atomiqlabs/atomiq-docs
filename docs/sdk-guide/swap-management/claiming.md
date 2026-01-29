@@ -188,7 +188,7 @@ try {
 
 ## API Reference
 
-- [claim](/sdk-reference/sdk/classes/FromBTCSwap#claim) - Execute claim
-- [txsClaim](/sdk-reference/sdk/classes/FromBTCSwap#txsclaim) - Get claim transactions
-- [waitTillClaimed](/sdk-reference/sdk/classes/FromBTCSwap#waittillclaimed) - Wait for claim
-- [getClaimableSwaps](/sdk-reference/sdk/classes/Swapper#getclaimableswaps) - Get all claimable swaps
+- [claim](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#claim) - Execute claim
+- [txsClaim](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#txsclaim) - Get claim transactions
+- [waitTillClaimed](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#waittillclaimed) - Wait for claim
+- [getClaimableSwaps](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getclaimableswaps) - Get all claimable swaps

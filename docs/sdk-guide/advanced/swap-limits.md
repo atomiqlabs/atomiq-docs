@@ -215,6 +215,6 @@ Limits depend on:
 
 ## API Reference
 
-- [getSwapLimits](/sdk-reference/sdk/classes/Swapper#getswaplimits) - Get limits for token pair
-- [getSwapBounds](/sdk-reference/sdk/classes/Swapper#getswapbounds) - Get all limits
-- [OutOfBoundsError](/sdk-reference/sdk/classes/OutOfBoundsError) - Error for invalid amounts
+- [getSwapLimits](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getswaplimits) - Get limits for token pair
+- [getSwapBounds](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getswapbounds) - Get all limits
+- [OutOfBoundsError](/sdk-reference/api/atomiq-sdk/src/classes/OutOfBoundsError) - Error for invalid amounts

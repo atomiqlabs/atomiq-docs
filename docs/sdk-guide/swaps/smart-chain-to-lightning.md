@@ -248,6 +248,6 @@ if (!success) await swap.refund(evmSigner);
 
 ## API Reference
 
-- [ToBTCLNSwap](/sdk-reference/sdk/classes/ToBTCLNSwap) - Swap class
-- [SwapAmountType](/sdk-reference/sdk/enumerations/SwapAmountType) - Amount type enum
-- [ToBTCSwapState](/sdk-reference/sdk/enumerations/ToBTCSwapState) - Swap states (shared with ToBTC)
+- [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap) - Swap class
+- [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum
+- [ToBTCSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/ToBTCSwapState) - Swap states (shared with ToBTC)

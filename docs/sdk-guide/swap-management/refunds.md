@@ -180,7 +180,7 @@ try {
 
 ## API Reference
 
-- [refund](/sdk-reference/sdk/classes/ToBTCSwap#refund) - Execute refund
-- [txsRefund](/sdk-reference/sdk/classes/ToBTCSwap#txsrefund) - Get refund transactions
-- [isRefundable](/sdk-reference/sdk/classes/ToBTCSwap#isrefundable) - Check refund status
-- [getRefundableSwaps](/sdk-reference/sdk/classes/Swapper#getrefundableswaps) - Get all refundable swaps
+- [refund](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap#refund) - Execute refund
+- [txsRefund](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap#txsrefund) - Get refund transactions
+- [isRefundable](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap#isrefundable) - Check refund status
+- [getRefundableSwaps](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getrefundableswaps) - Get all refundable swaps

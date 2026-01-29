@@ -252,6 +252,6 @@ const automaticSettlementSuccess = await swap.execute(
 
 ## API Reference
 
-- [FromBTCLNAutoSwap](/sdk-reference/sdk/classes/FromBTCLNAutoSwap) - Starknet/EVM swap class
-- [FromBTCLNSwap](/sdk-reference/sdk/classes/FromBTCLNSwap) - Solana swap class
-- [SwapAmountType](/sdk-reference/sdk/enumerations/SwapAmountType) - Amount type enum
+- [FromBTCLNAutoSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap) - Starknet/EVM swap class
+- [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) - Solana swap class
+- [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum

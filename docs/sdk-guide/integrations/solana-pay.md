@@ -304,6 +304,6 @@ main();
 
 ## API Reference
 
-- [txsCommit](/sdk-reference/sdk/classes/ToBTCLNSwap#txscommit) - Get commit transactions
-- [txsRefund](/sdk-reference/sdk/classes/ToBTCLNSwap#txsrefund) - Get refund transactions
-- [getRefundableSwaps](/sdk-reference/sdk/classes/Swapper#getrefundableswaps) - Get refundable swaps
+- [txsCommit](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap#txscommit) - Get commit transactions
+- [txsRefund](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap#txsrefund) - Get refund transactions
+- [getRefundableSwaps](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getrefundableswaps) - Get refundable swaps

@@ -202,6 +202,6 @@ const swapper = Factory.newSwapper({
 
 ## API Reference
 
-- [getSwapById](/sdk-reference/sdk/classes/Swapper#getswapbyid) - Get swap by ID (base type)
-- [getTypedSwapById](/sdk-reference/sdk/classes/Swapper#gettypedswapbyid) - Get swap by ID with type
-- [isSwapType](/sdk-reference/sdk/functions/isSwapType) - Type guard for swap types
+- [getSwapById](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getswapbyid) - Get swap by ID (base type)
+- [getTypedSwapById](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#gettypedswapbyid) - Get swap by ID with type
+- [isSwapType](/sdk-reference/api/atomiq-sdk/src/functions/isSwapType) - Type guard for swap types
