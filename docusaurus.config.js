@@ -130,7 +130,7 @@ const config = {
             label: 'Developers',
           },
           {
-            to: '/sdk-reference/api/atomiq-sdk/src',
+            to: '/sdk-reference/',
             label: 'SDK Reference',
             position: 'left',
           },

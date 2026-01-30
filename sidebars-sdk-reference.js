@@ -202,6 +202,8 @@ const fixedStorage = renameChainLabels(
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
   sdkReferenceSidebar: [
+    'sdk-reference-overview',
+
     // SDK Section
     {
       type: 'category',

@@ -1,0 +1,88 @@
+---
+id: sdk-reference-overview
+title: Overview
+---
+
+# SDK Reference Overview
+
+The Atomiq SDK provides a complete TypeScript/JavaScript interface for trustless cross-chain swaps between Bitcoin and smart chains (Solana, Starknet, EVM).
+
+## What You'll Find Here
+
+### **Core SDK** (`@atomiqlabs/sdk`)
+The main SDK package containing:
+
+- **Swapper** - The central class for managing all swap operations
+- **Swap Classes** - Specific implementations for different swap types:
+  - `ToBTCSwap` / `ToBTCLNSwap` - Smart chain to Bitcoin
+  - `FromBTCSwap` / `FromBTCLNSwap` / `SpvFromBTCSwap` - Bitcoin to smart chain
+- **Configuration** - `SwapperFactory` and initialization options
+- **Utilities** - Helpers for address parsing, balance checking, token identification
+- **Storage** - Unified storage interfaces for managing swap state
+- **Events** - Event listeners for swap state changes
+
+### **Chain Integrations** (Chains section)
+Chain-specific implementations you need based on your target blockchains:
+
+- **Solana** (`@atomiqlabs/chain-solana`) - Solana blockchain connector
+- **Starknet** (`@atomiqlabs/chain-starknet`) - Starknet blockchain connector
+- **EVM** (`@atomiqlabs/chain-evm`) - EVM-compatible chains (Ethereum, Arbitrum, etc.)
+
+Each chain module includes:
+- Chain-specific swap implementations
+- Wallet integrations
+- RPC configuration
+- Network-specific types and utilities
+
+### **Storage Adapters** (Storage section)
+Persistence layers for storing swap state:
+
+- **SQLite** (`@atomiqlabs/storage-sqlite`) - File-based SQLite storage (Node.js)
+- **React Native Async** (`@atomiqlabs/storage-rn-async`) - React Native async storage
+- **Memory Indexed KV** (`@atomiqlabs/storage-memory-indexed-kv`) - In-memory storage (browser)
+
+## Quick Navigation
+
+**Just starting?** Start with the [SDK Guide](/sdk-guide/) for step-by-step tutorials.
+
+**Looking for specific types?** Use the SDK section categories:
+- Core swap classes and types
+- Configuration and factory
+- Bitcoin/Lightning wallet interfaces
+- Token definitions and utilities
+
+**Need a specific chain?** Browse the Chains section for chain-specific classes and methods.
+
+**Building custom storage?** Check the Storage section interfaces to understand the storage contract.
+
+## Common Tasks
+
+| Task | Where to Look |
+|------|---|
+| Create a swapper instance | SDK → Core → `SwapperFactory` |
+| Execute a swap | SDK → Swaps → `ToBTCSwap`, `FromBTCSwap`, etc. |
+| Handle swap events | SDK → Events → `SwapEvent`, event listeners |
+| Configure Solana chain | Chains → Solana → `SolanaChainInterface` |
+| Manage wallet | SDK → Bitcoin → `BitcoinWallet`, or Chain-specific wallets |
+| Store swap state | Storage → Choose based on your platform |
+| Parse addresses | SDK → Utilities → `identifyAddressType` |
+| Check balances | SDK → Bitcoin → `IBitcoinWallet` methods |
+
+## Module Structure
+
+```
+atomiq-sdk/
+├── Core (Swapper, SwapperFactory)
+├── Bitcoin (Wallets, Headers, RPC)
+├── Chains (ChainInterface, Chain implementations)
+├── Swaps (ToBTC, FromBTC, LN variants)
+├── Storage (Unified storage interfaces)
+├── Events (Swap lifecycle events)
+├── Tokens (Token definitions and helpers)
+├── Pricing (Price providers)
+└── Utilities (Address parsing, helpers)
+```
+
+---
+
+**Ready to integrate?** Visit the [SDK Guide](/sdk-guide/) for detailed tutorials and examples.

@@ -44,7 +44,7 @@ const sidebars = {
   developersSidebar: [
     {
       type: 'category',
-      label: 'Developers',
+      label: 'Getting Started',
       link: { type: 'doc', id: 'sdk-guide/index' },
       items: [
         'sdk-guide/installation',
