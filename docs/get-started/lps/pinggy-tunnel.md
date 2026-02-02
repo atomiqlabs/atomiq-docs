@@ -54,7 +54,7 @@ SSL_AUTO:
 
 ***
 
-After this you are done with the pinggy setup and can [continue the LP node setup](https://docs.atomiq.exchange/running-lp-node#installation).
+After this you are done with the pinggy setup and can [continue the LP node setup](./running-lp-node#installation).
 
 [^1]: Replace with your access token
 

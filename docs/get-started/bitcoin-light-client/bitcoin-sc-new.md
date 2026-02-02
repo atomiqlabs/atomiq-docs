@@ -1,6 +1,6 @@
 # Bitcoin -> Smart chains (new)
 
-The new Bitcoin -> Smart chain swap protocol is leveraging the [UTXO-chain vault](https://docs.atomiq.exchange/bitcoin-light-client-on-chain/utxo-chain-vault).
+The new Bitcoin -> Smart chain swap protocol is leveraging the [UTXO-chain vault](./utxo-chain-vault).
 
 The LP (liquidity provider) creates a UTXO-chain vault on the smart chain, and uses a small (dust) UTXO that he owns as the initial UTXO. It's important to note that setting up the UTXO-chain vault is not done on a per-swap basis and is instead done just once when the LP sets up their LP node.
 

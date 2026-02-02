@@ -7,7 +7,7 @@ LP node runs in docker containers & it is fully separated from your other progra
 * A linux based machine (preferrably ubuntu 20.04 or 22.04) and SSH (command line) access
     * Testnet requirements: 4GB of RAM, 200GB SSD storage
     * Mainnet requirements: 6GB of RAM, 1TB SSD storage
-* Machine either needs to have a public IP address and be accessible from the public internet or you need to use the [Pinggy tunnel](https://docs.atomiq.exchange/liquidity-provider-nodes-lps/pinggy-tunnel) to forward traffic to your local machine
+* Machine either needs to have a public IP address and be accessible from the public internet or you need to use the [Pinggy tunnel](./pinggy-tunnel) to forward traffic to your local machine
 
 :::info
 We can recommend using [Contabo](https://contabo.com/en/vps) for VPS hosting, the following instances are recommended:
@@ -61,7 +61,7 @@ sudo tar -xvzf atomiq-node.tar.gz
 ```
 
 :::warning
-If you don't have a server with public ip address you need to [setup the Pinggy tunnel](https://docs.atomiq.exchange/liquidity-provider-nodes-lps/pinggy-tunnel) now. This creates a secure tunnel and allows your server to be accessible from the public internet - this is required such that your node is able to accept and respond to RFQ swap requests from clients.
+If you don't have a server with public ip address you need to [setup the Pinggy tunnel](./pinggy-tunnel) now. This creates a secure tunnel and allows your server to be accessible from the public internet - this is required such that your node is able to accept and respond to RFQ swap requests from clients.
 :::
 
 Run the setup script - this will walk you through setting an environment (mainnet/testnet) and node's wallet

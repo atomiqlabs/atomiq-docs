@@ -113,4 +113,4 @@ if (!success) {
 
 ## API Reference
 
-For detailed TypeScript API documentation, see the [SDK API Reference](/sdk-reference/sdk).
+For detailed TypeScript API documentation, see the [SDK API Reference](/sdk-reference/).

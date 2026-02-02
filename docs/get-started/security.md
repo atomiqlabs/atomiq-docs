@@ -4,7 +4,7 @@ Security of atomiq.exchange is based on the concept of atomic swaps.
 
 Atomic swaps are implemented in the form of smart contract vaults on the Smart chains (Solana, Starknet, EVM, etc.), such that they only pay out the escrowed funds when the counterparty proves that they really sent a bitcoin/lightning transaction. In case of non-cooperation the funds are returned to their original owner in a few days.
 
-Atomicity of the swaps is ensured by [submarine swaps](https://docs.atomiq.exchange/submarine-swaps-lightning) (for lightning network swaps) & [bitcoin light client](https://docs.atomiq.exchange/bitcoin-light-client-on-chain) (for bitcoin on-chain swaps).
+Atomicity of the swaps is ensured by [submarine swaps](/get-started/submarine-swaps/) (for lightning network swaps) & [bitcoin light client](/get-started/bitcoin-light-client/) (for bitcoin on-chain swaps).
 
 ## Example
 

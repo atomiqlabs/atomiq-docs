@@ -9,65 +9,6 @@ The Atomiq SDK provides a complete TypeScript/JavaScript interface for trustless
 
 ## What You'll Find Here
 
-### **Core SDK** ([@atomiqlabs/sdk](https://www.npmjs.com/package/@atomiqlabs/sdk))
-The main SDK package containing:
-
-- [**Swapper**](/sdk-reference/api/atomiq-sdk/src/classes/Swapper) - The central class for managing all swap operations
-- **Swap Classes** - Specific implementations for different swap types:
-  - [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap) / [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap) - Smart chain to Bitcoin
-  - [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap) / [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) / [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) - Bitcoin to smart chain
-- [**SwapperFactory**](/sdk-reference/api/atomiq-sdk/src/classes/SwapperFactory) - Configuration and initialization
-- **Utilities** - Helpers for address parsing, balance checking, token identification
-- **Storage** - Unified storage interfaces for managing swap state
-- **Events** - Event listeners for swap state changes
-
-### **Chain Integrations** (Chains section)
-Chain-specific implementations you need based on your target blockchains:
-
-- [**Solana**](/sdk-reference/api/atomiq-chain-solana/src/)
-- [**Starknet**](/sdk-reference/api/atomiq-chain-starknet/src/)
-- [**EVM**](/sdk-reference/api/atomiq-chain-evm/src/)
-
-Each chain module includes:
-- Chain-specific swap implementations
-- Wallet integrations
-- RPC configuration
-- Network-specific types and utilities
-
-### **Storage Adapters** (Storage section)
-Persistence layers for storing swap state:
-
-- **SQLite** ([@atomiqlabs/storage-sqlite](https://www.npmjs.com/package/@atomiqlabs/storage-sqlite)) - File-based SQLite storage (Node.js)
-- **React Native Async** ([@atomiqlabs/storage-rn-async](https://www.npmjs.com/package/@atomiqlabs/storage-rn-async)) - React Native async storage
-- **Memory Indexed KV** ([@atomiqlabs/storage-memory-indexed-kv](https://www.npmjs.com/package/@atomiqlabs/storage-memory-indexed-kv)) - In-memory storage (browser)
-
-## Quick Navigation
-
-**Just starting?** Start with the [SDK Guide](/sdk-guide/) for step-by-step tutorials.
-
-**Looking for specific types?** Use the SDK section categories:
-- Core swap classes and types
-- Configuration and factory
-- Bitcoin/Lightning wallet interfaces
-- Token definitions and utilities
-
-**Need a specific chain?** Browse the Chains section for chain-specific classes and methods.
-
-**Building custom storage?** Check the Storage section interfaces to understand the storage contract.
-
-## Common Tasks
-
-| Task | Where to Look |
-|------|---|
-| Create a swapper instance | [SwapperFactory](/sdk-reference/api/atomiq-sdk/src/classes/SwapperFactory) |
-| Execute a swap | [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap), [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap), [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap), [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) |
-| Handle swap events | [SwapEvent](/sdk-reference/api/atomiq-sdk/src/classes/SwapEvent), [ChainEvent](/sdk-reference/api/atomiq-sdk/src/classes/ChainEvent) |
-| Configure Solana chain | [SolanaChainInterface](/sdk-reference/api/atomiq-chain-solana/src/classes/SolanaChainInterface) |
-| Manage wallet | [BitcoinWallet](/sdk-reference/api/atomiq-sdk/src/classes/BitcoinWallet), [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) |
-| Store swap state | [IUnifiedStorage](/sdk-reference/api/atomiq-sdk/src/interfaces/IUnifiedStorage) |
-| Parse addresses | [identifyAddressType](/sdk-reference/api/atomiq-sdk/src/functions/identifyAddressType) |
-| Check balances | [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) |
-
 ## Module Structure
 
 ```
@@ -83,6 +24,55 @@ atomiq-sdk/
 └── Utilities (Address parsing, helpers)
 ```
 
+### **Core SDK**
+The main SDK package containing:
+
+- [**Swapper**](/sdk-reference/api/atomiq-sdk/src/classes/Swapper) - The central class for managing all swap operations
+- **Swap Classes** - Specific implementations for different swap types:
+  - [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap) / [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap) - Smart chain to Bitcoin
+  - [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap) / [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) / [FromBTCLNAutoSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap) / [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) - Bitcoin to smart chain
+- [**SwapperFactory**](/sdk-reference/api/atomiq-sdk/src/classes/SwapperFactory) - Configuration and initialization
+- **Utilities** - Helpers for address parsing, balance checking, token identification
+- **Storage** - Unified storage interfaces for managing swap state
+- **Events** - Event listeners for swap state changes
+
+### **Chain Integrations**
+Chain-specific implementations you need based on your target blockchains:
+
+- [**Solana**](/sdk-reference/api/atomiq-chain-solana/src/)
+- [**Starknet**](/sdk-reference/api/atomiq-chain-starknet/src/)
+- [**EVM**](/sdk-reference/api/atomiq-chain-evm/src/)
+
+Each chain module includes:
+- Chain-specific swap implementations
+- Wallet integrations
+- RPC configuration
+- Network-specific types and utilities
+
+### **Storage Adapters**
+Persistence layers for storing swap state:
+
+- File-based [**SQLite**](/sdk-reference/api/atomiq-storage-sqlite/src/) storage (Node.js)
+- [**React Native Async**](/sdk-reference/api/atomiq-storage-rn-async/src/) storage
+- [**Memory Indexed KV**](/sdk-reference/api/atomiq-storage-memory-indexed-kv/src/) for in-memory storage (browser)
+
+## Common Tasks -> move to the sdk-guide
+
+| Task | Where to Look |
+|------|---|
+| Create a swapper instance | [SwapperFactory](/sdk-reference/api/atomiq-sdk/src/classes/SwapperFactory) |
+| Execute a swap | [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap), [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap), [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap), [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) |
+| Handle swap events | [SwapEvent](/sdk-reference/api/atomiq-sdk/src/classes/SwapEvent), [ChainEvent](/sdk-reference/api/atomiq-sdk/src/classes/ChainEvent) |
+| Configure Solana chain | [SolanaChainInterface](/sdk-reference/api/atomiq-chain-solana/src/classes/SolanaChainInterface) |
+| Manage wallet | [BitcoinWallet](/sdk-reference/api/atomiq-sdk/src/classes/BitcoinWallet), [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) |
+| Store swap state | [IUnifiedStorage](/sdk-reference/api/atomiq-sdk/src/interfaces/IUnifiedStorage) |
+| Parse addresses | [identifyAddressType](/sdk-reference/api/atomiq-sdk/src/functions/identifyAddressType) |
+| Check balances | [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) |
+
+
+
 ---
 
-**Ready to integrate?** Visit the [SDK Guide](/sdk-guide/) for detailed tutorials and examples.
+**Ready to integrate?** Visit the [SDK Guide](/developers/) for detailed tutorials and examples.
+
+**Want to learn more about the Atomiq protocol?** Check out the [protocol overview](/).
