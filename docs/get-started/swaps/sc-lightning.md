@@ -1,5 +1,7 @@
 # Smart chain → Lightning
 
+This swap enables paying a Lightning Network invoice using smart chain tokens. It works by linking a Lightning payment to an on-chain [HTLC](../core-primitives/htlc.md): the user locks tokens in an HTLC on the smart chain using the Lightning invoice's payment hash, and the LP attempts to route the Lightning payment. When the payee settles the invoice they reveal the hash preimage (secret), which the LP then uses to claim the locked tokens from the HTLC. If the payment fails, the LP can cooperatively refund the user immediately, or the user can self-refund after the timelock expires.
+
 ## Requirements
 
 * lightning invoice's payment *hash P* needs to be known upfront

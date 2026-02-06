@@ -2,7 +2,7 @@
 
 Bitcoin light client is an on-chain smart contract deployed on the smart chains (Solana, Starknet, EVM, etc.) used to verify and store bitcoin blockheaders. This program is completely permissionless and trustless, anyone can write blockheaders as their validity is verified on-chain.
 
-Bitcoin blockheaders contain a merkle root of all the transactions executed in it. The merkle root can be used to easily prove that any Bitcoin transaction was actually confirmed/included in a block, by providing a short merkle proof. This is utilized in PrTLCs (proof-time locked contracts) and UTXO-chain vaults - these are the main primitives upon which the Bitcoin on-chain swaps are built.
+Bitcoin blockheaders contain a merkle root of all the transactions executed in it. The merkle root can be used to easily prove that any Bitcoin transaction was actually confirmed/included in a block, by providing a short merkle proof. This is utilized in PrTLCs (proof-time locked contracts) and UTXO-controlled vaults - these are the main primitives upon which the Bitcoin on-chain swaps are built.
 
 Here are more technical explanations about inner workings of our bitcoin light client contracts:
 

@@ -1,5 +1,7 @@
 # Smart chain → Bitcoin
 
+This swap uses a [PrTLC (proof-time locked contract)](../core-primitives/prtlc.md) to enable trustless swaps from smart chain tokens to on-chain Bitcoin. The user locks tokens in a PrTLC on the smart chain, and the LP claims them by proving — through the [Bitcoin light client](../core-primitives/bitcoin-light-client.md) — that it sent the agreed BTC amount to the recipient's Bitcoin address. If the LP fails to deliver, the user can unilaterally refund after the timelock expires. A cooperative refund path also allows the LP to release the user's funds immediately if the payment cannot be completed, without waiting for the timeout.
+
 ## Parties
 
 * **payer** - the one paying in the smart chain token (e.g. SOL on Solana, WBTC on Starknet) and using the LP to do the swap
@@ -31,6 +33,6 @@
 
 4. **Payer** waits till the expiry of *locktime T* and then refunds his funds back from the PrTLC
 
-## Diagram
+## Swap Flow Diagram
 
 ![Smart chain -> Bitcoin on-chain swap process (Intermediary = LP Node)](https://github.com/adambor/SolLightning-readme/raw/main/flows/tobtc-diagram.drawio.png)

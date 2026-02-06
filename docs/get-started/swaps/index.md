@@ -1,17 +1,17 @@
 # Swaps
 
-Atomiq enables trustless cross-chain swaps between Bitcoin and smart chains (Solana, Starknet, etc.) through an RFQ (Request for Quote) model where Liquidity Provider (LP) nodes facilitate the exchange. Swaps are secured by on-chain contracts - no custody or trust required.
+Swaps between Bitcoin and smart chains are inherently asymmetric — Bitcoin cannot execute smart contracts, so each direction requires a different approach. Smart chain → Bitcoin swaps use [PrTLCs](../core-primitives/prtlc.md) where the LP proves it sent BTC, while Bitcoin → Smart chain swaps use [UTXO-controlled vaults](../core-primitives/utxo-controlled-vault.md) where a single cooperatively-signed Bitcoin transaction atomically settles both sides. Lightning swaps follow a symmetric [HTLC](../core-primitives/htlc.md) pattern, linking Lightning payment secrets to smart chain contracts.
 
-There are two categories of swaps depending on which Bitcoin layer is used:
+The protocol has evolved over time — legacy swap designs are documented for reference, while the current pages describe the production protocol.
 
 ## Bitcoin On-chain (L1)
 
-On-chain swaps interact directly with the Bitcoin base layer. They use the [Bitcoin light client](../core-primitives/bitcoin-light-client.md) to verify Bitcoin transactions on the smart chain, secured by [PrTLCs](../core-primitives/prtlc.md) and [UTXO-chain vaults](../core-primitives/utxo-chain-vault.md).
+On-chain swaps interact directly with the Bitcoin base layer. They use the [Bitcoin light client](../core-primitives/bitcoin-light-client.md) to verify Bitcoin transactions on the smart chain, secured by [PrTLCs](../core-primitives/prtlc.md) and [UTXO-controlled vaults](../core-primitives/utxo-controlled-vault.md).
 
 | Swap | Description |
 |------|-------------|
 | [Smart chain -> Bitcoin](./sc-bitcoin.md) | Send smart chain tokens, receive on-chain BTC |
-| [Bitcoin -> Smart chain](./bitcoin-sc-new.md) | Send on-chain BTC, receive smart chain tokens (current protocol using UTXO-chain vaults) |
+| [Bitcoin -> Smart chain](./bitcoin-sc-new.md) | Send on-chain BTC, receive smart chain tokens (current protocol using UTXO-controlled vaults) |
 | [Bitcoin -> Solana (legacy)](./bitcoind-sc-legacy.md) | Legacy protocol for on-chain BTC to Solana swaps using PrTLCs |
 
 ## Bitcoin Lightning (L2)

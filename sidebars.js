@@ -13,7 +13,7 @@ const sidebars = {
         'get-started/core-primitives/htlc',
         'get-started/core-primitives/bitcoin-light-client',
         'get-started/core-primitives/prtlc',
-        'get-started/core-primitives/utxo-chain-vault',
+        'get-started/core-primitives/utxo-controlled-vault',
       ],
     },
     {

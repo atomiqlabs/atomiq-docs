@@ -1,8 +1,8 @@
 # Bitcoin → Smart chains
 
-The new Bitcoin -> Smart chain swap protocol is leveraging the [UTXO-chain vault](./utxo-chain-vault).
+This is the current protocol for swapping on-chain Bitcoin to smart chain tokens. It uses the [UTXO-controlled vault](../core-primitives/utxo-controlled-vault.md) primitive, where the LP deposits liquidity into a vault on the smart chain whose withdrawals are controlled by Bitcoin transactions (verified through the [Bitcoin light client](../core-primitives/bitcoin-light-client.md)). The user and LP cooperatively sign a single Bitcoin transaction that atomically sends BTC to the LP and authorizes the smart chain payout to the user. Unlike the [legacy PrTLC-based approach](./bitcoind-sc-legacy.md), users don't need any smart chain balance upfront, the LP doesn't lock funds per-swap, and watchtowers are a UX convenience rather than a security requirement.
 
-The LP (liquidity provider) creates a UTXO-chain vault on the smart chain, and uses a small (dust) UTXO that he owns as the initial UTXO. It's important to note that setting up the UTXO-chain vault is not done on a per-swap basis and is instead done just once when the LP sets up their LP node.
+The LP (liquidity provider) creates a UTXO-controlled vault on the smart chain, and uses a small (dust) UTXO that he owns as the initial UTXO. It's important to note that setting up the UTXO-controlled vault is not done on a per-swap basis and is instead done just once when the LP sets up their LP node.
 
 User and LP can then cooperatively sign a transaction that atomically (in a single transaction):
 
