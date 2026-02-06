@@ -16,14 +16,6 @@ Each withdrawal transaction produces a new UTXO as its first output, which becom
 
 ### Enabling atomic swaps
 
-To enable atomic swaps, the user and LP cooperatively construct and sign a single Bitcoin transaction (PSBT) that atomically:
+This primitive can be used to create atomic cross-chain swaps by having the user and LP cooperatively construct a Partially Signed Bitcoin Transaction (PSBT). A single Bitcoin transaction simultaneously transfers BTC from the user to the LP and authorizes a withdrawal from the vault to the user on the smart chain — making the swap atomic at the Bitcoin protocol level, without any escrow or timelock.
 
-- **Spends** the vault's current UTXO (advancing the chain)
-- **Sends** BTC from the user's inputs to the LP's wallet
-- **Encodes** the withdrawal data (recipient, amount, watchtower reward) in an `OP_RETURN` output
-
-Both parties sign with `SIGHASH_ALL`, committing to the full transaction — so it either confirms as-is (both sides get their assets) or doesn't confirm at all (nothing happens). This makes the swap atomic at the Bitcoin protocol level, without requiring any escrow contract or timelock.
-
-Once the transaction gets enough confirmations, anyone (a watchtower, the LP, or the user themselves) can submit the transaction data to the smart chain, where the vault verifies it through the light client and pays out the tokens to the user. Watchtowers earn a small reward for this service, but they are purely a UX convenience — the user can always claim independently.
-
-![Diagram showcasing an atomic swap](/img/utxo-swap-diagram.svg)
+For the full swap flow and details, see [Bitcoin → Smart chain swaps](../swaps/bitcoin-sc-new.md).

@@ -4,13 +4,17 @@ This is the current protocol for swapping on-chain Bitcoin to smart chain tokens
 
 The LP (liquidity provider) creates a UTXO-controlled vault on the smart chain, and uses a small (dust) UTXO that he owns as the initial UTXO. It's important to note that setting up the UTXO-controlled vault is not done on a per-swap basis and is instead done just once when the LP sets up their LP node.
 
-User and LP can then cooperatively sign a transaction that atomically (in a single transaction):
+User and LP can then cooperatively construct and sign a single Bitcoin transaction (PSBT) that atomically (in a single transaction):
 
-* spends the latest vault UTXO
-* commits to the withdrawal data (i.e. user gets 10 wBTC)
-* sends funds from user to the LP's wallet on the bitcoin side (i.e. LP gets 10 BTC)
+- **Spends** the vault's current UTXO (advancing the chain)
+- **Sends** BTC from the user's inputs to the LP's wallet
+- **Encodes** the withdrawal data (recipient, amount, watchtower reward) in an `OP_RETURN` output
 
-![Diagram showcasing a swap of 10 BTC -> 10 wBTC](https://3413090771-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FQKYJLT6LdI5sTgcaMspD%2Fuploads%2F62Omq5mEy0zkNn1beQp2%2Fnew%20swap%20design%20actual%20swap.drawio.png?alt=media&token=dcb10dff-5b4c-4034-9194-ba7175108ac1)
+Both parties sign with `SIGHASH_ALL`, committing to the full transaction — so it either confirms as-is (both sides get their assets) or doesn't confirm at all (nothing happens). This makes the swap atomic at the Bitcoin protocol level, without requiring any escrow contract or timelock.
+
+Once the transaction gets enough confirmations, anyone (a watchtower, the LP, or the user themselves) can submit the transaction data to the smart chain, where the vault verifies it through the light client and pays out the tokens to the user. Watchtowers earn a small reward for this service, but they are purely a UX convenience — the user can always claim independently.
+
+![Diagram showcasing a UTXO-controlled vault based Bitcoin -> Smart chain swap](/img/utxo-swap-diagram.svg)
 
 ## Watchtowers
 
