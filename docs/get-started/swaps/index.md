@@ -2,7 +2,7 @@
 
 Swaps between Bitcoin and smart chains are inherently asymmetric — Bitcoin cannot execute smart contracts, so each direction requires a different approach. Smart chain → Bitcoin swaps use [PrTLCs](../core-primitives/prtlc.md) where the LP proves it sent BTC, while Bitcoin → Smart chain swaps use [UTXO-controlled vaults](../core-primitives/utxo-controlled-vault.md) where a single cooperatively-signed Bitcoin transaction atomically settles both sides. Lightning swaps follow a symmetric [HTLC](../core-primitives/htlc.md) pattern, linking Lightning payment secrets to smart chain contracts.
 
-The protocol has evolved over time — legacy swap designs are documented for reference, while the current pages describe the production protocol.
+The protocol has evolved over time — the Bitcoin → Solana swaps use a legacy protocol design, while the other swaps use a new UTXO-controlled vault based design.
 
 ## Bitcoin On-chain (L1)
 
