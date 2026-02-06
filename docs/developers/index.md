@@ -114,3 +114,17 @@ if (!success) {
 ## API Reference
 
 For detailed TypeScript API documentation, see the [SDK API Reference](/sdk-reference/).
+
+
+## Common Tasks
+
+| Task | Where to Look |
+|------|---|
+| Create a swapper instance | [SwapperFactory](/sdk-reference/api/atomiq-sdk/src/classes/SwapperFactory) |
+| Execute a swap | [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap), [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap), [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap), [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) |
+| Handle swap events | [SwapEvent](/sdk-reference/api/atomiq-sdk/src/classes/SwapEvent), [ChainEvent](/sdk-reference/api/atomiq-sdk/src/classes/ChainEvent) |
+| Configure Solana chain | [SolanaChainInterface](/sdk-reference/api/atomiq-chain-solana/src/classes/SolanaChainInterface) |
+| Manage wallet | [BitcoinWallet](/sdk-reference/api/atomiq-sdk/src/classes/BitcoinWallet), [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) |
+| Store swap state | [IUnifiedStorage](/sdk-reference/api/atomiq-sdk/src/interfaces/IUnifiedStorage) |
+| Parse addresses | [identifyAddressType](/sdk-reference/api/atomiq-sdk/src/functions/identifyAddressType) |
+| Check balances | [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) |
