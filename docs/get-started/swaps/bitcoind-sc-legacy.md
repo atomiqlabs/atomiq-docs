@@ -1,4 +1,4 @@
-# Bitcoin -> Solana (legacy)
+# Bitcoin → Solana (legacy)
 
 ## Requirements
 

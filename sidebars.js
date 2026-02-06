@@ -5,6 +5,42 @@ const sidebars = {
   // Protocol documentation (non-developer technical docs)
   getStartedSidebar: [
     'get-started/introduction',
+    'get-started/protocol-overview',
+    {
+      type: 'category',
+      label: 'Core Primitives',
+      items: [
+        'get-started/core-primitives/htlc',
+        'get-started/core-primitives/bitcoin-light-client',
+        'get-started/core-primitives/prtlc',
+        'get-started/core-primitives/utxo-chain-vault',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Swaps',
+      link: { type: 'doc', id: 'get-started/swaps/index' },
+      items: [
+        {
+          type: 'category',
+          label: 'Bitcoin On-chain (L1)',
+          items: [
+            'get-started/swaps/sc-bitcoin',
+            'get-started/swaps/bitcoin-sc-new',
+            'get-started/swaps/bitcoind-sc-legacy',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Bitcoin Lightning (L2)',
+          items: [
+            'get-started/swaps/sc-lightning',
+            'get-started/swaps/lightning-sc-new',
+            'get-started/swaps/lightning-sc-legacy',
+          ],
+        },
+      ],
+    },
     {
       type: 'category',
       label: 'Liquidity Provider Nodes',
@@ -12,30 +48,6 @@ const sidebars = {
       items: [
         'get-started/lps/running-lp-node',
         'get-started/lps/pinggy-tunnel',
-      ],
-    },
-    'get-started/security',
-    {
-      type: 'category',
-      label: 'Bitcoin Light Client',
-      link: { type: 'doc', id: 'get-started/bitcoin-light-client/index' },
-      items: [
-        'get-started/bitcoin-light-client/sc-bitcoin',
-        'get-started/bitcoin-light-client/bitcoin-sc-new',
-        'get-started/bitcoin-light-client/bitcoind-sc-legacy',
-        'get-started/bitcoin-light-client/prtlc',
-        'get-started/bitcoin-light-client/utxo-chain-vault',
-      ],
-    },
-    {
-      type: 'category',
-      label: 'Submarine Swaps',
-      link: { type: 'doc', id: 'get-started/submarine-swaps/index' },
-      items: [
-        'get-started/submarine-swaps/htlc',
-        'get-started/submarine-swaps/sc-lightning',
-        'get-started/submarine-swaps/lightning-sc-new',
-        'get-started/submarine-swaps/lightning-sc-legacy',
       ],
     },
   ],

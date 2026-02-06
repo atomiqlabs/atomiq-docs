@@ -1,6 +1,4 @@
-# Security
-
-Security of atomiq.exchange is based on the concept of atomic swaps.
+# Protocol Overview
 
 Atomic swaps are implemented in the form of smart contract vaults on the Smart chains (Solana, Starknet, EVM, etc.), such that they only pay out the escrowed funds when the counterparty proves that they really sent a bitcoin/lightning transaction. In case of non-cooperation the funds are returned to their original owner in a few days.
 

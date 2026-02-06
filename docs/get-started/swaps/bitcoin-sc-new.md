@@ -1,4 +1,4 @@
-# Bitcoin -> Smart chains (new)
+# Bitcoin → Smart chains
 
 The new Bitcoin -> Smart chain swap protocol is leveraging the [UTXO-chain vault](./utxo-chain-vault).
 

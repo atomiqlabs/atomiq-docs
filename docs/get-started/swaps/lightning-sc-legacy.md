@@ -1,4 +1,4 @@
-# Lightning -> Solana (legacy)
+# Lightning → Solana (legacy)
 
 ## Requirements
 

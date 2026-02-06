@@ -1,4 +1,4 @@
-# Smart chain -> Lightning
+# Smart chain → Lightning
 
 ## Requirements
 

@@ -1,4 +1,4 @@
-# Smart chain -> Bitcoin
+# Smart chain → Bitcoin
 
 ## Parties
 
