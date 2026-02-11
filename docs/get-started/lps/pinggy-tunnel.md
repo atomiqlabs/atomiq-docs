@@ -1,4 +1,4 @@
-# Pinggy tunnel
+# Localhost Tunnel (Pinggy)
 
 :::warning
 You only need to do this in case your machine running the LP node software doesn't have a static & public IP address accessible from the public internet. This is usually the case if you want to run the LP node at your home, which then runs in a local network and is not accessible from the outside world because of NAT.

@@ -1,0 +1,985 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
+  <diagram name="Page-1" id="v_abSemOzw6kNZ-jSQ5_">
+    <mxGraphModel dx="1415" dy="730" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="xtIyixmofCU6Mkym6CMM-1" value="Payee (Smart chain)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="160" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="xtIyixmofCU6Mkym6CMM-2" value="Intermediary" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="760" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="xtIyixmofCU6Mkym6CMM-3" value="Payer (BTC lightning)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1160" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="xtIyixmofCU6Mkym6CMM-4" value="Smart chain RPC" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="360" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="xtIyixmofCU6Mkym6CMM-6" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" parent="1" source="LldOg9A5rvM3-FE8M_Fl-11" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="419" y="820" as="sourcePoint" />
+            <mxPoint x="419.16999999999996" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="xtIyixmofCU6Mkym6CMM-23" value="LN gRPC" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="960" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-1" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" parent="1" source="LldOg9A5rvM3-FE8M_Fl-5" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="219.5" y="820" as="sourcePoint" />
+            <mxPoint x="219.67000000000007" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-2" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" parent="1" source="LldOg9A5rvM3-FE8M_Fl-7" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="819.5" y="820" as="sourcePoint" />
+            <mxPoint x="819.6700000000001" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-3" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" parent="1" source="LldOg9A5rvM3-FE8M_Fl-28" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1019.5" y="820" as="sourcePoint" />
+            <mxPoint x="1019.6700000000001" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-4" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1220" y="1520" as="sourcePoint" />
+            <mxPoint x="1219.75" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-6" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" parent="1" target="LldOg9A5rvM3-FE8M_Fl-5" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="220" y="1520" as="sourcePoint" />
+            <mxPoint x="219.67000000000007" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-5" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="210" y="110.17" width="20" height="219.83" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-8" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" parent="1" target="LldOg9A5rvM3-FE8M_Fl-7" edge="1" source="99isAbADdhbxdDrAkC_n-13">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="820" y="1580" as="sourcePoint" />
+            <mxPoint x="819.6700000000001" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-7" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="810" y="110.17" width="20" height="149.83" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="110" as="targetPoint" />
+            <mxPoint x="230" y="110.34000000000027" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="520" y="110.17000000000003" />
+              <mxPoint x="520" y="110.17000000000003" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-10" value="Request quote&lt;br&gt;REST /createInvoice" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-9" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="20" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.206;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="LldOg9A5rvM3-FE8M_Fl-7" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="140.00000000000009" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="810" y="140" />
+            </Array>
+            <mxPoint x="610.0000000000002" y="140.00000000000009" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-16" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" parent="1" target="LldOg9A5rvM3-FE8M_Fl-11" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="420" y="1520" as="sourcePoint" />
+            <mxPoint x="419.1700000000001" y="79.99999999999989" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-11" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="140.00000000000009" width="20" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="170" as="targetPoint" />
+            <mxPoint x="430" y="169.4800000000003" as="sourcePoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="260.1700000000001" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="810" y="260" />
+            </Array>
+            <mxPoint x="810" y="260" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-20" value="Response quote&lt;br&gt;Pricing + fees" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-19" vertex="1" connectable="0">
+          <mxGeometry x="0.0747" relative="1" as="geometry">
+            <mxPoint x="14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-21" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="300.1700000000001" width="20" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="300.1700000000002" as="targetPoint" />
+            <mxPoint x="230" y="300.3400000000004" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="340" y="300.1700000000001" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-23" value="Check LP balance" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-22" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="10" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="330.17000000000013" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="230" y="330.17" />
+            </Array>
+            <mxPoint x="410" y="330.17000000000013" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-25" value="Return LP balance&lt;br&gt;Abort if not enough" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-24" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="-8" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1010" y="200.00000000000017" as="targetPoint" />
+            <mxPoint x="830" y="200.17000000000024" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="940" y="200.00000000000006" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-27" value="Generate LN invoice&lt;br&gt;createHodlInvoice()" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-26" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="10" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-29" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" parent="1" target="LldOg9A5rvM3-FE8M_Fl-28" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1020" y="1520" as="sourcePoint" />
+            <mxPoint x="1019.6700000000005" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-28" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1010" y="200.17000000000007" width="20" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="830" y="230.17000000000013" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="830" y="230.17000000000002" />
+            </Array>
+            <mxPoint x="1010" y="230.17000000000013" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-31" value="Generated LN invoice" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-30" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="-8" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-32" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="210" y="400.17" width="20" height="299.83" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-33" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="810" y="400.17" width="20" height="359.83" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;dashed=1;dashPattern=8 8;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="400" as="targetPoint" />
+            <mxPoint x="230" y="400.34000000000015" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="520" y="400.17" />
+              <mxPoint x="520" y="400.17" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-35" value="Poll status /getInvoicePaymentAuth" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-34" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="20" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.055;exitDx=0;exitDy=0;endArrow=classic;endFill=1;dashed=1;dashPattern=8 8;exitPerimeter=0;" parent="1" source="LldOg9A5rvM3-FE8M_Fl-33" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="419.20000000000005" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="520" y="420" />
+            </Array>
+            <mxPoint x="610" y="419.19999999999993" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-37" value="Response: unpaid" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-36" vertex="1" connectable="0">
+          <mxGeometry x="0.0747" relative="1" as="geometry">
+            <mxPoint x="14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.138;entryDx=0;entryDy=0;dashed=1;dashPattern=8 8;entryPerimeter=0;" parent="1" target="LldOg9A5rvM3-FE8M_Fl-33" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="449.1700000000002" as="targetPoint" />
+            <mxPoint x="230" y="449.34000000000015" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="520" y="449" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-43" value="Poll status /getInvoicePaymentAuth" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-42" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="20" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=-0.075;exitY=0.186;exitDx=0;exitDy=0;endArrow=classic;endFill=1;dashed=1;dashPattern=8 8;exitPerimeter=0;" parent="1" source="LldOg9A5rvM3-FE8M_Fl-33" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="468.20000000000016" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="809" y="468" />
+            </Array>
+            <mxPoint x="610" y="468.19999999999993" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-45" value="Response: unpaid" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-44" vertex="1" connectable="0">
+          <mxGeometry x="0.0747" relative="1" as="geometry">
+            <mxPoint x="14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-46" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1210" y="480" width="20" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-48" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1010" y="480" width="20" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1030" y="480.0000000000001" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1030" y="480" />
+            </Array>
+            <mxPoint x="1210" y="480.0000000000001" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-50" value="LN payment attempt" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-49" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="-8" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="830" y="490" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="830" y="490" />
+            </Array>
+            <mxPoint x="1010" y="490" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-52" value="Payment received" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-51" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="-8" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.278;entryDx=0;entryDy=0;dashed=1;dashPattern=8 8;entryPerimeter=0;" parent="1" target="LldOg9A5rvM3-FE8M_Fl-33" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="500.2300000000001" as="targetPoint" />
+            <mxPoint x="230" y="500.40000000000015" as="sourcePoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-54" value="Poll status /getInvoicePaymentAuth" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-53" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="20" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-55" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.333;exitDx=0;exitDy=0;endArrow=classic;endFill=1;exitPerimeter=0;" parent="1" source="LldOg9A5rvM3-FE8M_Fl-33" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="519.2600000000002" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="520" y="520" />
+            </Array>
+            <mxPoint x="610" y="519.2599999999998" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-56" value="Response: success" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-55" vertex="1" connectable="0">
+          <mxGeometry x="0.0747" relative="1" as="geometry">
+            <mxPoint x="14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-62" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="550.18" width="20" height="49.82" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.667;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="LldOg9A5rvM3-FE8M_Fl-62" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="580.3566099999999" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="530" y="580.18" />
+              <mxPoint x="530" y="580.18" />
+            </Array>
+            <mxPoint x="410" y="579.8399999999999" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=-0.015;exitY=0.666;exitDx=0;exitDy=0;strokeWidth=3;exitPerimeter=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="550.18" as="targetPoint" />
+            <Array as="points" />
+            <mxPoint x="809.7000000000003" y="549.9967800000001" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-69" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="660" width="20" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-70" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;exitX=-0.003;exitY=0.59;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="c43ppAFyWigC0BN0gYnn-18" target="LldOg9A5rvM3-FE8M_Fl-69" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="670.0000000000003" as="targetPoint" />
+            <mxPoint x="600" y="660" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="520" y="660" />
+              <mxPoint x="430" y="660" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-71" value="Send claim TX" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-70" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="-4" y="2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-72" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;strokeWidth=3;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="699.9999999999999" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="230" y="700" />
+            </Array>
+            <mxPoint x="410" y="699.9999999999999" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-73" value="Claim TX confirmed&lt;br&gt;&lt;b&gt;Get token from HTLC&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-72" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="-8" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-74" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.833;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" target="LldOg9A5rvM3-FE8M_Fl-33" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="700.0000000000005" as="targetPoint" />
+            <mxPoint x="430" y="700.1700000000005" as="sourcePoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-76" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1010" y="710.0000000000002" as="targetPoint" />
+            <mxPoint x="830" y="710.1700000000005" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="940" y="710.0000000000001" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-77" value="Settle LN payment&lt;br&gt;with revealed secret" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-76" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="10" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-78" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1210" y="719.3100000000002" as="targetPoint" />
+            <mxPoint x="1030" y="719.4800000000005" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="1140" y="719.3100000000001" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-79" value="Settle LN payment&lt;br&gt;with revealed secret" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-78" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="10" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-81" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;strokeWidth=3;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1030" y="750" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1030" y="750" />
+            </Array>
+            <mxPoint x="1210" y="750" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-82" value="&lt;b&gt;Settled LN funds&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-81" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="-8" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-85" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;strokeWidth=3;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="830" y="760" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="830" y="760" />
+            </Array>
+            <mxPoint x="1010" y="760" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-86" value="&lt;b&gt;Settled LN funds&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-85" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="-8" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-87" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="210" y="830" width="20" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-88" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="810" y="830" width="20" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-89" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;dashed=1;dashPattern=8 8;" parent="1" edge="1" target="LldOg9A5rvM3-FE8M_Fl-88">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="830" as="targetPoint" />
+            <mxPoint x="230" y="830.1700000000001" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="520" y="830" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-90" value="Poll status /getInvoicePaymentAuth" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-89" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="20" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-91" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.167;exitDx=0;exitDy=0;endArrow=classic;endFill=1;dashed=1;dashPattern=8 8;exitPerimeter=0;entryX=1;entryY=0.111;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" edge="1" target="LldOg9A5rvM3-FE8M_Fl-87" source="LldOg9A5rvM3-FE8M_Fl-88">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="250" y="850" as="targetPoint" />
+            <Array as="points" />
+            <mxPoint x="610" y="849.0299999999997" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-92" value="Response: unpaid" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-91" vertex="1" connectable="0">
+          <mxGeometry x="0.0747" relative="1" as="geometry">
+            <mxPoint x="14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-93" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.408;entryDx=0;entryDy=0;dashed=1;dashPattern=8 8;entryPerimeter=0;" parent="1" edge="1" target="LldOg9A5rvM3-FE8M_Fl-88">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="879" as="targetPoint" />
+            <mxPoint x="230" y="879.1700000000001" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="520" y="879" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-94" value="Poll status /getInvoicePaymentAuth" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-93" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="20" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-95" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.567;exitDx=0;exitDy=0;endArrow=classic;endFill=1;dashed=1;dashPattern=8 8;exitPerimeter=0;" parent="1" edge="1" source="LldOg9A5rvM3-FE8M_Fl-88">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="898.0300000000002" as="targetPoint" />
+            <Array as="points" />
+            <mxPoint x="610" y="898.0299999999997" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-96" value="Response: unpaid" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-95" vertex="1" connectable="0">
+          <mxGeometry x="0.0747" relative="1" as="geometry">
+            <mxPoint x="14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-97" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1210" y="909.83" width="20" height="180.17" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-98" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1010" y="909.83" width="20" height="180.17" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-99" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1030" y="909.8299999999999" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1030" y="909.8299999999999" />
+            </Array>
+            <mxPoint x="1210" y="909.8299999999999" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-100" value="LN payment attempt" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-99" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="-8" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-101" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="830" y="919.8299999999999" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="830" y="919.8299999999999" />
+            </Array>
+            <mxPoint x="1010" y="919.8299999999999" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-102" value="Payment received" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-101" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="-8" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-103" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.834;entryDx=0;entryDy=0;dashed=1;dashPattern=8 8;entryPerimeter=0;" parent="1" edge="1" target="LldOg9A5rvM3-FE8M_Fl-88">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="930.06" as="targetPoint" />
+            <mxPoint x="230" y="930.23" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="520" y="930" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-104" value="Poll status /getInvoicePaymentAuth" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-103" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="20" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-105" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;endArrow=classic;endFill=1;" parent="1" edge="1" source="LldOg9A5rvM3-FE8M_Fl-88">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="949.0900000000001" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="520" y="950" />
+            </Array>
+            <mxPoint x="610" y="949.0899999999997" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-106" value="Response: success + init signature" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-105" vertex="1" connectable="0">
+          <mxGeometry x="0.0747" relative="1" as="geometry">
+            <mxPoint x="14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-107" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="979.8300000000002" width="20" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-108" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="979.8300000000002" as="targetPoint" />
+            <mxPoint x="230" y="980.0000000000005" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="340" y="979.8300000000002" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-109" value="Check LP balance" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-108" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="10" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-110" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="1009.8299999999999" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="230" y="1009.8299999999999" />
+            </Array>
+            <mxPoint x="410" y="1009.8299999999999" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-111" value="Return LP balance&lt;br&gt;Abort if not enough" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-110" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="-8" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-126" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1010" y="1080.0000000000002" as="targetPoint" />
+            <mxPoint x="830" y="1080.1700000000005" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="940" y="1080.0000000000002" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-127" value="Cancel LN payment" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-126" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="10" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-128" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1210" y="1089.43" as="targetPoint" />
+            <mxPoint x="1030" y="1089.6000000000004" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="1140" y="1089.43" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-129" value="Cancel LN payment" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-128" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="10" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-135" value="&lt;i&gt;After lightning invoice expires...&lt;/i&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="420" y="1050" width="190" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-136" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="210" y="1160" width="20" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-138" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;dashed=1;dashPattern=8 8;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="1160" as="targetPoint" />
+            <mxPoint x="230" y="1160.17" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="520" y="1160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-139" value="Poll status /getInvoicePaymentAuth" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-138" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="20" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-140" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.083;exitDx=0;exitDy=0;endArrow=classic;endFill=1;dashed=1;dashPattern=8 8;exitPerimeter=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="1179.03" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="520" y="1180" />
+            </Array>
+            <mxPoint x="810" y="1174.94" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-141" value="Response: unpaid" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-140" vertex="1" connectable="0">
+          <mxGeometry x="0.0747" relative="1" as="geometry">
+            <mxPoint x="14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-142" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.279;entryDx=0;entryDy=0;dashed=1;dashPattern=8 8;entryPerimeter=0;" parent="1" edge="1" target="99isAbADdhbxdDrAkC_n-16">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="1197.44" as="targetPoint" />
+            <mxPoint x="230" y="1209.17" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="520" y="1209" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-143" value="Poll status /getInvoicePaymentAuth" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-142" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="20" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-144" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;dashed=1;dashPattern=8 8;entryX=1;entryY=0.567;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0;exitY=0.39;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" edge="1" target="LldOg9A5rvM3-FE8M_Fl-136" source="99isAbADdhbxdDrAkC_n-16">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="1229" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="810" y="1228" />
+              <mxPoint x="800" y="1228" />
+              <mxPoint x="230" y="1229" />
+            </Array>
+            <mxPoint x="800" y="1228" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-145" value="Response: unpaid" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-144" vertex="1" connectable="0">
+          <mxGeometry x="0.0747" relative="1" as="geometry">
+            <mxPoint x="14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-146" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1210" y="1239.83" width="20" height="230.17" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-147" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1010" y="1239.83" width="20" height="230.17" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-148" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1030" y="1239.83" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1030" y="1239.83" />
+            </Array>
+            <mxPoint x="1210" y="1239.83" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-149" value="LN payment attempt" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-148" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="-8" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-150" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="830" y="1249.83" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="830" y="1249.83" />
+            </Array>
+            <mxPoint x="1010" y="1249.83" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-151" value="Payment received" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-150" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="-8" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-152" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;dashed=1;dashPattern=8 8;entryX=0;entryY=0.557;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" edge="1" target="99isAbADdhbxdDrAkC_n-16">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="1260" as="targetPoint" />
+            <mxPoint x="230" y="1260.23" as="sourcePoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-153" value="Poll status /getInvoicePaymentAuth" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-152" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="20" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-154" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="1280.0000000000002" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="810" y="1280.91" />
+              <mxPoint x="520" y="1280.91" />
+            </Array>
+            <mxPoint x="810" y="1280.91" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-155" value="Response: success + init signature" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-154" vertex="1" connectable="0">
+          <mxGeometry x="0.0747" relative="1" as="geometry">
+            <mxPoint x="14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-156" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="1309.8300000000002" width="20" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-174" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;exitX=0;exitY=1;exitDx=0;exitDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="1309.84" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="610" y="1309.84" />
+              <mxPoint x="610" y="1309.84" />
+            </Array>
+            <mxPoint x="810" y="1309.84" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-176" value="&lt;i&gt;Client never sends init TX&lt;/i&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="50" y="980" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-177" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1010" y="1460.0000000000002" as="targetPoint" />
+            <mxPoint x="830" y="1460.1700000000003" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="940" y="1460.0000000000002" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-178" value="Cancel LN payment" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-177" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="10" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-180" value="&lt;i&gt;After HTLC expires...&lt;/i&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="470" y="1380" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-181" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="1420.0000000000002" width="20" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-182" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="1420" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="430" y="1420" />
+            </Array>
+            <mxPoint x="810" y="1420" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-184" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;strokeWidth=3;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="1450" as="targetPoint" />
+            <mxPoint x="430" y="1450.1700000000005" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="540" y="1450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-186" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1210" y="1470" as="targetPoint" />
+            <mxPoint x="1030" y="1470.1700000000005" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="1140" y="1470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-187" value="Cancel LN payment" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="LldOg9A5rvM3-FE8M_Fl-186" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="10" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-188" value="" style="endArrow=none;dashed=1;html=1;dashPattern=12 12;strokeWidth=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1280" y="370" as="sourcePoint" />
+            <mxPoint x="40" y="369.16999999999996" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-189" value="&lt;b&gt;Successful swap&lt;br&gt;&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="370.16999999999996" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-190" value="" style="endArrow=none;dashed=1;html=1;dashPattern=12 12;strokeWidth=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1280" y="800" as="sourcePoint" />
+            <mxPoint x="40" y="800" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-191" value="&lt;b&gt;Failed swap&lt;br&gt;(client never initiates)&lt;br&gt;&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="800" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-192" value="" style="endArrow=none;dashed=1;html=1;dashPattern=12 12;strokeWidth=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1280" y="1130" as="sourcePoint" />
+            <mxPoint x="40" y="1130.0000000000002" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LldOg9A5rvM3-FE8M_Fl-193" value="&lt;b&gt;Failed swap&lt;br&gt;(client initiates but&lt;br&gt;doesn&#39;t claim)&lt;br&gt;&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="1130" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-1" value="Watchtower" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="560" y="40" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-2" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" parent="1" source="c43ppAFyWigC0BN0gYnn-16" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="619.8" y="1580" as="sourcePoint" />
+            <mxPoint x="619.55" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-3" value="Return balance&lt;br&gt;Abort if not enough" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="620" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-4" value="Check self balance" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="620" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-7" value="&lt;b&gt;Deposit tokens from&lt;br&gt;LP node&#39;s vault to HTLC&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="620" y="550.09" as="geometry" />
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-8" value="Init TX confirmed" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="620" y="580.18" as="geometry" />
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="600.0000000000003" as="targetPoint" />
+            <mxPoint x="430" y="600.1700000000004" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="540" y="600" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-11" value="Register swap" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="c43ppAFyWigC0BN0gYnn-9" vertex="1" connectable="0">
+          <mxGeometry x="-0.1526" y="1" relative="1" as="geometry">
+            <mxPoint x="14" y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-12" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="610" y="600" width="20" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.666;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="LldOg9A5rvM3-FE8M_Fl-62" target="LldOg9A5rvM3-FE8M_Fl-32" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="260" y="600" as="targetPoint" />
+            <mxPoint x="470" y="680.1700000000004" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="370" y="600" />
+              <mxPoint x="370" y="600" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-14" value="InitializeEvent&lt;br&gt;Swap committed" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="c43ppAFyWigC0BN0gYnn-13" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint y="2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-17" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" parent="1" source="c43ppAFyWigC0BN0gYnn-18" target="c43ppAFyWigC0BN0gYnn-16" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="619.8" y="1580" as="sourcePoint" />
+            <mxPoint x="619.55" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-16" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="615" y="610" width="10" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-19" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" parent="1" target="c43ppAFyWigC0BN0gYnn-18" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="620" y="1520" as="sourcePoint" />
+            <mxPoint x="620" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-18" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="610" y="630" width="20" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" target="c43ppAFyWigC0BN0gYnn-18" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="630.0000000000002" as="targetPoint" />
+            <mxPoint x="230" y="630.1700000000003" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="520" y="630" />
+              <mxPoint x="520" y="630" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-21" value="Send secret over &lt;b&gt;Nostr&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="c43ppAFyWigC0BN0gYnn-20" vertex="1" connectable="0">
+          <mxGeometry x="-0.1056" y="-2" relative="1" as="geometry">
+            <mxPoint x="20" y="-2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;strokeWidth=3;entryX=0;entryY=1;entryDx=0;entryDy=0;" parent="1" source="LldOg9A5rvM3-FE8M_Fl-69" target="c43ppAFyWigC0BN0gYnn-18" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="740" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="520" y="680" />
+              <mxPoint x="520" y="680" />
+            </Array>
+            <mxPoint x="570" y="740" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c43ppAFyWigC0BN0gYnn-24" value="&lt;b&gt;Watchtower fee from HTLC&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="c43ppAFyWigC0BN0gYnn-23" vertex="1" connectable="0">
+          <mxGeometry x="-0.0874" y="-1" relative="1" as="geometry">
+            <mxPoint x="4" y="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-1" value="ClaimEvent&lt;br&gt;revealing the secret" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="620" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-4" value="&lt;b&gt;Deposit tokens from&lt;br&gt;LP node&#39;s vault to HTLC&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="620" y="1309.83" as="geometry" />
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-5" value="Send refund TX" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="620" y="1420" as="geometry" />
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-6" value="Refund TX confirmed&lt;br&gt;&lt;b&gt;HTLC tokens returned&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="620" y="1450" as="geometry" />
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="1339.83" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="490" y="1339.83" />
+              <mxPoint x="490" y="1339.83" />
+            </Array>
+            <mxPoint x="429.9999999999998" y="1339.83" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-9" value="Init TX confirmed" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="620" y="1339.83" as="geometry" />
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-11" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" edge="1" parent="1" target="99isAbADdhbxdDrAkC_n-10">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="820" y="1520" as="sourcePoint" />
+            <mxPoint x="820" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-10" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="815" y="1339.83" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-12" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="810" y="1380" width="20" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-14" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=none;" edge="1" parent="1" source="99isAbADdhbxdDrAkC_n-10" target="99isAbADdhbxdDrAkC_n-13">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="820" y="1340" as="sourcePoint" />
+            <mxPoint x="820" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-13" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="815" y="949.83" width="10" height="100.17" as="geometry" />
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-15" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="810" y="1050" width="20" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="99isAbADdhbxdDrAkC_n-16" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="810" y="1159.83" width="20" height="180" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
