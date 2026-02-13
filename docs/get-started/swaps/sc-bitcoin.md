@@ -35,4 +35,4 @@ This swap uses a [PrTLC (proof-time locked contract)](../core-primitives/prtlc.m
 
 ## Swap Flow Diagram
 
-![Smart chain -> Bitcoin on-chain swap process (Intermediary = LP Node)](https://github.com/adambor/SolLightning-readme/raw/main/flows/tobtc-diagram.drawio.png)
+![Smart chain -> Bitcoin on-chain swap process (Intermediary = LP Node)](/img/tobtc-diagram.svg)

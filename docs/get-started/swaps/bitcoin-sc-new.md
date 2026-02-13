@@ -69,4 +69,4 @@ Liquidity fronting is not yet available on mainnet nor testnet
 
 ## Diagram
 
-![New swap flow diagram](https://3413090771-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FQKYJLT6LdI5sTgcaMspD%2Fuploads%2Fs5VzKGZWrzaFKodVI2ww%2Fnew%20swap%20flow%20diagram.drawio.png?alt=media&token=8cd5f6f2-4eb0-4f5a-960a-264fc24a319f)
+![New swap flow diagram](/img/utxo-swap-diagram.svg)

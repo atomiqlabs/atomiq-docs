@@ -41,4 +41,4 @@ This swap uses an [HTLC](../core-primitives/htlc.md) to receive Solana tokens vi
 
 ## Diagram
 
-![Bitcoin Lightning -> Smart chain swap process (Intermediary = LP Node, Smart chain = Solana)](https://github.com/adambor/SolLightning-readme/raw/main/flows/frombtcln-diagram.drawio.png)
+![Bitcoin Lightning -> Smart chain swap process (Intermediary = LP Node, Smart chain = Solana)](/img/frombtcln-diagram.svg)

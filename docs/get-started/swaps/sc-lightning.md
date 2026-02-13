@@ -46,4 +46,4 @@ This swap enables paying a Lightning Network invoice using smart chain tokens. I
 
 ## Diagram
 
-![Smart chain-> Bitcoin Lightning swap process (Intermediary = LP Node)](https://github.com/adambor/SolLightning-readme/blob/main/flows/tobtcln-diagram.drawio.png?raw=true)
+![Smart chain-> Bitcoin Lightning swap process (Intermediary = LP Node)](/img/tobtcln-diagram.svg)

@@ -37,4 +37,4 @@ This swap uses a [PrTLC](../core-primitives/prtlc.md) in the reverse direction: 
 
 ## Diagram
 
-![Bitcoin on-chain -> Solana swap process (Intermediary = LP Node, Smart chain = Solana)](https://github.com/adambor/SolLightning-readme/raw/main/flows/frombtc-diagram.drawio.png)
+![Bitcoin on-chain -> Solana swap process (Intermediary = LP Node, Smart chain = Solana)](/img/frombtc-diagram.svg)
