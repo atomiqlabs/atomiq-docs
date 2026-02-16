@@ -48,4 +48,4 @@ If no watchtower claims on behalf of the user, the user can always claim by hims
 
 ## Diagram
 
-![Bitcoin Lightning -> Smart chain swap process (Intermediary = LP Node)](https://3413090771-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FQKYJLT6LdI5sTgcaMspD%2Fuploads%2FdvZRcSxefJ0stELFmsn5%2Fnostr-frombtcln-diagram.drawio.png?alt=media&token=d267eabd-97d4-4d74-88f4-f1a4e1e0cc80)
+![Bitcoin Lightning -> Smart chain swap process (Intermediary = LP Node)](/img/nostr-frombtcln-diagram.svg)
