@@ -1,6 +1,10 @@
 rm -f -r repos
 mkdir repos
 cd repos
+git clone -b develop --single-branch https://github.com/atomiqlabs/atomiq-base
+cd atomiq-base
+npm i
+cd ..
 git clone -b develop --single-branch https://github.com/atomiqlabs/atomiq-sdk
 cd atomiq-sdk
 npm i

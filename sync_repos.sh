@@ -1,4 +1,8 @@
 cd repos
+cd atomiq-base
+git pull -f
+npm i
+cd ..
 cd atomiq-sdk
 git pull -f
 npm i
