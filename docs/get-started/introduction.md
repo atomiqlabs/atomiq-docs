@@ -5,11 +5,11 @@ sidebar_position: 1
 
 # Introduction
 
-atomiq.exchange is a fully trustless cross-chain decentralized exchange (DEX) enabling swaps between Bitcoin and smart contract blockchains (Solana, Starknet, EVM) without trusting any intermediary.
+Atomiq.exchange is a fully trustless cross-chain decentralized exchange (DEX) enabling swaps between Bitcoin and smart contract blockchains (Solana, Starknet, EVM) without trusting any intermediary.
 
-In contrast to existing cross-chain solutions that force users to choose between usability and trustlessness, Atomiq achieves both by leveraging Bitcoin proof-of-work consensus through on-chain [light client verification](/get-started/bitcoin-light-client/) and novel swap primitives. Combined with an off-chain request-for-quote (RFQ) system, this enables zero slippage swaps with competitive price discovery—without exposing participants to MEV risks.
+In contrast to existing cross-chain solutions that force users to choose between usability and trustlessness, Atomiq achieves both by leveraging Bitcoin proof-of-work consensus through on-chain [light client verification](/get-started/core-primitives/bitcoin-light-client/) and two novel swap primitives: [Proof-time locked contracts (PrTLCs)](/get-started/core-primitives/prtlc/) and [UTXO-controlled vaults](/get-started/core-primitives/utxo-controlled-vault/). These primitives enable non-custodial, trustless swaps with atomic settlement guarantees. For swaps involving the Bitcoin Lightning Network, the protocol also utilizes established [HTLC-based mechanisms](/get-started/core-primitives/htlc/). Combined with an off-chain request-for-quote (RFQ) system, this enables zero slippage swaps with competitive price discovery—without exposing participants to MEV risks.
 
-The protocol uses a network of Liquidity Provider nodes to process swaps via RFQ—anyone can [run an LP node](/get-started/lps/running-lp-node). LPs are not trusted: swaps only complete when both sides cooperate, enforced by smart contract escrows with atomic settlement guarantees.
+The protocol uses a network of Liquidity Provider nodes to process swaps via RFQ—anyone can [run an LP node](/get-started/lps/running-lp-node). LPs are not trusted: swaps only complete when both sides cooperate, enforced by smart contract escrows with atomic settlement guarantees. In case the swap fails, the user will simply get their funds returned to them in a refund.
 
 ## Use Cases
 

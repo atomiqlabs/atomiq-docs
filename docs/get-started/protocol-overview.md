@@ -1,15 +1,29 @@
 # Protocol Overview
 
-Atomic swaps are implemented in the form of smart contract vaults on the Smart chains (Solana, Starknet, EVM, etc.), such that they only pay out the escrowed funds when the counterparty proves that they really sent a bitcoin/lightning transaction. In case of non-cooperation the funds are returned to their original owner in a few days.
+Atomiq facilitates trustless cross-chain swaps through a combination of on-chain smart contract logic and off-chain coordination, ensuring atomic execution without intermediaries. Users initiate swaps by requesting quotes from a decentralized network of Liquidity Providers (LPs) via an off-chain request-for-quote (RFQ) system. This allows competitive pricing and zero slippage while keeping the actual settlement fully on-chain and trustless.
 
-Atomicity of the swaps is ensured by [submarine swaps](/get-started/submarine-swaps/) (for lightning network swaps) & [bitcoin light client](/get-started/bitcoin-light-client/) (for bitcoin on-chain swaps).
+## Swap Flow and Settlement
 
-## Example
+Once a user accepts a quote, the swap proceeds with atomic guarantees enforced by protocol-specific primitives. For swaps from smart chains to Bitcoin, funds are escrowed in a smart contract vault on the smart chain side (Solana, Starknet, EVM). Settlement occurs only when the counterparty demonstrates successful delivery of Bitcoin, verified through the protocol's mechanisms. If cooperation fails at any point, escrowed funds are automatically refunded to the original owner after a predefined timeout period.
 
-In the following example we have a **wallet #1** swapping *SOL* to *BTC* received by **wallet #2**. **Liquidity provider node** acts as a counterparty for this swap, receiving *SOL* from **wallet #1** and paying out to **wallet #2** in *BTC*. Smart contract vault makes sure that Liquidity provider node can take the *SOL* from the vault only and only if it successfully pays out the *BTC* to **wallet #2**.
+## Core Settlement Mechanisms
 
-![Successful SOL -> BTC swap via atomiq.exchange](https://3413090771-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FQKYJLT6LdI5sTgcaMspD%2Fuploads%2Ff4CMVF65VxFjkrPzw4DD%2Fatomiq%20working%20principle.png?alt=media&token=7c932e13-d04d-4f15-bd2f-3971856cf3ae)
+The protocol relies on Bitcoin's proof-of-work consensus, verified directly on the smart chain via an on-chain [Bitcoin light client](/get-started/core-primitives/bitcoin-light-client/). This light client serves as a permissionless oracle of bitcoin state, maintaining and validating Bitcoin block headers submitted by any participant. It enables secure verification of Bitcoin-side transactions on the smart chain without trusted intermediaries.
 
-In case **Liquidity provider node** doesn't cooperate the funds will be returned back to the **wallet #1** after a timeout, and **Liquidity provider node's** reputation will decrease.
+Two novel primitives handle the primary swap directions and address longstanding limitations in traditional atomic swaps:
 
-![Failed SOL -> BTC swap via atomiq.exchange](https://3413090771-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FQKYJLT6LdI5sTgcaMspD%2Fuploads%2FtAqoSKmpGRIRA8kCMjnL%2Fatomiq%20notworking%20principle.png?alt=media&token=91b2ad08-87df-4b8b-8a62-77330a7c3aa0)
+- [Proof-time Locked Contracts (PrTLCs)](/get-started/core-primitives/prtlc/) manage [Smart chain → Bitcoin swaps](/get-started/swaps/sc-bitcoin/), replacing conventional HTLC hashlocks with bitcoin light client based transaction proofs. This eliminates the free option problem for liquidity providers and removes user liveness requirements, as anyone can permissionlessly settle the swap using light client transaction proofs.
+- [UTXO-controlled vaults](/get-started/core-primitives/utxo-controlled-vault/) secure [Bitcoin → Smart chain swaps](/get-started/swaps/bitcoin-sc-new), enabling atomic execution through bitcoin light client based transaction proofs and UTXO-chaining. This enables swaps without LPs having to pre-lock liquidity on the Smart chain side, while eliminating the free option problem and the user liveness requirement (anyone can settle using light client transaction proofs).
+
+These primitives eliminate liveness dependencies for users—anyone, including specialized [watchtowers](/get-started/actors/#watchtower), can permissionlessly settle swaps on behalf of participants while earning fees for doing so.
+
+## Lightning Network Integration
+
+For swaps involving the Bitcoin Lightning Network, Atomiq incorporates established [HTLC (hash-time locked contracts)](/get-started/core-primitives/htlc/) based mechanisms, similar to submarine swaps to ensure atomicity in a similar trust-minimized manner.
+
+While HTLC swaps are not an ideal construction for cross-chain swaps, using it with the lightning network at least partially mitigates their drawbacks as the user livneness requirement is significantly reduced thanks to Lightning’s fast settlement times—payments are typically confirmed in seconds.
+
+---
+
+This architecture delivers practical, everyday usability while preserving full non-custodial security: users retain control of their funds throughout, and settlement is enforced purely by code and verifiable blockchain consensus.
+

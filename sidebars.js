@@ -6,6 +6,7 @@ const sidebars = {
   getStartedSidebar: [
     'get-started/introduction',
     'get-started/protocol-overview',
+    'get-started/actors',
     {
       type: 'category',
       label: 'Core Primitives',
