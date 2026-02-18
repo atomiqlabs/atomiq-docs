@@ -4,6 +4,14 @@ A UTXO-controlled vault is a smart contract on the smart chain that holds LP liq
 
 UTXO-controlled vaults are a novel primitive introduced by Atomiq to enable trustless Bitcoin → smart chain swaps, overcoming limitations of using PrTLCs in the [legacy Bitcoin -> Smart chain](/get-started/swaps/bitcoind-sc-legacy/) direction, such as the "cold start" problem (users needing smart chain tokens upfront), timeout dependencies, and—most critically—the need for LPs to pre-lock liquidity into per-swap escrows. This primitive is central to Atomiq's core protocol for the [Bitcoin → smart chain](/get-started/swaps/bitcoin-sc-new/) direction, complementing PrTLCs for the reverse flow.
 
+## Intuition
+
+To resolve the issue with the use of PrTLCs in Bitcoin -> Smart chain direction—having to pre-lock liquidity—the UTXO-controlled vaults were introduced. Core idea is to let the LP create a single vault from which multiple swaps could be executed—pre-lock once, execute multiple swaps. This removes the need to always pre-lock new liquidity for every swap. However a naive implementation of it would be completely insecure — i.e. if we allow the LP to withdraw funds from the vault, the LP can do so right after user intitiates a swap and already sends the bitcoin transaction, draining all the funds in the vault before the user could be made whole.
+
+Making the vault deposit-only, such that withdrawals can only be processed by sending BTC amount to the LP address (as verified by the light client), can slightly mitigate this vulnerability. However, it introduces additional issue on the bitcoin side — if the user sends the BTC amount now, what guarantee do they have that when their bitcoin transaction confirms the vault will still have enough balance to make them whole? This creates an inherent race-condition as anyone can front-run the user's bitcoin transaction by paying a higher fee and getting funds first, leaving no funds left for the user.
+
+UTXO-controlled vaults enforce the order of withdrawals and prevent race-conditions by assigning the vault a specific ownership UTXO, where every withdrawal authorized by the Bitcoin transaction needs to spend this ownership UTXO as one of its inputs and create a new ownership UTXO for the vault, that is to be used for subsequent withdrawals. This enforces a strict order of withdrawals as the ownership UTXO can only be spent once (i.e. only one withdrawal can be processed at a time), creating a new UTXO, which then the subsequent withdrawal uses.
+
 ## Mechanism
 
 The vault operates by tracking a specific Bitcoin UTXO as its ownership reference, ensuring that only transactions spending this UTXO can update its state and withdraw funds from the vault.
