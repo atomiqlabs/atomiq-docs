@@ -2,9 +2,12 @@
 
 Atomiq facilitates trustless cross-chain swaps through a combination of on-chain smart contract logic and off-chain coordination, ensuring atomic execution without intermediaries. Users initiate swaps by requesting quotes from a decentralized network of Liquidity Providers (LPs) via an off-chain request-for-quote (RFQ) system. This allows competitive pricing and zero slippage while keeping the actual settlement fully on-chain and trustless.
 
+![RFQ based Swap Flow](/img/rfq.svg)
+
 ## Swap Flow and Settlement
 
 Once a user accepts a quote, the swap proceeds with atomic guarantees enforced by protocol-specific primitives. For swaps from smart chains to Bitcoin, funds are escrowed in a smart contract vault on the smart chain side (Solana, Starknet, EVM). Settlement occurs only when the counterparty demonstrates successful delivery of Bitcoin, verified through the protocol's mechanisms. If cooperation fails at any point, escrowed funds are automatically refunded to the original owner after a predefined timeout period.
+
 
 ## Core Settlement Mechanisms
 

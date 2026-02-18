@@ -2,6 +2,8 @@
 
 Atomiq is designed as a permissionless system where multiple independent parties interact to enable trustless cross-chain swaps. The main participants are the User, Liquidity Provider (LP), and Watchtower (also referred to as a relayer). Each plays a distinct role, while all operations remain non-custodial and verifiable on-chain.
 
+![Protocol Overview](/img/atomiq-overview-diagrams.svg)
+
 ## User
 
 The User is initiating a cross-chain swap. They request quotes off-chain directly from Liquidity Providers (LPs) via the RFQ system through the Atomiq SDK, which automatically selects and accepts the best available offer on the client-side. The user then signs and broadcasts the necessary transaction(s) on the source chain to commit funds for the swap. This involves depositing funds into a smart contract vault (escrow) on the smart chain (for **Smart chain → Bitcoin** swaps) or co-signing a Bitcoin transaction with the LP to move funds to the LP's address on Bitcoin (for **Bitcoin → Smart chain** swaps).
