@@ -1,44 +1,46 @@
 # Lightning → Solana (legacy)
 
 :::info
-This is the legacy protocol, superseded by the [new Lightning → Smart chain swap](./lightning-sc-new.md) which eliminates the need for users to hold smart chain tokens upfront.
+This is the legacy protocol only used on Solana, superseded by the [new Lightning → Smart chain swap](./lightning-sc-new.md) on all the other chains, which eliminates the need for users to hold smart chain tokens upfront.
 :::
 
-This swap uses an [HTLC](../core-primitives/htlc.md) to receive Solana tokens via a Lightning payment. The user generates a secret and payment hash, the LP creates a Lightning invoice with that hash, and the payer sends the Lightning payment. The LP then locks an HTLC on Solana, and the user claims it by revealing the secret — which also allows the LP to settle the Lightning payment. Unlike the current protocol, users must have SOL in their wallet to pay for the claim transaction, creating a "cold start" barrier for new users.
-
-## Requirements
-
-* lightning invoice has to have a fixed amount
-* payee needs to have some SOL in their wallet upfront to cover Solana transaction fees
+This swap uses an [HTLC](../core-primitives/htlc.md) to receive smart chain tokens via a Lightning payment. The user generates a secret preimage and payment hash, the LP creates a Lightning invoice with that hash, and the payer sends the Lightning payment. The user then locks up LP funds in an HTLC on the smart chain, and subsequently claims it by revealing the secret preimage — which also allows the LP to settle the Lightning payment. Unlike the current protocol, users must have native smart chain token balance in their destination wallet to pay for the initiate and claim transaction, creating a "cold start" barrier for new users.
 
 ## Parties
 
-* **payee** - recipient of the Solana token, using the LP to do the swap
-* **LP node** - handling the swap, sends the Solana token and receives lightning network payment
-* **payer** - the one paying on bitcoin lightning network
+- **User** - has bitcoin lightning network and smart chain wallets and wants to swap bitcoin (on Lightning) to smart chain asset, also needs to have funds on the smart chain to inititate the swap.
+- **LP** - handling the swap and providing the liquidity, locks-up smart chain tokens in the HTLC escrow and receives a lightning network payment
 
 ## Process
 
-1. **Payee** creates a *secret S* and *payment hash P* that is produced by *hash of secret H(S)*
-2. **Payee** queries the **LP node** off-chain, with *payment hash P* and an amount he wishes the receive, **LP node** creates a bitcoin lightning invoice using *payment hash P*, with the amount specified and returns it to **payee**
-3. **Payee** sends this lightning invoice to the **payer**
-4. **LP node** receives an incoming lightning network payment from **payer**, but cannot settle it because **LP node** doesn't know *secret S* yet.
-5. **Payee** queries the **LP node** off-chain to obtain a specific message *Mi (initialize)* signed by **LP node** allowing payee to create an HTLC on Solana with funds pulled from **LP node's** vault, an HTLC is constructed:
+1. **User** generates a secret preimage and uses it to generate a payment hash—i.e. payment hash = sha256(secret)
+2. **User** sends an RFQ (request for quote) to the **LP** indicating the requested input (or output) amount of assets, while sending over the payment hash
+3. **LP** creates a BOLT11 bitcoin lightning invoice using the **User**-provided payment hash, with the amount specified, then returns it along with the swap fee and bond amount (that the user needs to lockup on the smart chain side to guarantee the execution of the swap after the HTLC is created)
+4. **User** reviews the returned fees and checks that the returned lightning invoice uses the correct payment hash, then initiates a lightning network payment to the **LP** via the invoice
+5. **LP** receives an incoming lightning network payment from the **User**, but cannot settle it because it doesn't know the secret preimage, yet
+6. **User** queries the **LP** to obtain the signed authorization, allowing the **User** to create an HTLC on the smart chain (with the same payment hash) by pulling funds from the **LP**'s balance.
+7. **User** sends a transaction creating the HTLC on the Smart chain using the signed **LP** authorization to fund the PrTLC with **LP**'s balance, while the **User** also deposits the slashable bond. The HTLC has the following spend conditions:
+   1. Pays the funds to the **User**, if it's able to provide a valid secret that, when hashed produces HTLC payment hash—i.e. payment hash = sha256(secret), the slashable bond is also returned back to the **User**
+   2. Returns the funds back to the **LP** after a timeout, along with the slashable bond from the user - as this implies the user didn't execute the swap
 
-    * paying the funds to **payee** if he can supply a valid *secret S*, such that *hash of secret H(S)* is equal to *payment hash P*, but only until a specific time in the future - *locktime T*
-    * refunding the **payer**, but only after *locktime T*
+:::info
+HTLC timeout is determined by the **LP** based on lightning invoice's *min\_cltv\_delta* field - the minimal timeout delta for last lightning network HTLC (last hop of the lightning network payment) as the **LP** needs to have a knowledge of the secret preimage before then to successfully settle the lightning network payment and claim the funds.
+:::
 
-   **NOTE:** *locktime T* is determined by **LP node** based on lightning invoice's *min\_cltv\_delta* - the minimal timeout delta for last lightning network HTLC in chain (last hop of the lightning network payment) as **LP node** needs to have a knowledge of *secret S* before then to successfully receive a payment
+### a) Successful swap
 
-### **Successful payment**
+> ...the initiation transaction confirms on the smart chain
 
-6. Upon confirmation of HTLC creation's transaction on Solana, **payee** submits a second transaction revealing the *secret S* and claiming the funds from HTLC
-7. **LP node** observes this transaction on Solana and uses the revealed *secret S* to settle the lightning network payment.
+8. **User** submits a second smart chain transaction that claims the funds from the HTLC escrow by revealing the secret preimage, the slashable bond is also returned back to the **User**
+9. **LP** observes this transaction on Solana and uses the revealed *secret S* to settle the lightning network payment.
 
-### **Payee went offline**
+### b) Failed swap
 
-6. **LP node** waits till the expiry of *locktime T* and then refunds his funds back from the HTLC
+> ...the HTLC was never claimed by User, hence no secret preimage was revealed
 
-## Diagram
+8. **LP** waits till the HTLC timeout and refunds its funds back from the HTLC escrow, keeping the slashable bond originally deposited by the **User**
+9. **LP** cancels the incoming lightning network HTLC or lets it expire, this returns the lightning network funds back to the **User**
 
-![Bitcoin Lightning -> Smart chain swap process (Intermediary = LP Node, Smart chain = Solana)](/img/frombtcln-diagram.svg)
+## Swap sequence diagram
+
+![Legacy Bitcoin Lightning -> Smart chain swap process](/img/frombtcln-diagram.svg)

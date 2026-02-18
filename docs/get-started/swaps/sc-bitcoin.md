@@ -4,35 +4,46 @@ This swap uses a [PrTLC (proof-time locked contract)](../core-primitives/prtlc.m
 
 ## Parties
 
-* **payer** - the one paying in the smart chain token (e.g. SOL on Solana, WBTC on Starknet) and using the LP to do the swap
-* **LP node** - handling the swap receives the smart chain token and sends on-chain bitcoin
-* **payee** - recipient of the bitcoin on-chain payment
+* **User** - has smart chain and bitcoin wallets and wants to swap smart chain token (e.g. SOL on Solana, WBTC on Starknet) to bitcoin
+* **LP** - handling the swap and providing the liquidity, sends a Bitcoin on-chain payment and receives funds from the PrTLC escrow
 
 ## Process
 
-1. **Payer** queries the **LP node** off-chain, sending the payee's bitcoin address and an amount he wishes to send, **LP node** returns the network fee along with his swap fee needed for the swap and random *nonce N*
-2. **Payer** reviews the returned fees and sends a transaction to construct a PrTLC on the Smart chain:
+1. **User** sends an RFQ (request for quote) to the **LP** indicating the requested input (or output) amount of assets, and the bitcoin address to receive the BTC at. Also sends a unique nonce that will be used to tag the bitcoin transaction and prevent replay attacks
+2. **LP** returns the swap fee and Bitcoin network fee along with the signed authorization allowing the **User** to initiate the PrTLC escrow
+3. **User** reviews the returned fees and sends a transaction to construct a PrTLC on the Smart chain. The PrTLC has the following spend conditions:
+    1. Pays the funds to the **LP**, upon verifying a Bitcoin transaction (via the light client) that sends the exact pre-agreed amount of BTC to the **User**'s bitcoin address and is tagged with the nonce provided by the **User** to prevent replay attacks
+    2. Returns the funds back to the **User** after a timeout
+    3. Returns the funds back to the **User**, upon verifying a refund authorization signed by the **LP**—this allows an instant co-operative refund
 
-    * paying the funds to **LP node** if he can prove that he sent a pre-agreed amount to payee's address in a bitcoin transaction (tagged with *nonce N* to prevent replay attacks) that has >=3 confirmations
-    * refunding the **payer**, but only after *locktime T*
-    * refunding the **payer**, but only with a specific message *Mr (refund)* signed by **LP node** (for co-operative close, when payment fails for any reason)
+:::info
+The **User** needs to make sure that the **LP** cannot use an already existing bitcoin transaction to claim funds from the PrTLC escrow—i.e. if the user already received 1 BTC to its address, and initiates the swap of 1 BTC, the LP could use the already existing Bitcoin transaction to claim the funds from the PrTLC escrow. To prevent this, it is required that each Bitcoin transaction is tagged with a random 7-byte nonce (provided by the **User**), where:
+- 3 least significant bytes prefixed with 0xFF are being used as the *nSequence* field for ALL transaction inputs
+- 4 most significant bytes being treated as integer, adding `500,000,000` to that integer and using it as *locktime* field for the transaction.
 
-   **NOTE:** If **payer** tries to send same amount to same address twice, even though bitcoin addresses should not be reused this can't be avoided as **payee's** wallet implementation is out of our influence, in this case **LP node** could use the same transaction proof to claim both of the PrTLCs and paying bitcoin transaction just once. To prevent this, it is required that each transaction is tagged with the 7-byte *nonce N* with least significant 3 bytes prefixed with 0xFF being written as *nSequence* field for ALL inputs and rest - 4 most significant bytes being treated as integer, adding 500,000,000 to that integer and writing it as *locktime* field for the transaction.
-3. **LP node** observes the creation of PrTLC on the Smart chain and proceeds to send a bitcoin transaction.
+The PrTLC escrow asserts that the Bitcoin transaction uses the pre-agreed to nonce by parsing the *nSequence* and *locktime* fields.
+:::
 
-### **Successful payment**
+### c) Successful swap
 
-4. Transaction confirms on bitcoin chain (has >=6 confirmations) **LP node** proves this via bitcoin relay and claims the funds from the PrTLC
+4. **LP** observes the creation of PrTLC on the Smart chain and proceeds to send a Bitcoin transaction, paying out BTC funds to the **User**
 
-### **Failed payment**
+> ...the transaction confirms on the bitcoin network and gets required number of confirmations
 
-4. The payment was unsuccessful, maybe **LP node** ran out of funds in the meantime, or **LP node** thinks it's not possible to safely send the transaction with pre-agreed fee and have it confirm in under *locktime T*.
-5. Upon request by **payer**, **LP node** creates a specific signed message *Mr (refund)*, allowing the **payer** to refund his funds from the PTLC (cooperative close)
+5. **LP** submits the Bitcoin transaction data to smart chain, where it's verified and the escrowed funds are paid out to the **LP**
 
-### **LP node went offline**
+### b) Failed swap
 
-4. **Payer** waits till the expiry of *locktime T* and then refunds his funds back from the PrTLC
+4. **LP** is unable to send the Bitcoin transaction to the **User**—e.g. **LP** ran out of funds in the meantime
+5. **User** sends a request to the **LP**, the **LP** returns a signed refund message, that allows the **User** to refund the PrTLC before a timeout (cooperative close)
+6. **User** uses the signed refund message to refund its funds from the PrTLC before a timeout
 
-## Swap Flow Diagram
+### c) LP went offline
 
-![Smart chain -> Bitcoin on-chain swap process (Intermediary = LP Node)](/img/tobtc-diagram.svg)
+> ...LP is unresponsive
+
+4. **User** waits until the timeout and then refunds its funds back from the PrTLC
+
+## Swap sequence diagram
+
+![Smart chain -> Bitcoin on-chain swap process](/img/tobtc-diagram.svg)
