@@ -2,9 +2,53 @@
 sidebar_position: 2
 ---
 
+
 # Quick Start
 
-This guide walks you through setting up and initializing the Atomiq SDK.
+
+This guide covers installing the Atomiq SDK and its chain-specific connectors and walks you through setting up and initializing the Atomiq SDK.
+
+## Core SDK
+
+Install the main SDK package:
+
+```bash
+npm install @atomiqlabs/sdk@latest
+```
+
+### Chain Connectors
+
+The SDK supports multiple chains. Install only the chain connectors your project needs, and mix and match them as required: 
+
+```bash
+npm install @atomiqlabs/chain-solana@latest
+npm install @atomiqlabs/chain-starknet@latest
+npm install @atomiqlabs/chain-evm@latest
+```
+
+### Node.js Storage
+
+For Node.js applications, install the SQLite storage adapter:
+
+```bash
+npm install @atomiqlabs/storage-sqlite@latest
+```
+
+:::info Browser Storage
+Browser applications use IndexedDB by default and don't require additional storage packages.
+:::
+
+
+### Browser Example
+
+For example, for a browser project with Solana and Starknet you need to install the following packages:
+
+```bash
+npm install @atomiqlabs/sdk@latest \
+  @atomiqlabs/chain-solana@latest \
+  @atomiqlabs/chain-starknet@latest
+```
+
 
 ## Setup
 
@@ -12,8 +56,8 @@ Set your RPC URLs:
 
 ```typescript
 const solanaRpc = "https://api.mainnet-beta.solana.com";
-const starknetRpc = "https://starknet-mainnet.public.blastapi.io/rpc/v0_8";
-const citreaRpc = "https://rpc.testnet.citrea.xyz";
+const starknetRpc = "https://api.zan.top/public/starknet-mainnet/rpc/v0_9";
+const citreaRpc = "https://rpc.mainnet.citrea.xyz";
 ```
 
 Create a swapper factory with your desired chain support. Use `as const` so TypeScript can properly infer the types:
@@ -54,7 +98,7 @@ const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
       rpcUrl: citreaRpc // Can also pass JsonApiProvider object
     }
   },
-  bitcoinNetwork: BitcoinNetwork.TESTNET // or MAINNET, TESTNET4
+  bitcoinNetwork: BitcoinNetwork.MAINNET // or TESTNET, TESTNET4
 });
 
 // Initialize the swapper - see Swapper Initialization section for more details
