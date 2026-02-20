@@ -98,7 +98,7 @@ Initialize the swapper with `await swapper.init();` shown above once when your a
 <details>
 <summary>Using Solana wallet adapter</summary>
 
-Install the [Solana wallet adapter](https://github.com/solana-labs/wallet-adapter) and follow the instructions to set it up.
+Install the [Solana wallet adapter](https://github.com/anza-xyz/wallet-adapter):
 
 ```bash
 npm install --save \
@@ -110,15 +110,43 @@ npm install --save \
     react
 ```
 
-Import the Solana wallet adapter and create a signer:
+Wrap your app with the wallet adapter providers:
 
-```typescript
+```tsx
+import { ConnectionProvider, WalletProvider, useAnchorWallet } from "@solana/wallet-adapter-react";
+import { WalletModalProvider, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import "@solana/wallet-adapter-react-ui/styles.css";
+import { SolanaSigner } from "@atomiqlabs/chain-solana";
 
-import {SolanaSigner} from "@atomiqlabs/chain-solana";
+// In your component, create the signer from the connected wallet:
+function YourApp() {
+  const anchorWallet = useAnchorWallet();
+  const wallet = new SolanaSigner(anchorWallet);
+  
+  return (
+    <div>
+      <h1>Your App</h1>
+      {/* Place a wallet button in your app to allow the user to connect their wallet */}
+      <WalletMultiButton />
+    </div>
+  );
+}
 
-const anchorWallet = useAnchorWallet();
-const wallet = new SolanaSigner(anchorWallet);
+function App() {
+  return (
+    // Use the same solanaRpc that was used to create the swapper earlier
+    <ConnectionProvider endpoint={solanaRpc}>
+      <WalletProvider wallets={[]} autoConnect>
+        <WalletModalProvider>
+          <YourApp />
+        </WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
+  );
+}
 ```
+
+
 </details>
 
 ### Starknet
@@ -126,13 +154,34 @@ const wallet = new SolanaSigner(anchorWallet);
 <details>
 <summary>Using get-starknet</summary>
 
-```typescript
-import {WalletAccount} from "starknet";
-import {StarknetSigner} from "@atomiqlabs/chain-starknet";
+Install [get-starknet](https://github.com/starknet-io/get-starknet) and the Starknet SDK:
 
-// Browser - using get-starknet
-const swo = await connect();
-const wallet = new StarknetBrowserSigner(new WalletAccount(starknetRpc, swo.wallet));
+```bash
+npm install --save \
+    @starknet-io/get-starknet-core \
+    starknet
+```
+
+Connect the wallet and create a signer:
+
+```tsx
+import { getStarknet } from "@starknet-io/get-starknet-core";
+import { WalletAccount } from "starknet";
+import { StarknetBrowserSigner } from "@atomiqlabs/chain-starknet";
+
+const starknet = getStarknet();
+
+async function connectStarknetWallet() {
+  // Get available wallets (Argent, Braavos, etc.)
+  const availableWallets = await starknet.getAvailableWallets();
+
+  // Enable the first available wallet (or let the user choose)
+  const swo = await starknet.enable(availableWallets[0], { silent_mode: false });
+
+  // Use the same starknetRpc that was used to create the swapper earlier
+  const walletAccount = await WalletAccount.connect(starknetRpc, swo);
+  const wallet = new StarknetBrowserSigner(walletAccount);
+}
 ```
 
 </details>
@@ -140,13 +189,79 @@ const wallet = new StarknetBrowserSigner(new WalletAccount(starknetRpc, swo.wall
 ### EVM (Citrea, etc.)
 
 <details>
-<summary>Using private key</summary>
+<summary>Using Wagmi + ethers</summary>
+
+Install [Wagmi](https://wagmi.sh/) and ethers:
+
+```bash
+npm install --save \
+    wagmi \
+    @tanstack/react-query \
+    ethers
+```
+
+Set up Wagmi with your EVM chain and wrap your app:
+
+```tsx
+import { createConfig, WagmiProvider, useAccount, useConnectors } from "wagmi";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserProvider } from "ethers";
+import { EVMBrowserSigner } from "@atomiqlabs/chain-evm";
+
+// Define your chain (example: Citrea)
+const citreaChain = {
+  id: 5115,
+  name: "Citrea",
+  nativeCurrency: { name: "cBTC", symbol: "cBTC", decimals: 18 },
+  rpcUrls: { default: { http: ["https://rpc.mainnet.citrea.xyz"] } },
+};
+
+const config = createConfig({
+  chains: [citreaChain],
+  multiInjectedProviderDiscovery: true, // Auto-discovers MetaMask, Rabby, etc.
+});
+const queryClient = new QueryClient();
+
+function App() {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <YourApp />
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+Then in your component, connect the wallet and create a signer:
+
+```tsx
+function YourApp() {
+  const connectors = useConnectors();
+  const { connector, isConnected } = useAccount();
+
+  async function connect(walletName: string) {
+    const found = connectors.find((c) => c.name === walletName);
+    await found.connect({ chainId: citreaChain.id });
+  }
+
+  async function createSigner() {
+    const provider = await connector.getProvider({ chainId: citreaChain.id });
+    const signer = await new BrowserProvider(provider).getSigner();
+    const wallet = new EVMBrowserSigner(signer, signer.address);
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>Using private key (Node.js)</summary>
 
 ```typescript
-import {BaseWallet, SigningKey} from "ethers";
-import {EVMSigner} from "@atomiqlabs/chain-evm";
+import { BaseWallet, SigningKey } from "ethers";
+import { EVMSigner } from "@atomiqlabs/chain-evm";
 
-// From private key
 const wallet = new BaseWallet(new SigningKey(evmKey));
 const evmWallet = new EVMSigner(wallet, wallet.address);
 ```
