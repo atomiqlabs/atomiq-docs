@@ -60,8 +60,8 @@ const sidebars = {
       id: 'developers/index',
       label: 'Overview',
     },
-    'developers/installation',
-    'developers/quick-start',
+    'developers/quick-start-browser',
+    'developers/quick-start-nodejs',
     {
       type: 'category',
       label: 'Swap Tutorials',
