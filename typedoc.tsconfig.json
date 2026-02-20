@@ -9,6 +9,8 @@
       "@atomiqlabs/chain-evm": ["./repos/atomiq-chain-evm/src"],
       "@atomiqlabs/storage-sqlite": ["./repos/atomiq-storage-sqlite/src"],
       "@atomiqlabs/base": ["./repos/atomiq-base/src"],
+      "@atomiqlabs/messenger-nostr": ["./repos/atomiq-messenger-nostr/src"],
+      "@atomiqlabs/btc-mempool": ["./repos/atomiq-btc-mempool/src"],
       "@atomiqlabs/storage-rn-async": ["./repos/atomiq-storage-rn-async/src"],
       "@atomiqlabs/storage-memory-indexed-kv": ["./repos/atomiq-storage-memory-indexed-kv/src"]
     }
@@ -16,6 +18,8 @@
   "include": [
     "repos/atomiq-sdk/src/**/*",
     "repos/atomiq-base/src/**/*",
+    "repos/atomiq-btc-mempool/src/**/*",
+    "repos/atomiq-messenger-nostr/src/**/*",
     "repos/atomiq-chain-solana/src/**/*",
     "repos/atomiq-chain-starknet/src/**/*",
     "repos/atomiq-chain-evm/src/**/*",

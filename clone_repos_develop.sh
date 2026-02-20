@@ -33,4 +33,12 @@ git clone https://github.com/atomiqlabs/atomiq-storage-memory-indexed-kv
 cd atomiq-storage-memory-indexed-kv
 npm i
 cd ..
+git clone https://github.com/atomiqlabs/atomiq-btc-mempool
+cd atomiq-btc-mempool
+npm i
+cd ..
+git clone https://github.com/atomiqlabs/atomiq-messenger-nostr
+cd atomiq-messenger-nostr
+npm i
+cd ..
 cd ..

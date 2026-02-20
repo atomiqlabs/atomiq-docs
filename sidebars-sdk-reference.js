@@ -1,5 +1,19 @@
 // @ts-check
 
+//Defines priorities for sections, the format is: {[rootSectionLabel: string]: {[childLabel: string]: number}}
+// lower priority means the section will be displayed before sections with higher priorities. Sections without
+// priorities are always displayed at the end.
+const overridePriorities = {
+  "Swaps": {
+    ["Smart chain → Bitcoin"]: 0,
+    ["Smart chain → Lightning"]: 100,
+    ["Lightning → Smart chain"]: 200,
+    ["Bitcoin → Smart chain"]: 300,
+    ["Legacy"]: 400,
+    ["Trusted Gas Swaps"]: 500
+  }
+};
+
 /**
  * Fix paths in TypeDoc-generated sidebar items
  * Removes prefix from doc IDs to work with unified structure
@@ -79,6 +93,22 @@ function renameChainLabels(items) {
     }
     return fixed;
   });
+}
+
+function sortItems(items, rootLabel) {
+  items.sort((a, b) => {
+    const aPrio = overridePriorities[rootLabel ?? null]?.[a.label];
+    const bPrio = overridePriorities[rootLabel ?? null]?.[b.label];
+    if(aPrio==null && bPrio==null) return a.label.localeCompare(b.label);
+    if(aPrio==null) return 1;
+    if(bPrio==null) return -1;
+    if(aPrio===bPrio) return a.label.localeCompare(b.label);
+    return aPrio - bPrio;
+  });
+  items.forEach(item => {
+    if(item.items!=null) sortItems(item.items, item.label);
+  });
+  return items;
 }
 
 /**
@@ -182,6 +212,9 @@ if (sdkItems.length === 1 && sdkItems[0].type === 'category' && sdkItems[0].labe
 }
 
 // Apply transforms to chains and storage
+const fixedSdk = sortItems(nestCategories(flattenSrcLevel(sdkItems)));
+
+// Apply transforms to chains and storage
 const fixedChains = renameChainLabels(
   flattenSrcLevel(chainItems).map(chain => {
     // Apply nestCategories to each chain's items
@@ -209,7 +242,7 @@ const sidebars = {
       type: 'category',
       label: 'SDK',
       collapsed: false,
-      items: sdkItems,
+      items: fixedSdk,
     },
 
     // Chains Section
