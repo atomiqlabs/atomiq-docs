@@ -1,0 +1,122 @@
+scripts git:(main) ✗ ./extract-contract-addresses.sh                                    
+═══════════════════════════════════════════════════════════════
+  STARKNET CONTRACT ADDRESSES
+═══════════════════════════════════════════════════════════════
+
+BTC Relay  src/starknet/btcrelay/StarknetBtcRelay.ts
+  TESTNET4     0x0099b63f39f0cabb767361de3d8d3e97212351a51540e2687c2571f4da490dbe  (L46)
+  TESTNET      0x068601c79da2231d21e015ccfd59c243861156fa523a12c9f987ec28eb8dbc8c  (L46)
+  MAINNET      0x057b14a4231b82f1e525ff35a722d893ca3dd2bde0baa6cee97937c5be861dbc  (L46)
+
+Escrow Manager  src/starknet/swaps/StarknetSwapContract.ts
+  Contract:
+    SEPOLIA      0x017bf50dd28b6d823a231355bb25813d4396c8e19d2df03026038714a22f0413  (L66)
+    MAINNET      0x04f278e1f19e495c3b1dd35ef307c4f7510768ed95481958fbae588bd173f79a  (L66)
+  Claim handlers:
+    MAINNET      HTLC             0x04a57ea54d4637c352aad1bbee046868926a11702216a0aaf7eeec1568be2d7b  (L82)
+    MAINNET      CHAIN_TXID       0x04c7cde88359e14b6f6f779f8b9d8310cee37e91a6f143f855ae29fab33c396e  (L82)
+    MAINNET      CHAIN            0x051bef6f5fd12e2832a7d38653bdfc8eb84ba7eb7a4aada5b87ef38a9999cf17  (L82)
+    MAINNET      CHAIN_NONCED     0x050e50eacd16da414f2c3a7c3570fd5e248974c6fe757d41acbf72d2836fa0a1  (L82)
+    MAINNET      HTLC             0x07b74b50a883ebee262b6db0e3c0c697670c6f30e3d610e75faf33a89c46aa2a  (L82)
+    MAINNET      CHAIN_TXID       0x016c2db2b03f39cf4fd7f871035000f66b62307d9983056e33a38315da8a44dc  (L82)
+    MAINNET      CHAIN            0x02c45a81c4a48d0645a0a199e620061e8a55dcc9c2b5946d050eaeeddba64e9a  (L82)
+    MAINNET      CHAIN_NONCED     0x0019b5480dd7ed8ded10a09437b0a7a30b8997b4ef139deb24ff8c86f995d84f  (L82)
+  Refund handler:
+    MAINNET      TIMELOCK         0x034b8f28b3ca979036cb2849cfa3af7f67207459224b6ca5ce2474aa398ec3e7  (L95)
+    MAINNET      TIMELOCK         0x06a59659990c2aefbf7239f6d911617b3ae60b79cb3364f3bd242a6ca8f4f4f7  (L95)
+
+SPV Swap Vault  src/starknet/spv_swap/StarknetSpvVaultContract.ts
+  SEPOLIA      0x02d581ea838cd5ca46ba08660eddd064d50a0392f618e95310432147928d572e  (L113)
+  MAINNET      0x01932042992647771f3d0aa6ee526e65359c891fe05a285faaf4d3ffa373e132  (L113)
+
+═══════════════════════════════════════════════════════════════
+  EVM CONTRACT ADDRESSES
+═══════════════════════════════════════════════════════════════
+
+ALPEN  src/chains/alpen/AlpenInitializer.ts
+
+  TESTNET    Execution Contract       0x32EB4DbDdC31e19ba908fecc7cae03F0d04F01Fa  (L42)
+  TESTNET    Escrow Manager           0x2920EE496693A5027249a027A6FD3F643E743745  (L43)
+  TESTNET    BTC Relay                0x59A54378B6bA9C21ba66487C6A701D702baDEabE  (L45)
+  TESTNET    SPV Swap Vault           0xaB2D14745362B26a732dD8B7F95daAE3D2914bBF  (L47)
+  TESTNET    Timelock Refund          0x9a027B5Bf43382Cc4A5134d9EFD389f61ece27B9  (L51)
+  TESTNET    Hashlock Claim           0x3887B02217726bB36958Dd595e57293fB63D5082  (L54)
+  TESTNET    TxID Claim               0xe8be24CF21341c9567664009a8a82C9Dc1eE90D6  (L55)
+  TESTNET    Output Claim             0x71Bc44F3F7203fC1279107D924e418F02b0d4029  (L56)
+  TESTNET    Nonced Output Claim      0xe510D5781C6C849284Fb25Dc20b1684cEC445C8B  (L57)
+  TESTNET4   Execution Contract       0xa2698D2fBE3f7c74cCca428a5fd968411644C641  (L62)
+  TESTNET4   Escrow Manager           0xb0226bAC3BD30179fb66A43cEA212AbBC988e004  (L63)
+  TESTNET4   BTC Relay                0xfFA842529977a40A3fdb988cdDC9CB5c39bAcF26  (L65)
+  TESTNET4   SPV Swap Vault           0x62a718348081F9CF9a8E3dF4B4EA6d6349991ad9  (L67)
+  TESTNET4   Timelock Refund          0xA6E5eBF158cDFC4A5B3694495FB26ecadb1378eb  (L71)
+  TESTNET4   Hashlock Claim           0x44aC0f0677C88e2c0B2FEc986b70E3b9A224f553  (L74)
+  TESTNET4   TxID Claim               0xCBd9bcfb4b47F0A98948eD4d7Dcc872433989d57  (L75)
+  TESTNET4   Output Claim             0x50dFF49039c0e45eCb8040fC986fA24B4dda787D  (L76)
+  TESTNET4   Nonced Output Claim      0xFB5582400a527342a7D32491D7e756Ba3C346FE7  (L77)
+
+BOTANIX  src/chains/botanix/BotanixInitializer.ts
+
+  MAINNET    Execution Contract       0x71Bc44F3F7203fC1279107D924e418F02b0d4029  (L21)
+  MAINNET    Escrow Manager           0x9a027B5Bf43382Cc4A5134d9EFD389f61ece27B9  (L22)
+  MAINNET    BTC Relay                0xe8be24CF21341c9567664009a8a82C9Dc1eE90D6  (L24)
+  MAINNET    SPV Swap Vault           0xe510D5781C6C849284Fb25Dc20b1684cEC445C8B  (L26)
+  MAINNET    Timelock Refund          0x44aC0f0677C88e2c0B2FEc986b70E3b9A224f553  (L30)
+  MAINNET    Hashlock Claim           0xfFA842529977a40A3fdb988cdDC9CB5c39bAcF26  (L33)
+  MAINNET    TxID Claim               0xa2698D2fBE3f7c74cCca428a5fd968411644C641  (L34)
+  MAINNET    Output Claim             0x62a718348081F9CF9a8E3dF4B4EA6d6349991ad9  (L35)
+  MAINNET    Nonced Output Claim      0xb0226bAC3BD30179fb66A43cEA212AbBC988e004  (L36)
+  TESTNET    Execution Contract       0xe510D5781C6C849284Fb25Dc20b1684cEC445C8B  (L41)
+  TESTNET    Escrow Manager           0xfFA842529977a40A3fdb988cdDC9CB5c39bAcF26  (L42)
+  TESTNET    BTC Relay                0xba7E78011909e3501027FBc226a04DCC837a555D  (L44)
+  TESTNET    SPV Swap Vault           0x9a027B5Bf43382Cc4A5134d9EFD389f61ece27B9  (L46)
+  TESTNET    Timelock Refund          0xEf227Caf24681FcEDa5fC26777B81964D404e239  (L50)
+  TESTNET    Hashlock Claim           0xBe8C784b03F0c6d54aC35a4D41bd6CF2EDb6e012  (L53)
+  TESTNET    TxID Claim               0x65faec5DC334bf2005eC2DFcf012da87a832f1F0  (L54)
+  TESTNET    Output Claim             0x4699450973c21d6Fe09e36A8A475EaE4D78a3137  (L55)
+  TESTNET    Nonced Output Claim      0xfd0FbA128244f502678251b07dEa0fb4EcE959F3  (L56)
+
+CITREA  src/chains/citrea/CitreaInitializer.ts
+
+  MAINNET    Execution Contract       0x6a373b6Adad83964727bA0fa15E22Be05173fc12  (L22)
+  MAINNET    Escrow Manager           0xc98Ef084d3911C8447DBbE4dDa18bC2c9bB0584e  (L23)
+  MAINNET    BTC Relay                0x11ac854A68830d61af975063c91602f878C36fA6  (L25)
+  MAINNET    SPV Swap Vault           0x5bb0C725939cB825d1322A99a3FeB570097628c3  (L27)
+  MAINNET    Timelock Refund          0x2920EE496693A5027249a027A6FD3F643E743745  (L31)
+  MAINNET    Hashlock Claim           0x8A44f1995a54fD976c904Cccf9EbaB49c3182eb3  (L34)
+  MAINNET    TxID Claim               0x59A54378B6bA9C21ba66487C6A701D702baDEabE  (L35)
+  MAINNET    Output Claim             0x32EB4DbDdC31e19ba908fecc7cae03F0d04F01Fa  (L36)
+  MAINNET    Nonced Output Claim      0xaB2D14745362B26a732dD8B7F95daAE3D2914bBF  (L37)
+  TESTNET4   Execution Contract       0x9e289512965A0842b342A6BB3F3c41F22a555Cfe  (L42)
+  TESTNET4   Escrow Manager           0xBbf7755b674dD107d59F0650D1A3fA9C60bf6Fe6  (L43)
+  TESTNET4   BTC Relay                0x00D122E9f9766cd81a38D2dd44f9AFfb94c67Af7  (L45)
+  TESTNET4   SPV Swap Vault           0x9Bf990C6088F716279797a602b05941c40591533  (L47)
+  TESTNET4   Timelock Refund          0x4699450973c21d6Fe09e36A8A475EaE4D78a3137  (L51)
+  TESTNET4   Hashlock Claim           0x1120e1Eb3049148AeBEe497331774BfE1f6c174D  (L54)
+  TESTNET4   TxID Claim               0xf61D1da542111216337FeEA5586022130D468842  (L55)
+  TESTNET4   Output Claim             0xBe8C784b03F0c6d54aC35a4D41bd6CF2EDb6e012  (L56)
+  TESTNET4   Nonced Output Claim      0x65faec5DC334bf2005eC2DFcf012da87a832f1F0  (L57)
+  TESTNET4   (token/other)            0xDF240DC08B0FdaD1d93b74d5048871232f6BEA3d  (L85)
+  TESTNET4   (token/other)            0xE045e6c36cF77FAA2CfB54466D71A3aEF7bbE839  (L90)
+
+GOAT  src/chains/goat/GoatInitializer.ts
+
+  TESTNET    Execution Contract       0xe8be24CF21341c9567664009a8a82C9Dc1eE90D6  (L42)
+  TESTNET    Escrow Manager           0xe510D5781C6C849284Fb25Dc20b1684cEC445C8B  (L43)
+  TESTNET    BTC Relay                0x3887B02217726bB36958Dd595e57293fB63D5082  (L45)
+  TESTNET    SPV Swap Vault           0x71Bc44F3F7203fC1279107D924e418F02b0d4029  (L47)
+  TESTNET    Timelock Refund          0xb0226bAC3BD30179fb66A43cEA212AbBC988e004  (L51)
+  TESTNET    Hashlock Claim           0x9a027B5Bf43382Cc4A5134d9EFD389f61ece27B9  (L54)
+  TESTNET    TxID Claim               0xfFA842529977a40A3fdb988cdDC9CB5c39bAcF26  (L55)
+  TESTNET    Output Claim             0xa2698D2fBE3f7c74cCca428a5fd968411644C641  (L56)
+  TESTNET    Nonced Output Claim      0x62a718348081F9CF9a8E3dF4B4EA6d6349991ad9  (L57)
+  TESTNET4   Execution Contract       0x4f7d86C870F28ac30C8fa864Ee04264D7dD03847  (L62)
+  TESTNET4   Escrow Manager           0x3FbbA0eb82cf1247cbf92B3D51641226310F0Ca5  (L63)
+  TESTNET4   BTC Relay                0xEeD58871C24d24C49554aF8B65Dd86eD8ed778D3  (L65)
+  TESTNET4   SPV Swap Vault           0x8a80A68f8bA1732015A821b5260fEF8040a844b7  (L67)
+  TESTNET4   Timelock Refund          0x0Ff4792d4F792c5B3678f08c18e7cE1974880e48  (L71)
+  TESTNET4   Hashlock Claim           0x122962B30c46Ef188Dd598a76647c2DBbE1E914e  (L74)
+  TESTNET4   TxID Claim               0x4737C793a1f86a375BAad0D96134bEd64f246693  (L75)
+  TESTNET4   Output Claim             0xa2b2d8CD8D1a9200Ac0970523FdfFcbD94aE54B6  (L76)
+  TESTNET4   Nonced Output Claim      0x3BfF76308e6DEaCaEfdF5a928d6a3082Ab55bf58  (L77)
+  TESTNET4   (token/other)            0xdA97429ea2082334C63813f092B6A6209bfC4DEb  (L106)
+  TESTNET4   (token/other)            0x42Dff13a9D6C33f89311C188F6eA780D00287F17  (L111)
