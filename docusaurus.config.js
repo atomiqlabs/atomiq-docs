@@ -119,9 +119,15 @@ const config = {
         items: [
           {
             type: 'docSidebar',
-            sidebarId: 'getStartedSidebar',
+            sidebarId: 'overviewSidebar',
             position: 'left',
-            label: 'Get Started',
+            label: 'Overview',
+          },
+          {
+            type: 'docSidebar',
+            sidebarId: 'guidesSidebar',
+            position: 'left',
+            label: 'Guides',
           },
           {
             type: 'docSidebar',

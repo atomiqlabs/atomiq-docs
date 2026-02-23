@@ -12,7 +12,7 @@ User and LP can then cooperatively construct and sign a single Bitcoin transacti
 
 Both parties sign with `SIGHASH_ALL`, committing to the full transaction — so it either confirms as-is (both sides get their assets) or doesn't confirm at all (nothing happens). This makes the swap atomic at the Bitcoin protocol level, without requiring any escrow contract or timelock.
 
-Once the transaction gets enough confirmations, anyone (a [watchtower](/get-started/actors#watchtower), the LP, or the user themselves) can submit the transaction data to the smart chain, where the vault verifies it through the light client and pays out the tokens to the user. Watchtowers earn a small reward for this service, but they are purely a UX convenience — the user can always claim independently.
+Once the transaction gets enough confirmations, anyone (a [watchtower](/overview/actors#watchtower), the LP, or the user themselves) can submit the transaction data to the smart chain, where the vault verifies it through the light client and pays out the tokens to the user. Watchtowers earn a small reward for this service, but they are purely a UX convenience — the user can always claim independently.
 
 ![Diagram showcasing a UTXO-controlled vault based Bitcoin -> Smart chain swap](/img/utxo-swap-diagram.svg)
 

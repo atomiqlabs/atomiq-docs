@@ -3,52 +3,66 @@
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
   // Protocol documentation (non-developer technical docs)
-  getStartedSidebar: [
-    'get-started/introduction',
-    'get-started/protocol-overview',
-    'get-started/actors',
+  overviewSidebar: [
+    'overview/introduction',
+    'overview/protocol-overview',
+    'overview/actors',
     {
       type: 'category',
       label: 'Core Primitives',
       items: [
-        'get-started/core-primitives/htlc',
-        'get-started/core-primitives/bitcoin-light-client',
-        'get-started/core-primitives/prtlc',
-        'get-started/core-primitives/utxo-controlled-vault',
+        'overview/core-primitives/htlc',
+        'overview/core-primitives/bitcoin-light-client',
+        'overview/core-primitives/prtlc',
+        'overview/core-primitives/utxo-controlled-vault',
       ],
     },
     {
       type: 'category',
       label: 'Swaps',
-      link: { type: 'doc', id: 'get-started/swaps/index' },
+      link: { type: 'doc', id: 'overview/swaps/index' },
       items: [
         {
           type: 'category',
           label: 'Bitcoin On-chain (L1)',
           items: [
-            'get-started/swaps/sc-bitcoin',
-            'get-started/swaps/bitcoin-sc-new',
-            'get-started/swaps/bitcoind-sc-legacy',
+            'overview/swaps/sc-bitcoin',
+            'overview/swaps/bitcoin-sc-new',
+            'overview/swaps/bitcoind-sc-legacy',
           ],
         },
         {
           type: 'category',
           label: 'Bitcoin Lightning (L2)',
           items: [
-            'get-started/swaps/sc-lightning',
-            'get-started/swaps/lightning-sc-new',
-            'get-started/swaps/lightning-sc-legacy',
+            'overview/swaps/sc-lightning',
+            'overview/swaps/lightning-sc-new',
+            'overview/swaps/lightning-sc-legacy',
           ],
         },
       ],
     },
     {
       type: 'category',
-      label: 'Liquidity Provider Nodes',
-      link: { type: 'doc', id: 'get-started/lps/index' },
+      label: 'Contracts',
+      link: { type: 'doc', id: 'overview/contracts/index' },
       items: [
-        'get-started/lps/running-lp-node',
-        'get-started/lps/pinggy-tunnel',
+        'overview/contracts/solana/index',
+        'overview/contracts/evm-starknet/index',
+      ],
+    },
+  ],
+
+  // Guides (practical how-to guides)
+  guidesSidebar: [
+    'guides/webapp',
+    {
+      type: 'category',
+      label: 'Liquidity Provider Nodes',
+      link: { type: 'doc', id: 'guides/lps/index' },
+      items: [
+        'guides/lps/running-lp-node',
+        'guides/lps/pinggy-tunnel',
       ],
     },
   ],

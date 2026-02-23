@@ -37,7 +37,7 @@ For edge cases where the fork length exceeds the smart chain (Solana, Starknet, 
 
 Since smart contracts cannot access Bitcoin's P2P network directly, the light client relies on **relayers** to submit the latest block headers. The role of a relayer is permissionless — anyone can submit block headers (including the LP and the user) as the contract verifies their validity regardless of who submits them.
 
-Since submitting a block header incurs a transaction fee on the smart chain, relayers must be economically motivated to do so. In Atomiq, any swap participant has a vested economic interest in keeping the light client synchronized — [LPs](/get-started/actors/#liquidity-provider-lp) need it to unlock capital, [Watchtowers](/get-started/actors/#watchtower) earn fees for settling swaps, and [Users](/get-started/actors/#user) can always submit headers themselves to self-settle.
+Since submitting a block header incurs a transaction fee on the smart chain, relayers must be economically motivated to do so. In Atomiq, any swap participant has a vested economic interest in keeping the light client synchronized — [LPs](/overview/actors/#liquidity-provider-lp) need it to unlock capital, [Watchtowers](/overview/actors/#watchtower) earn fees for settling swaps, and [Users](/overview/actors/#user) can always submit headers themselves to self-settle.
 
 ## Implementations
 

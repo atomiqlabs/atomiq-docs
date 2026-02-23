@@ -1,0 +1,99 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram name="Page-1" id="khp9T2YTDuFo3XVu20Yr">
+    <mxGraphModel dx="830" dy="859" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-1" value="Smart contracts" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="190" y="330" width="680" height="460" as="geometry">
+            <mxRectangle y="130" width="140" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-2" value="&lt;b&gt;Bitcoin light client&lt;/b&gt; (btc_relay)" style="shape=card;whiteSpace=wrap;html=1;" vertex="1" parent="Edl9PWeuSrPi-0muTQ5N-1">
+          <mxGeometry x="580" y="40" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="Edl9PWeuSrPi-0muTQ5N-1" source="Edl9PWeuSrPi-0muTQ5N-5" target="Edl9PWeuSrPi-0muTQ5N-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="Edl9PWeuSrPi-0muTQ5N-1" source="Edl9PWeuSrPi-0muTQ5N-5" target="Edl9PWeuSrPi-0muTQ5N-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-5" value="&lt;b&gt;SPV vault manager&lt;br&gt;&lt;/b&gt;(spv_swap&lt;br&gt;_vault)" style="shape=card;whiteSpace=wrap;html=1;" vertex="1" parent="Edl9PWeuSrPi-0muTQ5N-1">
+          <mxGeometry x="300" y="40" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="Edl9PWeuSrPi-0muTQ5N-1" source="Edl9PWeuSrPi-0muTQ5N-9" target="Edl9PWeuSrPi-0muTQ5N-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="Edl9PWeuSrPi-0muTQ5N-1" source="Edl9PWeuSrPi-0muTQ5N-9" target="Edl9PWeuSrPi-0muTQ5N-10">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="340" y="270" />
+              <mxPoint x="460" y="270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="Edl9PWeuSrPi-0muTQ5N-1" source="Edl9PWeuSrPi-0muTQ5N-9" target="Edl9PWeuSrPi-0muTQ5N-15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="340" y="270" />
+              <mxPoint x="125" y="270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-9" value="&lt;b&gt;Escrow manager&lt;br&gt;&lt;/b&gt;(escrow&lt;br&gt;_manager)" style="shape=card;whiteSpace=wrap;html=1;" vertex="1" parent="Edl9PWeuSrPi-0muTQ5N-1">
+          <mxGeometry x="300" y="160" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-10" value="Claim handlers" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="Edl9PWeuSrPi-0muTQ5N-1">
+          <mxGeometry x="250" y="290" width="420" height="160" as="geometry">
+            <mxRectangle x="250" y="290" width="130" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-11" value="&lt;b&gt;Bitcoin&lt;br&gt;nonced output&lt;br&gt;&lt;/b&gt;(btc_nonced&lt;br&gt;_output_claim&lt;br&gt;_handler)" style="shape=card;whiteSpace=wrap;html=1;" vertex="1" parent="Edl9PWeuSrPi-0muTQ5N-10">
+          <mxGeometry x="20" y="40" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-12" value="&lt;b&gt;Bitcoin output&lt;br&gt;&lt;/b&gt;(btc_output&lt;br&gt;_claim&lt;br&gt;_handler)" style="shape=card;whiteSpace=wrap;html=1;" vertex="1" parent="Edl9PWeuSrPi-0muTQ5N-10">
+          <mxGeometry x="120" y="40" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-13" value="&lt;b&gt;Bitcoin&lt;br&gt;tx id&lt;br&gt;&lt;/b&gt;(btc_txid&lt;br&gt;_claim&lt;br&gt;_handler)" style="shape=card;whiteSpace=wrap;html=1;" vertex="1" parent="Edl9PWeuSrPi-0muTQ5N-10">
+          <mxGeometry x="220" y="40" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-14" value="&lt;b&gt;Hashlock&lt;br&gt;&lt;/b&gt;(hashlock&lt;br&gt;_claim&lt;br&gt;_handler)" style="shape=card;whiteSpace=wrap;html=1;" vertex="1" parent="Edl9PWeuSrPi-0muTQ5N-10">
+          <mxGeometry x="320" y="40" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-15" value="Refund handlers" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="Edl9PWeuSrPi-0muTQ5N-1">
+          <mxGeometry x="10" y="290" width="230" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-16" value="&lt;b&gt;Timelock&lt;br&gt;&lt;/b&gt;(timelock&lt;br&gt;_refund&lt;br&gt;_handler)" style="shape=card;whiteSpace=wrap;html=1;" vertex="1" parent="Edl9PWeuSrPi-0muTQ5N-15">
+          <mxGeometry x="75" y="40" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-17" value="&lt;b&gt;Execution contract&lt;br&gt;&lt;/b&gt;(execution&lt;br&gt;_contract)" style="shape=card;whiteSpace=wrap;html=1;" vertex="1" parent="Edl9PWeuSrPi-0muTQ5N-1">
+          <mxGeometry x="20" y="40" width="80" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=55;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="Edl9PWeuSrPi-0muTQ5N-1" source="Edl9PWeuSrPi-0muTQ5N-11" target="Edl9PWeuSrPi-0muTQ5N-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="325" y="320" />
+              <mxPoint x="620" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=55;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="Edl9PWeuSrPi-0muTQ5N-1" source="Edl9PWeuSrPi-0muTQ5N-12" target="Edl9PWeuSrPi-0muTQ5N-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="425" y="320" />
+              <mxPoint x="620" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Edl9PWeuSrPi-0muTQ5N-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=55;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="Edl9PWeuSrPi-0muTQ5N-1" source="Edl9PWeuSrPi-0muTQ5N-13" target="Edl9PWeuSrPi-0muTQ5N-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="320" />
+              <mxPoint x="620" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

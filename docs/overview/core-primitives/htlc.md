@@ -2,7 +2,7 @@
 
 An HTLC is an escrow smart contract between two parties that uses a cryptographic hash to link transactions across independent blockchains. The swap protocol uses a **secret** and its **hash** (where the hash is calculated ***sha256(secret)***) to create an all-or-nothing outcome: either both parties successfully exchange assets, or both safely refund through time-bound recovery paths.
 
-HTLCs are the foundational primitive behind traditional atomic swaps and the Lightning Network. While Atomiq uses more advanced primitives ([PrTLCs](./prtlc.md) and [UTXO-controlled vaults](./utxo-controlled-vault.md)) for its Bitcoin on-chain swap protocol, the HTLC submarine swaps are still used for [Lightning Network swaps](/get-started/swaps/#bitcoin-lightning-l2).
+HTLCs are the foundational primitive behind traditional atomic swaps and the Lightning Network. While Atomiq uses more advanced primitives ([PrTLCs](./prtlc.md) and [UTXO-controlled vaults](./utxo-controlled-vault.md)) for its Bitcoin on-chain swap protocol, the HTLC submarine swaps are still used for [Lightning Network swaps](/overview/swaps/#bitcoin-lightning-l2).
 
 ## Mechanism
 
