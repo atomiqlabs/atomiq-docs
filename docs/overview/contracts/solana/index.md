@@ -44,12 +44,12 @@ Solana transaction for PrTLC swap claim (providing an on-chain Bitcoin transacti
 
 The program supports four swap types, each with its own claim verification path:
 
-| Type | Name | Used For                | Claim Verification                                                                                  |
-|---|---|-------------------------|-----------------------------------------------------------------------------------------------------|
-| 0 | **HTLC** | Lightning Network swaps | SHA-256 preimage revelation                                                                         |
-| 1 | **Chain** | Bitcoin → Solana        | Specific Bitcoin output and block inclusion proof via BTC relay                                     |
-| 2 | **ChainNonced** | Solana → Bitcoin        | Specific Bitcoin output + nonce from `locktime`/`nSequence` and block inclusion proof via BTC relay |
-| 3 | **ChainTxhash** | None (Future extension) | Raw bitcoin transaction ID verified via BTC relay                                                   |
+| Type | Name | Used For                                   |
+|---|---|--------------------------------------------|
+| 0 | **HTLC** | Lightning Network swaps in both directions |
+| 1 | **Chain** | Bitcoin → Solana                           |
+| 2 | **ChainNonced** | Solana → Bitcoin                           |
+| 3 | **ChainTxhash** | Nothing (Future extension)                 |
 
 #### Claim Verification
 
