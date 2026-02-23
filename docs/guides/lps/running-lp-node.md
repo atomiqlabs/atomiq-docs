@@ -348,8 +348,6 @@ To make the atomiq frontend access your node you can use the following frontend 
 https://app.atomiq.exchange/?UNSAFE_LP_URL=<your node URL>
 ```
 
-[^1]
-
 This will force the frontend to connect only to your LP node
 
 ### Registering LP node
@@ -391,7 +389,7 @@ To update the node to the latest version of the docker images you can run the fo
 Download the latest atomiq node archive
 
 ```bash
-wget https://atomiqbeta.blob.core.windows.net/node/atomiq-node.tar.gz
+wget https://atomiqbeta.blob.core.windows.net/node/atomiq-node.tar.gz -O atomiq-node.tar.gz
 ```
 
 Unpack & run the update script (this will automatically install the new package versions and restart all the docker containers)
@@ -413,6 +411,8 @@ Default mainnet configuration:
 ```yaml title="config.yaml"
 #Solana RPC
 SOLANA:
+  #If the LP node has below this amount it will stop processing new swaps
+  MIN_NATIVE_RESERVE: 0.1
   #Solana RPC URL to use, it is recommended to use a dedicated RPC endpoint from e.g. Helius (recommended), Quicknode, etc.
   RPC_URL: "https://api.mainnet-beta.solana.com"
   #Maximum fee in micro lamport/CU to use for transactions
@@ -422,14 +422,18 @@ SOLANA:
   #Static tip (in lamports) to add to every transaction
   STATIC_TIP: 50000
   #Jito transaction relayer configuration
-  JITO:
-    PUBKEY: "DttWaMuVvTiduZRnguLF7jNxTgiMBZ1hyAumKUiL2KRL"
-    ENDPOINT: "https://frankfurt.mainnet.block-engine.jito.wtf/api/v1/transactions"
+  #JITO:
+  #  PUBKEY: "DttWaMuVvTiduZRnguLF7jNxTgiMBZ1hyAumKUiL2KRL"
+  #  ENDPOINT: "https://frankfurt.mainnet.block-engine.jito.wtf/api/v1/transactions"
 
 #Starknet RPC
 STARKNET:
+  #If the LP node has below this amount it will stop processing new swaps
+  MIN_NATIVE_RESERVE: 100
   #Starknet RPC URL
-  RPC_URL: "https://starknet-mainnet.public.blastapi.io/rpc/v0_8"
+  RPC_URL: "https://starknet.api.onfinality.io/public/rpc/v0_9"
+  #Can also optionally specify an additional WS URL - allows for faster swap processing
+  #WS_URL: ""
   #Gas price limits (higher bound)
   MAX_L1_FEE_GWEI: 20000000
   MAX_L2_FEE_GWEI: 4000000
@@ -441,10 +445,29 @@ STARKNET:
   MNEMONIC_FILE: "/mnt/share/wallet/mnemonic.txt"
 
   #Starknet quotes timeout
-  AUTHORIZATION_TIMEOUT: 60
+  AUTHORIZATION_TIMEOUT: 90
 
-#Required APY option premium to be paid by the users as security deposit with BTC -> SOL swaps
-SECURITY_DEPOSIT_APY: 20
+BOTANIX:
+  #If the LP node has below this amount it will stop processing new swaps
+  MIN_NATIVE_RESERVE: 0.0002
+  #Botanix RPC URL, can either be an http or ws RPC
+  RPC_URL: "wss://rpc.botanixlabs.com/ws"
+  #Maximum block range that the underlying RPC provider supports
+  MAX_LOGS_BLOCK_RANGE: 900
+  #Fees
+  MAX_FEE_GWEI: 2
+  FEE_TIP_GWEI: 0.001
+  #Botanix chain
+  CHAIN: "MAINNET"
+
+  #File with wallet mnemonic seed
+  MNEMONIC_FILE: "/mnt/share/wallet/mnemonic.txt"
+
+  #Botanix quotes timeout
+  AUTHORIZATION_TIMEOUT: 90
+
+#Required APY option premium to be paid by the users as security deposit with BTC -> Solana swaps
+SECURITY_DEPOSIT_APY: 80
 
 #Bitcoin RPC
 BITCOIND:
@@ -458,23 +481,42 @@ BITCOIND:
 #LND RPC
 LND:
   MNEMONIC_FILE: "/mnt/share/wallet/mnemonic.txt"
+  MNEMONIC_BIRTHDAY_FILE: "/mnt/share/wallet/mnemonic-birthday.txt"
   WALLET_PASSWORD_FILE: "/mnt/share/wallet/password.txt"
   CERT_FILE: "/mnt/share/lnd/tls.cert"
   MACAROON_FILE: "/mnt/share/lnd/admin.macaroon"
   HOST: "lnd"
   PORT: 10009
 
-#LN setup (disabled by default)
-# LN:
-#   BASE_FEE: 0.00000010
-#   FEE_PERCENTAGE: 0.3
-#   MIN: 0.00001000
-#   MAX: 0.01000000
+#LN setup, uncomment these lines if you want to enable lightning network support for your node
+#LN:
+#  #Total swap fee is calculated as BASE_FEE + {SWAP_VALUE}*FEE_PERCENTAGE
+#  #Base fee (in BTC) to be paid by every swap
+#  BASE_FEE: 0.00000010
+#  #Fee (in %) to be charged on the swaps
+#  FEE_PERCENTAGE: 0.3
+#
+#  #Minimum swappable amount in BTC (for lightning network swaps)
+#  MIN: 0.00001000
+#  #Maximum swappable amount in BTC (for lightning network swaps)
+#  MAX: 0.01000000
+#
+#  #Allow lightning network swaps that cannot be probed first
+#  ALLOW_NON_PROBABLE_SWAPS: true
+#  #Allow lightning network swaps where the LN invoice has a very short expiry
+#  ALLOW_LN_SHORT_EXPIRY: true
+#  #Set expiration for lightning swaps invoices
+#  INVOICE_EXPIRY_SECONDS: 90
+#
+#  #Maximum amounts for swap for gas
+#  GAS_MAX:
+#    STARKNET: 5
+#    SOLANA: 0.03
+#    BOTANIX: 0.00005
+#
+#  MAX_INFLIGHT_SWAPS: 100
+#  MAX_INFLIGHT_AUTO_SWAPS: 20
 
-#   ALLOW_NON_PROBABLE_SWAPS: false
-#   ALLOW_LN_SHORT_EXPIRY: false
-
-#On-chain setup Starknet/Solana -> BTC
 #On-chain setup
 ONCHAIN:
   #Total swap fee is calculated as BASE_FEE + {SWAP_VALUE}*FEE_PERCENTAGE
@@ -492,7 +534,9 @@ ONCHAIN:
   # fee to accomodate for the possible fee rate increases in the near future 
   NETWORK_FEE_ADD_PERCENTAGE: 25
 
-#On-chain setup BTC -> Starknet
+  MAX_INFLIGHT_SWAPS: 100
+
+#On-chain setup BTC -> Starknet/EVM (new protocol - not BTC -> Solana!!!)
 ONCHAIN_SPV:
   MNEMONIC_FILE: "/mnt/share/wallet/mnemonic.txt"
 
@@ -511,9 +555,20 @@ ONCHAIN_SPV:
   GAS_MAX:
     STARKNET: 5
     SOLANA: 0.05
+    BOTANIX: 0.00005
+
+  MAX_INFLIGHT_SWAPS: 100
 
 #Tradable assets setup
 ASSETS:
+  BBTC:
+    chains:
+      BOTANIX:
+        address: "0x0000000000000000000000000000000000000000"
+        decimals: 18
+        securityDepositAllowed: true
+        spvVaultMultiplier: 1000000000
+    pricing: "$fixed-100000000"
   WBTC:
     chains:
       SOLANA:
@@ -576,7 +631,7 @@ REST:
   ADDRESS: "0.0.0.0"
   #REST API port
   PORT: 443
-  
+
 #Automatic SSL certificate provisioning config
 SSL_AUTO:
   #HTTP listen port to list for ACME challenges
@@ -587,7 +642,4 @@ SSL_AUTO:
 #Node extensions/plugins
 PLUGINS:
   atomiq-archiver: "atomiq-archiver@latest"
-  spv-vault-manager: "spv-vault-manager@latest"
 ```
-
-[^1]: Replace with your node URL obtained from the geturl command on the LP node.

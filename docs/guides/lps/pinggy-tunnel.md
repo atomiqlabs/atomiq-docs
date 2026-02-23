@@ -22,7 +22,7 @@ So in this case the access token (*eCC...*) & subdomain (*zrgaulsdkx.a.pinggy.li
 
 ### Running the tunnel
 
-We will now use the copied access token & subdomain to setup the tunnel on the LP node. The following command will run the tunnel inside a docker image (replace the *\<access token>* with your own access token copied in the previous step)
+We will now use the copied access token & subdomain to setup the tunnel on the LP node. The following command will run the tunnel inside a docker image (replace the *\<your access token from pinggy dashboard>* with your own access token copied in the previous step)
 
 ```bash
 sudo docker run -d --restart=unless-stopped --net=host -t pinggy/pinggy -p 443 -R0:localhost:443 -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -t <your access token from pinggy dashboard>+tls@pro.pinggy.io
@@ -55,7 +55,3 @@ SSL_AUTO:
 ***
 
 After this you are done with the pinggy setup and can [continue the LP node setup](./running-lp-node#installation).
-
-[^1]: Replace with your access token
-
-[^2]: Replace with your subdomain copied from the pinggy dashboard

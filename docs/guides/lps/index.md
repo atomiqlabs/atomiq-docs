@@ -35,6 +35,8 @@ The liquidity of the node will be redistributed based on swaps it processes (if 
 LP node needs to have access to Smart chain blockchains (via RPC), Bitcoin blockchain and Lightning network to be able to process swaps.
 
 * Bitcoin node (bitcoind) - to provide access to Bitcoin blockchain
-* Lightning network node (lnd) - to provide access to Bitcoin Lightning network
-* BTC Relayer/Watchtower - to make sure bitcoin light client on the Smart chain is synchronized so atomiq node is able to claim on-chain swaps
-* atomiq node - main software processing swaps
+* Lightning network node (lnd) - to provide a Bitcoin wallet and access to the Bitcoin Lightning network
+* atomiq Relayer/Watchtower - to make sure bitcoin light client on the Smart chain is synchronized so atomiq LP is able to claim on-chain swaps
+* atomiq LP - main software processing swaps
+
+All of these are part of the atomiq node docker images—see [Running LP node](./running-lp-node) for installation guide.
