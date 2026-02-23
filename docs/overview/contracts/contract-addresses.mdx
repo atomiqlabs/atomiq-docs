@@ -1,0 +1,229 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Contract Addresses
+
+Summary of all contract addresses used by atomiq across different chains. The contracts are classified based on which Bitcoin network they support:
+
+- **Mainnet**: Bitcoin mainnet, live deployment
+- **Testnet3**: Bitcoin older testnet3 for testing
+- **Testnet4**: New Bitcoin testnet4 network for testing
+
+:::warning
+Not every chain supports both bitcoin testnets (3 and 4)!
+:::
+
+## Solana
+
+<Tabs groupId="network">
+  <TabItem value="mainnet" label="Mainnet" default>
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `3KHSHFpEK6bsjg3bqcxQ9qssJYtRCMi2S9TYVe4q6CQc` |
+| Swaps | `4hfUykhqmD7ZRvNh1HuzVKEY7ToENixtdUKZspNDCrEM` |
+
+  </TabItem>
+  <TabItem value="testnet" label="Testnet3 (Solana Devnet)">
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `3KHSHFpEK6bsjg3bqcxQ9qssJYtRCMi2S9TYVe4q6CQc` |
+| Swaps | `4hfUykhqmD7ZRvNh1HuzVKEY7ToENixtdUKZspNDCrEM` |
+
+  </TabItem>
+</Tabs>
+
+## Starknet
+
+<Tabs groupId="network">
+  <TabItem value="mainnet" label="Mainnet" default>
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `0x057b14a4231b82f1e525ff35a722d893ca3dd2bde0baa6cee97937c5be861dbc` |
+| Escrow Manager | `0x04f278e1f19e495c3b1dd35ef307c4f7510768ed95481958fbae588bd173f79a` |
+| SPV Swap Vault | `0x01932042992647771f3d0aa6ee526e65359c891fe05a285faaf4d3ffa373e132` |
+| Hashlock Claim Handler | `0x07b74b50a883ebee262b6db0e3c0c697670c6f30e3d610e75faf33a89c46aa2a` |
+| Output Claim Handler | `0x02c45a81c4a48d0645a0a199e620061e8a55dcc9c2b5946d050eaeeddba64e9a` |
+| Nonced Output Claim Handler | `0x0019b5480dd7ed8ded10a09437b0a7a30b8997b4ef139deb24ff8c86f995d84f` |
+| TxID Claim Handler | `0x016c2db2b03f39cf4fd7f871035000f66b62307d9983056e33a38315da8a44dc` |
+| Timelock Refund Handler | `0x06a59659990c2aefbf7239f6d911617b3ae60b79cb3364f3bd242a6ca8f4f4f7` |
+
+  </TabItem>
+  <TabItem value="testnet" label="Testnet3 (Starknet Sepolia)">
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `0x068601c79da2231d21e015ccfd59c243861156fa523a12c9f987ec28eb8dbc8c` |
+| Escrow Manager | `0x017bf50dd28b6d823a231355bb25813d4396c8e19d2df03026038714a22f0413` |
+| SPV Swap Vault | `0x02d581ea838cd5ca46ba08660eddd064d50a0392f618e95310432147928d572e` |
+| Hashlock Claim Handler | `0x04a57ea54d4637c352aad1bbee046868926a11702216a0aaf7eeec1568be2d7b` |
+| Output Claim Handler | `0x051bef6f5fd12e2832a7d38653bdfc8eb84ba7eb7a4aada5b87ef38a9999cf17` |
+| Nonced Output Claim Handler | `0x050e50eacd16da414f2c3a7c3570fd5e248974c6fe757d41acbf72d2836fa0a1` |
+| TxID Claim Handler | `0x04c7cde88359e14b6f6f779f8b9d8310cee37e91a6f143f855ae29fab33c396e` |
+| Timelock Refund Handler | `0x034b8f28b3ca979036cb2849cfa3af7f67207459224b6ca5ce2474aa398ec3e7` |
+
+  </TabItem>
+
+  <TabItem value="testnet4" label="Testnet4 (Starknet Sepolia)">
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `0x0099b63f39f0cabb767361de3d8d3e97212351a51540e2687c2571f4da490dbe` |
+| Escrow Manager | `0x017bf50dd28b6d823a231355bb25813d4396c8e19d2df03026038714a22f0413` |
+| SPV Swap Vault | `0x02d581ea838cd5ca46ba08660eddd064d50a0392f618e95310432147928d572e` |
+| Hashlock Claim Handler | `0x04a57ea54d4637c352aad1bbee046868926a11702216a0aaf7eeec1568be2d7b` |
+| Output Claim Handler | `0x051bef6f5fd12e2832a7d38653bdfc8eb84ba7eb7a4aada5b87ef38a9999cf17` |
+| Nonced Output Claim Handler | `0x050e50eacd16da414f2c3a7c3570fd5e248974c6fe757d41acbf72d2836fa0a1` |
+| TxID Claim Handler | `0x04c7cde88359e14b6f6f779f8b9d8310cee37e91a6f143f855ae29fab33c396e` |
+| Timelock Refund Handler | `0x034b8f28b3ca979036cb2849cfa3af7f67207459224b6ca5ce2474aa398ec3e7` |
+
+  </TabItem>
+</Tabs>
+
+## Botanix
+
+<Tabs groupId="network">
+  <TabItem value="mainnet" label="Mainnet" default>
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `0xe8be24CF21341c9567664009a8a82C9Dc1eE90D6` |
+| Escrow Manager | `0x9a027B5Bf43382Cc4A5134d9EFD389f61ece27B9` |
+| SPV Swap Vault | `0xe510D5781C6C849284Fb25Dc20b1684cEC445C8B` |
+| Hashlock Claim Handler | `0xfFA842529977a40A3fdb988cdDC9CB5c39bAcF26` |
+| Output Claim Handler | `0x62a718348081F9CF9a8E3dF4B4EA6d6349991ad9` |
+| Nonced Output Claim Handler | `0xb0226bAC3BD30179fb66A43cEA212AbBC988e004` |
+| TxID Claim Handler | `0xa2698D2fBE3f7c74cCca428a5fd968411644C641` |
+| Timelock Refund Handler | `0x44aC0f0677C88e2c0B2FEc986b70E3b9A224f553` |
+
+  </TabItem>
+  <TabItem value="testnet" label="Testnet3 (Botanix Testnet)">
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `0xba7E78011909e3501027FBc226a04DCC837a555D` |
+| Escrow Manager | `0xfFA842529977a40A3fdb988cdDC9CB5c39bAcF26` |
+| SPV Swap Vault | `0x9a027B5Bf43382Cc4A5134d9EFD389f61ece27B9` |
+| Hashlock Claim Handler | `0xBe8C784b03F0c6d54aC35a4D41bd6CF2EDb6e012` |
+| Output Claim Handler | `0x4699450973c21d6Fe09e36A8A475EaE4D78a3137` |
+| Nonced Output Claim Handler | `0xfd0FbA128244f502678251b07dEa0fb4EcE959F3` |
+| TxID Claim Handler | `0x65faec5DC334bf2005eC2DFcf012da87a832f1F0` |
+| Timelock Refund Handler | `0xEf227Caf24681FcEDa5fC26777B81964D404e239` |
+
+  </TabItem>
+</Tabs>
+
+## Citrea
+
+<Tabs groupId="network">
+  <TabItem value="mainnet" label="Mainnet" default>
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `0x11ac854A68830d61af975063c91602f878C36fA6` |
+| Escrow Manager | `0xc98Ef084d3911C8447DBbE4dDa18bC2c9bB0584e` |
+| SPV Swap Vault | `0x5bb0C725939cB825d1322A99a3FeB570097628c3` |
+| Hashlock Claim Handler | `0x8A44f1995a54fD976c904Cccf9EbaB49c3182eb3` |
+| Output Claim Handler | `0x32EB4DbDdC31e19ba908fecc7cae03F0d04F01Fa` |
+| Nonced Output Claim Handler | `0xaB2D14745362B26a732dD8B7F95daAE3D2914bBF` |
+| TxID Claim Handler | `0x59A54378B6bA9C21ba66487C6A701D702baDEabE` |
+| Timelock Refund Handler | `0x2920EE496693A5027249a027A6FD3F643E743745` |
+
+  </TabItem>
+  <TabItem value="testnet4" label="Testnet4 (Citrea Testnet)">
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `0x00D122E9f9766cd81a38D2dd44f9AFfb94c67Af7` |
+| Escrow Manager | `0xBbf7755b674dD107d59F0650D1A3fA9C60bf6Fe6` |
+| SPV Swap Vault | `0x9Bf990C6088F716279797a602b05941c40591533` |
+| Hashlock Claim Handler | `0x1120e1Eb3049148AeBEe497331774BfE1f6c174D` |
+| Output Claim Handler | `0xBe8C784b03F0c6d54aC35a4D41bd6CF2EDb6e012` |
+| Nonced Output Claim Handler | `0x65faec5DC334bf2005eC2DFcf012da87a832f1F0` |
+| TxID Claim Handler | `0xf61D1da542111216337FeEA5586022130D468842` |
+| Timelock Refund Handler | `0x4699450973c21d6Fe09e36A8A475EaE4D78a3137` |
+
+  </TabItem>
+</Tabs>
+
+## GOAT Network
+
+<Tabs groupId="network">
+  <TabItem value="mainnet" label="Mainnet" default>
+
+:::info
+Not yet deployed on GOAT Network mainnet.
+:::
+
+  </TabItem>
+  <TabItem value="testnet" label="Testnet3 (GOAT Testnet)">
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `0x3887B02217726bB36958Dd595e57293fB63D5082` |
+| Escrow Manager | `0xe510D5781C6C849284Fb25Dc20b1684cEC445C8B` |
+| SPV Swap Vault | `0x71Bc44F3F7203fC1279107D924e418F02b0d4029` |
+| Hashlock Claim Handler | `0x9a027B5Bf43382Cc4A5134d9EFD389f61ece27B9` |
+| Output Claim Handler | `0xa2698D2fBE3f7c74cCca428a5fd968411644C641` |
+| Nonced Output Claim Handler | `0x62a718348081F9CF9a8E3dF4B4EA6d6349991ad9` |
+| TxID Claim Handler | `0xfFA842529977a40A3fdb988cdDC9CB5c39bAcF26` |
+| Timelock Refund Handler | `0xb0226bAC3BD30179fb66A43cEA212AbBC988e004` |
+
+  </TabItem>
+  <TabItem value="testnet4" label="Testnet4 (GOAT Testnet)">
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `0xEeD58871C24d24C49554aF8B65Dd86eD8ed778D3` |
+| Escrow Manager | `0x3FbbA0eb82cf1247cbf92B3D51641226310F0Ca5` |
+| SPV Swap Vault | `0x8a80A68f8bA1732015A821b5260fEF8040a844b7` |
+| Hashlock Claim Handler | `0x122962B30c46Ef188Dd598a76647c2DBbE1E914e` |
+| Output Claim Handler | `0xa2b2d8CD8D1a9200Ac0970523FdfFcbD94aE54B6` |
+| Nonced Output Claim Handler | `0x3BfF76308e6DEaCaEfdF5a928d6a3082Ab55bf58` |
+| TxID Claim Handler | `0x4737C793a1f86a375BAad0D96134bEd64f246693` |
+| Timelock Refund Handler | `0x0Ff4792d4F792c5B3678f08c18e7cE1974880e48` |
+
+  </TabItem>
+</Tabs>
+
+## Alpen
+
+<Tabs groupId="network">
+  <TabItem value="mainnet" label="Mainnet" default>
+
+:::info
+Not yet deployed on Alpen mainnet.
+:::
+
+  </TabItem>
+  <TabItem value="testnet" label="Testnet3 (Alpen Testnet)">
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `0x59A54378B6bA9C21ba66487C6A701D702baDEabE` |
+| Escrow Manager | `0x2920EE496693A5027249a027A6FD3F643E743745` |
+| SPV Swap Vault | `0xaB2D14745362B26a732dD8B7F95daAE3D2914bBF` |
+| Hashlock Claim Handler | `0x3887B02217726bB36958Dd595e57293fB63D5082` |
+| Output Claim Handler | `0x71Bc44F3F7203fC1279107D924e418F02b0d4029` |
+| Nonced Output Claim Handler | `0xe510D5781C6C849284Fb25Dc20b1684cEC445C8B` |
+| TxID Claim Handler | `0xe8be24CF21341c9567664009a8a82C9Dc1eE90D6` |
+| Timelock Refund Handler | `0x9a027B5Bf43382Cc4A5134d9EFD389f61ece27B9` |
+
+  </TabItem>
+  <TabItem value="testnet4" label="Testnet4 (Alpen Testnet)">
+
+| Contract | Address |
+|---|---|
+| BTC Relay | `0xfFA842529977a40A3fdb988cdDC9CB5c39bAcF26` |
+| Escrow Manager | `0xb0226bAC3BD30179fb66A43cEA212AbBC988e004` |
+| SPV Swap Vault | `0x62a718348081F9CF9a8E3dF4B4EA6d6349991ad9` |
+| Hashlock Claim Handler | `0x44aC0f0677C88e2c0B2FEc986b70E3b9A224f553` |
+| Output Claim Handler | `0x50dFF49039c0e45eCb8040fC986fA24B4dda787D` |
+| Nonced Output Claim Handler | `0xFB5582400a527342a7D32491D7e756Ba3C346FE7` |
+| TxID Claim Handler | `0xCBd9bcfb4b47F0A98948eD4d7Dcc872433989d57` |
+| Timelock Refund Handler | `0xA6E5eBF158cDFC4A5B3694495FB26ecadb1378eb` |
+
+  </TabItem>
+</Tabs>

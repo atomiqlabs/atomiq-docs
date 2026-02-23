@@ -47,8 +47,9 @@ const sidebars = {
       label: 'Contracts',
       link: { type: 'doc', id: 'overview/contracts/index' },
       items: [
-        'overview/contracts/solana/index',
         'overview/contracts/evm-starknet/index',
+        'overview/contracts/solana/index',
+        'overview/contracts/contract-addresses',
       ],
     },
   ],
