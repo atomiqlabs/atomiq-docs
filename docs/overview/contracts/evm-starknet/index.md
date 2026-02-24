@@ -6,6 +6,8 @@ The EVM and Starknet contract deployments share a **modular architecture** — t
 
 ## BTC Relay (Bitcoin Light Client)
 
+<p style={{marginTop: "-0.8em"}}>[EVM → contracts/btc_relay](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_relay) | [Starknet → packages/btc_relay](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_relay)</p>
+
 A permissionless, trustless Bitcoin SPV light client deployed on-chain. It verifies and stores Bitcoin block headers using proof-of-work validation, serving as a **trustless oracle of Bitcoin state**. Anyone can submit block headers — the contract verifies their validity regardless of who submits them.
 
 The relay validates consensus rules (PoW difficulty, difficulty adjustments, previous block hash, timestamps) and handles forks automatically by adopting the chain with the greatest cumulative chainwork. Block header data is stored efficiently — on EVM as calldata with only a hash fingerprint on-chain, and on Starknet as events with Poseidon hash fingerprints in storage.
@@ -14,32 +16,11 @@ Bitcoin relay contract is used for all Bitcoin on-chain claim handlers (PrTLCs) 
 
 ## Escrow Manager
 
+<p style={{marginTop: "-0.8em"}}>[EVM → contracts/escrow_manager](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/escrow_manager) | [Starknet → packages/escrow_manager](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/escrow_manager)</p>
+
 The central contract for escrow based swaps (HTLCs & PrTLCs). It handles initialization, claiming, refunding, and cooperative closing of escrows. Each escrow specifies a claim handler contract address with committed claim data and a refund handler contract address with committed refund data.
-All claim handlers implement a common `IClaimHandler` interface and all refund handlers implement `IRefundHandler`. These are then used as a predicate to verify validity of the claim and refund. Concretely, the caller calls the escrow claim function with the `witness` (a data to satisfy the claim condition), internally the escrow manager calls a claim handler's `claim` function with the: a) claim data committed during escrow initialization & b) caller provided `witness`. The claim handler than asserts the validity of the `witness` - the can range from a simple hashing (for hashlocks), to parsing a bitcoin transaction and verifying it through the BTC Relay contract.
 
-### Claim handlers
-
-#### Hashlock Claim Handler
-
-Validates claims based on knowledge of a SHA-256 preimage, asserts that the hash of the `witness` equals to the committed claim data. Used for **Lightning Network swaps** (both directions), where the preimage links the on-chain escrow to the off-chain Lightning payment.
-
-#### Bitcoin Output Claim Handler
-
-Verifies that a specific Bitcoin transaction output exists and is confirmed on the canonical chain. The `witness` contains the full bitcoin transaction, the handler parses it, verifies the transaction's output script & amount matches the committed claim data, and verifies transaction's inclusion Merkle proof via the BTC relay. Used for **Legacy Bitcoin on-chain → Smart chain** swaps.
-
-#### Bitcoin Nonced Output Claim Handler
-
-Same as the output claim handler, but additionally verifies a nonce encoded in the Bitcoin transaction's `locktime` and `nSequence` fields. The nonce uniquely identifies each swap and prevents replay attacks. Used for **Smart chain → Bitcoin on-chain** swaps.
-
-#### Bitcoin TxID Claim Handler
-
-Verifies that a specific Bitcoin transaction ID is confirmed on the canonical chain. Currently unused — reserved for future swap types such as Ordinals, Runes, or RGB.
-
-### Refund Handlers
-
-#### Timelock Refund Handler
-
-Validates refunds after a specified expiry timestamp. This is the universal refund handler used by **all current swap types** — it ensures the offerer can reclaim funds if the counterparty fails to claim within the timeout period.
+All [claim handlers](#claim-handlers) implement a common `IClaimHandler` interface and all [refund handlers](#refund-handlers) implement `IRefundHandler`. These are then used as a predicate to verify validity of the claim and refund. Concretely, the caller calls the escrow claim function with the `witness` (a data to satisfy the claim condition), internally the escrow manager calls a claim handler's `claim` function with the: a) claim data committed during escrow initialization & b) caller provided `witness`. The claim handler than asserts the validity of the `witness` - the can range from a simple hashing (for hashlocks), to parsing a bitcoin transaction and verifying it through the BTC Relay contract.
 
 ### Reputation Tracking
 
@@ -49,7 +30,47 @@ The escrow contract records swap outcomes (success, failed, cooperative refund) 
 
 To prevent LP always having to deposit funds into the contract (and incurring the ERC20 transfer gas cost) the contract allows the LP to hold balance inside the contract—the contracts tracks this balance in a single mapping. This way when an escrow is created using LP's funds no ERC20 transfer occurs and funds are instead taken from the internal balance of the LP.
 
+## Claim Handlers
+
+Claim handlers are used by the Escrow Manager contract to verify whether a condition required to pay out funds from the escrow has been met.
+
+### Hashlock Claim Handler
+
+<p style={{marginTop: "-0.8em"}}>[EVM → contracts/hashlock_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/hashlock_claim_handler) | [Starknet → packages/hashlock_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/hashlock_claim_handler)</p>
+
+Validates claims based on knowledge of a SHA-256 preimage, asserts that the hash of the `witness` equals to the committed claim data. Used for **Lightning Network swaps** (both directions), where the preimage links the on-chain escrow to the off-chain Lightning payment.
+
+### Bitcoin Output Claim Handler
+
+<p style={{marginTop: "-0.8em"}}>[EVM → contracts/btc_output_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_output_claim_handler)               | [Starknet → packages/btc_output_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_output_claim_handler)</p>
+
+Verifies that a specific Bitcoin transaction output exists and is confirmed on the canonical chain. The `witness` contains the full bitcoin transaction, the handler parses it, verifies the transaction's output script & amount matches the committed claim data, and verifies transaction's inclusion Merkle proof via the BTC relay. Used for **Legacy Bitcoin on-chain → Smart chain** swaps.
+
+### Bitcoin Nonced Output Claim Handler
+
+<p style={{marginTop: "-0.8em"}}>[EVM → contracts/btc_nonced_output_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_nonced_output_claim_handler) | [Starknet → packages/btc_nonced_output_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_nonced_output_claim_handler)</p>
+
+Same as the output claim handler, but additionally verifies a nonce encoded in the Bitcoin transaction's `locktime` and `nSequence` fields. The nonce uniquely identifies each swap and prevents replay attacks. Used for **Smart chain → Bitcoin on-chain** swaps.
+
+### Bitcoin TxID Claim Handler
+
+<p style={{marginTop: "-0.8em"}}>[EVM → contracts/btc_txid_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_txid_claim_handler)                   | [Starknet → packages/btc_txid_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_txid_claim_handler)</p>
+
+Verifies that a specific Bitcoin transaction ID is confirmed on the canonical chain. Currently unused — reserved for future swap types such as Ordinals, Runes, or RGB.
+
+## Refund Handlers
+
+Similar to claim handlers, the refund handlers are used by the Escrow Manager to determine whether an escrow can be refunded and funds returned to the offerer.
+
+### Timelock Refund Handler
+
+<p style={{marginTop: "-0.8em"}}>[EVM → contracts/timelock_refund_handler](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/timelock_refund_handler)                 | [Starknet → packages/timelock_refund_handler](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/timelock_refund_handler)</p>
+
+Validates refunds after a specified expiry timestamp. This is the universal refund handler used by **all current swap types** — it ensures the offerer can reclaim funds if the counterparty fails to claim within the timeout period.
+
 ## SPV Swap Vault
+
+<p style={{marginTop: "-0.8em"}}>[EVM → contracts/spv_swap_vault](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/spv_swap_vault)                                   | [Starknet → packages/spv_swap_vault](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/spv_swap_vault)</p>
 
 Implements the [UTXO-controlled vault](/overview/core-primitives/utxo-controlled-vault/) primitive for **Bitcoin on-chain → Smart chain** swaps. The vault holds LP liquidity on the smart chain, and withdrawals are authorized solely by verified Bitcoin transactions using the BTC relay.
 
@@ -58,6 +79,8 @@ The vault tracks a specific Bitcoin UTXO as its ownership reference. Each withdr
 The vault supports **liquidity fronting** (third parties can front funds before Bitcoin confirmation for a fee) and **caller fees** (watchtower incentives for submitting proofs).
 
 ## Execution Contract
+
+<p style={{marginTop: "-0.8em"}}>[EVM → contracts/execution_contract](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/execution_contract)                           | [Starknet → packages/execution_contract](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/execution_contract)</p>
 
 Allows scheduling and executing arbitrary smart contract calls as part of a swap. When a swap includes an execution action, the claimed funds are transferred to the execution contract instead of directly to the recipient. Any third party can then execute the scheduled action and earn an execution fee.
 
@@ -69,38 +92,62 @@ This enables use cases like swapping Bitcoin directly into a DeFi position — e
 
 ### Bitcoin Utilities
 
+<p style={{marginTop: "-0.8em"}}>[EVM → contracts/btc_utils](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_utils)                                             | [Starknet → packages/btc_utils](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_utils)</p>
+
 Low-level Bitcoin protocol utilities used by claim handlers and the SPV vault: transaction parsing, Merkle proof verification, endianness conversion, and compact size encoding.
 
 ### Token Utilities
 
+<p style={{marginTop: "-0.8em"}}>[EVM → contracts/transfer_utils](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/transfer_utils)                                   | [Starknet → packages/erc20_utils](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/erc20_utils)</p>
+
 Unified interface for ERC20 and native token transfers, used by the escrow manager, SPV vault, and execution contract.
 
-## Source Code
+[//]: # (## Source Code)
 
-| Module | EVM | Starknet |
-|---|---|---|
-| BTC Relay | [contracts/btc_relay](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_relay) | [packages/btc_relay](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_relay) |
-| Bitcoin Utilities | [contracts/btc_utils](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_utils) | [packages/btc_utils](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_utils) |
-| Token Utilities | [contracts/transfer_utils](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/transfer_utils) | [packages/erc20_utils](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/erc20_utils) |
-| Escrow Manager | [contracts/escrow_manager](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/escrow_manager) | [packages/escrow_manager](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/escrow_manager) |
-| SPV Swap Vault | [contracts/spv_swap_vault](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/spv_swap_vault) | [packages/spv_swap_vault](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/spv_swap_vault) |
-| Execution Contract | [contracts/execution_contract](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/execution_contract) | [packages/execution_contract](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/execution_contract) |
-| Hashlock Claim Handler | [contracts/hashlock_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/hashlock_claim_handler) | [packages/hashlock_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/hashlock_claim_handler) |
-| Output Claim Handler | [contracts/btc_output_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_output_claim_handler) | [packages/btc_output_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_output_claim_handler) |
-| Nonced Output Claim Handler | [contracts/btc_nonced_output_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_nonced_output_claim_handler) | [packages/btc_nonced_output_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_nonced_output_claim_handler) |
-| TxID Claim Handler | [contracts/btc_txid_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_txid_claim_handler) | [packages/btc_txid_claim_handler](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_txid_claim_handler) |
-| Timelock Refund Handler | [contracts/timelock_refund_handler](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/timelock_refund_handler) | [packages/timelock_refund_handler](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/timelock_refund_handler) |
+[//]: # ()
+[//]: # (| Module                      | EVM | Starknet |)
 
----
+[//]: # (|-----------------------------|---|---|)
 
-## Swap Type Routing
+[//]: # (| BTC Relay                   | [contracts/btc_relay]&#40;https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_relay&#41; | [packages/btc_relay]&#40;https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_relay&#41; |)
 
-Different swap directions use different combinations of handlers and vault types:
+[//]: # (| SPV Swap Vault              | [contracts/spv_swap_vault]&#40;https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/spv_swap_vault&#41; | [packages/spv_swap_vault]&#40;https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/spv_swap_vault&#41; |)
 
-| Swap Direction | Claim Handler | Refund Handler | Vault |
-|---|---|---|---|
-| Lightning → Smart chain | Hashlock | Timelock | Escrow Manager |
-| Smart chain → Lightning | Hashlock | Timelock | Escrow Manager |
-| Bitcoin on-chain → Smart chain | — | — | SPV Swap Vault |
-| Smart chain → Bitcoin on-chain | Nonced Output | Timelock | Escrow Manager |
+[//]: # (| Execution Contract          | [contracts/execution_contract]&#40;https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/execution_contract&#41; | [packages/execution_contract]&#40;https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/execution_contract&#41; |)
 
+[//]: # (| Escrow Manager              | [contracts/escrow_manager]&#40;https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/escrow_manager&#41; | [packages/escrow_manager]&#40;https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/escrow_manager&#41; |)
+
+[//]: # (| **Handlers**                |)
+
+[//]: # (| Hashlock Claim Handler      | [contracts/hashlock_claim_handler]&#40;https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/hashlock_claim_handler&#41; | [packages/hashlock_claim_handler]&#40;https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/hashlock_claim_handler&#41; |)
+
+[//]: # (| Output Claim Handler        | [contracts/btc_output_claim_handler]&#40;https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_output_claim_handler&#41; | [packages/btc_output_claim_handler]&#40;https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_output_claim_handler&#41; |)
+
+[//]: # (| Nonced Output Claim Handler | [contracts/btc_nonced_output_claim_handler]&#40;https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_nonced_output_claim_handler&#41; | [packages/btc_nonced_output_claim_handler]&#40;https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_nonced_output_claim_handler&#41; |)
+
+[//]: # (| TxID Claim Handler          | [contracts/btc_txid_claim_handler]&#40;https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_txid_claim_handler&#41; | [packages/btc_txid_claim_handler]&#40;https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_txid_claim_handler&#41; |)
+
+[//]: # (| Timelock Refund Handler     | [contracts/timelock_refund_handler]&#40;https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/timelock_refund_handler&#41; | [packages/timelock_refund_handler]&#40;https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/timelock_refund_handler&#41; | )
+
+[//]: # (| **Utilities**                   |)
+
+[//]: # (| Bitcoin Utilities           | [contracts/btc_utils]&#40;https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/btc_utils&#41; | [packages/btc_utils]&#40;https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/btc_utils&#41; |)
+
+[//]: # (| Token Utilities             | [contracts/transfer_utils]&#40;https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/transfer_utils&#41; | [packages/erc20_utils]&#40;https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/erc20_utils&#41; |)
+
+## Swap Type Overview
+
+Different swap directions use different combinations of claim and refund handlers with the Escrow Manager contract. The only exception being the **Bitcoin on-chain → Smart chain** swap direction, which uses the UTXO-controlled vault primitive implemented in the SPV Swap Vault contract. 
+
+Swaps using Escrow Manager contract:
+
+| Swap Direction                           | Claim Handler | Refund Handler |
+|------------------------------------------|---------------|----------------|
+| Lightning → Smart chain                  | Hashlock      | Timelock       |
+| Smart chain → Lightning                  | Hashlock      | Timelock       |
+| _Legacy Bitcoin on-chain → Smart chain_* | Output        | Timelock       |
+| Smart chain → Bitcoin on-chain           | Nonced Output | Timelock       |
+
+:::info
+\* _Legacy Bitcoin on-chain → Smart chain_ swaps have been replaced with the new Bitcoin on-chain → Smart chain swap protocol built on the UTXO-controlled vault primitive, these swaps are handled by the SPV Swap Vault contract.
+:::

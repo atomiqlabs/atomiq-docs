@@ -6,7 +6,7 @@ This is the original contract design, built as the first implementation of the A
 
 ## BTC Relay (Bitcoin Light Client)
 
-**Repository**: [atomiq-contracts-solana/btcrelay](https://github.com/atomiqlabs/atomiq-contracts-solana/tree/main/btcrelay)
+**Source code**: [atomiq-contracts-solana/btcrelay](https://github.com/atomiqlabs/atomiq-contracts-solana/tree/main/btcrelay)
 
 A permissionless, trustless Bitcoin SPV light client deployed on-chain. It verifies and stores Bitcoin block headers using proof-of-work validation, serving as a **trustless oracle of Bitcoin state**. Anyone can submit block headers — the contract verifies their validity regardless of who submits them.
 
@@ -20,7 +20,7 @@ Short forks (< 6 bitcoin blocks) are resolved in a single transaction. Longer fo
 
 ## Swap Program
 
-**Repository**: [atomiq-contracts-solana/swaps](https://github.com/atomiqlabs/atomiq-contracts-solana/tree/main/swaps)
+**Source code**: [atomiq-contracts-solana/swaps](https://github.com/atomiqlabs/atomiq-contracts-solana/tree/main/swaps)
 
 Handles all swap execution — initialization, claiming, refunding, and cooperative closing. Unlike the modular EVM/Starknet approach where claim/refund logic is in separate handler contracts, the swap program contains all verification logic internally and dispatches based on swap type.
 
