@@ -77,6 +77,7 @@ const sidebars = {
     },
     'developers/quick-start-browser',
     'developers/quick-start-nodejs',
+    'developers/quick-start-testnet',
     {
       type: 'category',
       label: 'Swap Tutorials',
