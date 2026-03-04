@@ -26,33 +26,29 @@ npm install @atomiqlabs/chain-starknet@latest
 npm install @atomiqlabs/chain-evm@latest
 ```
 
-### Browser Importing Example
-
-For example, for a browser project with Solana and Starknet you need to install the following packages:
-
-```bash
-npm install @atomiqlabs/sdk@latest \
-  @atomiqlabs/chain-solana@latest \
-  @atomiqlabs/chain-starknet@latest
-```
-
-
 ## Setup
 
 Set your RPC URLs:
 
 ```typescript
 const solanaRpc = "https://api.mainnet-beta.solana.com";
-const starknetRpc = "https://api.zan.top/public/starknet-mainnet/rpc/v0_9";
+const starknetRpc = "https://rpc.starknet.lava.build/";
 const citreaRpc = "https://rpc.mainnet.citrea.xyz";
 ```
+
+:::tip Alternative RPC URLs
+You can use the following alternative RPC URLs for Starknet:
+- https://starknet.api.onfinality.io/public
+- https://api.zan.top/public/starknet-mainnet
+:::
+
 
 Create a swapper factory with your desired chain support. Use `as const` so TypeScript can properly infer the types:
 
 ```typescript
-import {SolanaInitializer, SolanaInitializerType} from "@atomiqlabs/chain-solana";
-import {StarknetInitializer, StarknetInitializerType} from "@atomiqlabs/chain-starknet";
-import {CitreaInitializer, CitreaInitializerType} from "@atomiqlabs/chain-evm";
+import {SolanaInitializer} from "@atomiqlabs/chain-solana";
+import {StarknetInitializer} from "@atomiqlabs/chain-starknet";
+import {CitreaInitializer} from "@atomiqlabs/chain-evm";
 import {BitcoinNetwork, TypedSwapper, SwapperFactory, TypedTokens} from "@atomiqlabs/sdk";
 
 // Define chains you want to support
@@ -75,7 +71,8 @@ const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
       rpcUrl: starknetRpc // Can also pass Provider object
     },
     CITREA: {
-      rpcUrl: citreaRpc // Can also pass JsonApiProvider object
+      rpcUrl: citreaRpc, // Can also pass JsonRpcProvider object
+      chainType: "MAINNET"
     }
   },
   // The `bitcoinNetwork` setting also determines the network for Solana (devnet for testnet) and Starknet (sepolia for testnet).
@@ -270,19 +267,19 @@ const evmWallet = new EVMSigner(wallet, wallet.address);
 
 ## Your First Swap
 
-Here's a complete example of a Smart Chain to Lightning swap:
+Here's a complete example of a Smart Chain to Bitcoin on-chain swap:
 
 ```typescript
 import {SwapAmountType} from "@atomiqlabs/sdk";
 
-// Create a swap: SOL to Lightning
+// Create a swap: SOL to Bitcoin on-chain
 const swap = await swapper.swap(
   Tokens.SOLANA.SOL,              // From token
   Tokens.BITCOIN.BTC,             // To Bitcoin on-chain
-  undefined,                      // Amount from invoice
-  SwapAmountType.EXACT_OUT,       // Invoice has fixed amount
+  "0.0001",                       // Amount of BTC to receive
+  SwapAmountType.EXACT_OUT,       // Specify amount in output token
   solanaSigner.getAddress(),      // Source address
-  "bc1q..."                       // Bitcoin on-chain address
+  "bc1q..."                       // Bitcoin destination address
 );
 
 // Check quote details

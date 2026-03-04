@@ -31,16 +31,16 @@ Set your RPC URLs:
 
 ```typescript
 const solanaRpc = "https://api.mainnet-beta.solana.com";
-const starknetRpc = "https://api.zan.top/public/starknet-mainnet/rpc/v0_9";
+const starknetRpc = "https://starknet.api.onfinality.io/public";
 const citreaRpc = "https://rpc.mainnet.citrea.xyz";
 ```
 
 Create a swapper factory with your desired chain support. Use `as const` so TypeScript can properly infer the types:
 
 ```typescript
-import {SolanaInitializer, SolanaInitializerType} from "@atomiqlabs/chain-solana";
-import {StarknetInitializer, StarknetInitializerType} from "@atomiqlabs/chain-starknet";
-import {CitreaInitializer, CitreaInitializerType} from "@atomiqlabs/chain-evm";
+import {SolanaInitializer} from "@atomiqlabs/chain-solana";
+import {StarknetInitializer} from "@atomiqlabs/chain-starknet";
+import {CitreaInitializer} from "@atomiqlabs/chain-evm";
 
 import {BitcoinNetwork, TypedSwapper, SwapperFactory, TypedTokens} from "@atomiqlabs/sdk";
 import {SqliteStorageManager, SqliteUnifiedStorage} from "@atomiqlabs/storage-sqlite";
@@ -60,7 +60,7 @@ const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
   chains: {
     SOLANA: { rpcUrl: solanaRpc },
     STARKNET: { rpcUrl: starknetRpc },
-    CITREA: { rpcUrl: citreaRpc }
+    CITREA: { rpcUrl: citreaRpc, chainType: "MAINNET" }
   },
   bitcoinNetwork: BitcoinNetwork.TESTNET,
   // Required for Node.js (SDK defaults to browser's IndexedDB)
@@ -68,12 +68,21 @@ const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
   chainStorageCtor: name => new SqliteStorageManager("STORE_"+name+".sqlite3"),
 });
 
-// Initialize the swapper
-await swapper.init();
+async function main() {
+  // Initialize the swapper
+  await swapper.init();
+
+  // ... your swap logic here
+}
+main();
 ```
 
 :::info
-Initialize the swapper with `await swapper.init();` shown above once when your app starts. Ideally, you should create only one swapper instance for your entire app, and use that instance for all your swaps. This checks existing in-progress swaps and does initial LP discovery.
+Initialize the swapper with `await swapper.init();` once when your app starts. Ideally, you should create only one swapper instance for your entire app, and use that instance for all your swaps. This checks existing in-progress swaps and does initial LP discovery.
+:::
+
+:::tip ESM Alternative
+The examples above use an `async function main()` wrapper for CommonJS compatibility. If your project uses ESM (`"type": "module"` in `package.json` and `"module": "nodenext"` in `tsconfig.json`), you can use top-level `await` directly instead.
 :::
 
 
@@ -96,39 +105,42 @@ const solanaSigner = new SolanaSigner(
 
 ```typescript
 import {StarknetSigner, StarknetKeypairWallet} from "@atomiqlabs/chain-starknet";
+import {RpcProvider} from "starknet";
 
 // From private key
+const starknetProvider = new RpcProvider({nodeUrl: starknetRpc});
 const starknetSigner = new StarknetSigner(
-  new StarknetKeypairWallet(starknetRpc, starknetKey)
+  new StarknetKeypairWallet(starknetProvider, starknetKey)
 );
 ```
 
 ### EVM (Citrea, etc.)
 
 ```typescript
-import {BaseWallet, SigningKey} from "ethers";
+import {BaseWallet, SigningKey, JsonRpcProvider} from "ethers";
 import {EVMSigner} from "@atomiqlabs/chain-evm";
 
 // From private key
-const wallet = new BaseWallet(new SigningKey(evmKey));
+const evmProvider = new JsonRpcProvider(citreaRpc);
+const wallet = new BaseWallet(new SigningKey(evmKey), evmProvider);
 const evmWallet = new EVMSigner(wallet, wallet.address);
 ```
 
 ## Your First Swap
 
-Here's a complete example of a Smart Chain to Lightning swap:
+Here's a complete example of a Smart Chain to Bitcoin on-chain swap:
 
 ```typescript
 import {SwapAmountType} from "@atomiqlabs/sdk";
 
-// Create a swap: SOL to Lightning
+// Create a swap: SOL to Bitcoin on-chain
 const swap = await swapper.swap(
   Tokens.SOLANA.SOL,              // From token
   Tokens.BITCOIN.BTC,             // To Bitcoin on-chain
-  undefined,                      // Amount from invoice
-  SwapAmountType.EXACT_OUT,       // Invoice has fixed amount
+  "0.0001",                       // Amount of BTC to receive
+  SwapAmountType.EXACT_OUT,       // Specify amount in output token
   solanaSigner.getAddress(),      // Source address
-  "bc1q..."                       // Bitcoin on-chain address
+  "bc1q..."                       // Bitcoin destination address
 );
 
 // Check quote details
