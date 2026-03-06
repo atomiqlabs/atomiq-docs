@@ -62,7 +62,7 @@ const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
     STARKNET: { rpcUrl: starknetRpc },
     CITREA: { rpcUrl: citreaRpc, chainType: "MAINNET" }
   },
-  bitcoinNetwork: BitcoinNetwork.TESTNET,
+  bitcoinNetwork: BitcoinNetwork.TESTNET3,
   // Required for Node.js (SDK defaults to browser's IndexedDB)
   swapStorage: chainId => new SqliteUnifiedStorage("CHAIN_"+chainId+".sqlite3"),
   chainStorageCtor: name => new SqliteStorageManager("STORE_"+name+".sqlite3"),

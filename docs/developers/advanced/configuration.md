@@ -155,7 +155,7 @@ import {BitcoinNetwork} from "@atomiqlabs/sdk";
 bitcoinNetwork: BitcoinNetwork.MAINNET
 
 // Testnet (also sets Solana to devnet, Starknet to sepolia)
-bitcoinNetwork: BitcoinNetwork.TESTNET
+bitcoinNetwork: BitcoinNetwork.TESTNET3
 
 // Testnet4
 bitcoinNetwork: BitcoinNetwork.TESTNET4

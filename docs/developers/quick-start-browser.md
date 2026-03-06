@@ -76,7 +76,7 @@ const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
     }
   },
   // The `bitcoinNetwork` setting also determines the network for Solana (devnet for testnet) and Starknet (sepolia for testnet).
-  bitcoinNetwork: BitcoinNetwork.MAINNET // or TESTNET, TESTNET4
+  bitcoinNetwork: BitcoinNetwork.MAINNET // or TESTNET3, TESTNET4
 });
 
 // Initialize the swapper
