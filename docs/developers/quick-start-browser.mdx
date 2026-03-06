@@ -2,6 +2,8 @@
 sidebar_position: 2
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Quick Start (Browser)
 
@@ -18,7 +20,7 @@ npm install @atomiqlabs/sdk@latest
 
 ### Chain Connectors
 
-The SDK supports multiple chains. Install only the chain connectors your project needs, and mix and match them as required: 
+The SDK supports multiple chains. Install only the chain connectors your project needs, and mix and match them as required:
 
 ```bash
 npm install @atomiqlabs/chain-solana@latest
@@ -27,6 +29,9 @@ npm install @atomiqlabs/chain-evm@latest
 ```
 
 ## Setup
+
+<Tabs groupId="network">
+  <TabItem value="mainnet" label="Mainnet" default>
 
 Set your RPC URLs:
 
@@ -41,7 +46,6 @@ You can use the following alternative RPC URLs for Starknet:
 - https://starknet.api.onfinality.io/public
 - https://api.zan.top/public/starknet-mainnet
 :::
-
 
 Create a swapper factory with your desired chain support. Use `as const` so TypeScript can properly infer the types:
 
@@ -75,17 +79,114 @@ const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
       chainType: "MAINNET"
     }
   },
-  // The `bitcoinNetwork` setting also determines the network for Solana (devnet for testnet) and Starknet (sepolia for testnet).
-  bitcoinNetwork: BitcoinNetwork.MAINNET // or TESTNET3, TESTNET4
+  bitcoinNetwork: BitcoinNetwork.MAINNET
 });
 
 // Initialize the swapper
 await swapper.init();
 ```
 
+  </TabItem>
+  <TabItem value="testnet3" label="Testnet3">
+
+:::info
+On testnets, only native tokens are generally supported (e.g. SOL, STRK, ETH, cBTC).
+:::
+
+Set your testnet RPC URLs:
+
+```typescript
+const solanaRpc = "https://api.devnet.solana.com";
+const starknetRpc = "https://rpc.starknet-testnet.lava.build/";
+```
+
+Create a swapper factory with your desired chain support:
+
+```typescript
+import {SolanaInitializer} from "@atomiqlabs/chain-solana";
+import {StarknetInitializer} from "@atomiqlabs/chain-starknet";
+import {BitcoinNetwork, TypedSwapper, SwapperFactory, TypedTokens} from "@atomiqlabs/sdk";
+
+const chains = [SolanaInitializer, StarknetInitializer] as const;
+type SupportedChains = typeof chains;
+
+const Factory = new SwapperFactory<SupportedChains>(chains);
+const Tokens: TypedTokens<SupportedChains> = Factory.Tokens;
+
+const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
+  chains: {
+    SOLANA: { rpcUrl: solanaRpc },
+    STARKNET: { rpcUrl: starknetRpc }
+  },
+  bitcoinNetwork: BitcoinNetwork.TESTNET3
+});
+
+await swapper.init();
+```
+
+  </TabItem>
+  <TabItem value="testnet4" label="Testnet4">
+
+:::info
+On testnets, only native tokens are generally supported (e.g. SOL, STRK, ETH, cBTC).
+:::
+
+Set your testnet RPC URLs:
+
+```typescript
+const starknetRpc = "https://rpc.starknet-testnet.lava.build/";
+const citreaRpc = "https://rpc.testnet.citrea.xyz";
+```
+
+Create a swapper factory with your desired chain support:
+
+```typescript
+import {StarknetInitializer} from "@atomiqlabs/chain-starknet";
+import {CitreaInitializer} from "@atomiqlabs/chain-evm";
+import {BitcoinNetwork, TypedSwapper, SwapperFactory, TypedTokens} from "@atomiqlabs/sdk";
+
+const chains = [StarknetInitializer, CitreaInitializer] as const;
+type SupportedChains = typeof chains;
+
+const Factory = new SwapperFactory<SupportedChains>(chains);
+const Tokens: TypedTokens<SupportedChains> = Factory.Tokens;
+
+const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
+  chains: {
+    STARKNET: { rpcUrl: starknetRpc },
+    CITREA: { rpcUrl: citreaRpc, chainType: "TESTNET4" }
+  },
+  bitcoinNetwork: BitcoinNetwork.TESTNET4
+});
+
+await swapper.init();
+```
+
+  </TabItem>
+</Tabs>
+
 :::info
 Initialize the swapper with `await swapper.init();` shown above once when your app starts. Ideally, you should create only one swapper instance for your entire app, and use that instance for all your swaps. This checks existing in-progress swaps and does initial LP discovery.
 :::
+
+### Network Availability
+
+Not all chains are available on all Bitcoin testnets:
+
+| Chain | Mainnet | Testnet3 | Testnet4 |
+|-------|---------|----------|----------|
+| **Solana** | Mainnet-beta | Devnet | - |
+| **Starknet** | Mainnet | Sepolia | Sepolia |
+| **Citrea** | Mainnet | - | Testnet |
+| **Botanix** | Mainnet | Testnet | - |
+| **Alpen** | - | Testnet | Testnet |
+| **GOAT Network** | - | Testnet | Testnet |
+
+### Getting Testnet Tokens
+
+- **Bitcoin Testnet/Testnet4** — Use a [Bitcoin testnet faucet](https://bitcoinfaucet.uo1.net/)
+- **Solana Devnet** — `solana airdrop 1` or use the [Solana faucet](https://faucet.solana.com/)
+- **Starknet Sepolia** — Use the [Starknet faucet](https://starknet-faucet.vercel.app/)
 
 
 ## Setting Up Signers
@@ -119,7 +220,7 @@ import { SolanaSigner } from "@atomiqlabs/chain-solana";
 function YourApp() {
   const anchorWallet = useAnchorWallet();
   const wallet = new SolanaSigner(anchorWallet);
-  
+
   return (
     <div>
       <h1>Your App</h1>
