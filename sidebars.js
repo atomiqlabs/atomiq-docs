@@ -75,8 +75,15 @@ const sidebars = {
       id: 'developers/index',
       label: 'Overview',
     },
-    'developers/quick-start-browser',
-    'developers/quick-start-nodejs',
+    {
+      type: 'category',
+      label: 'Quick Start',
+      link: { type: 'doc', id: 'developers/quick-start/index' },
+      items: [
+        'developers/quick-start/quick-start-browser',
+        'developers/quick-start/quick-start-nodejs',
+      ],
+    },
     {
       type: 'category',
       label: 'Swap Tutorials',

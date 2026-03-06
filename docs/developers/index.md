@@ -80,8 +80,8 @@ if (!success) {
 ## Documentation Sections
 
 ### Getting Started
-- [Quick Start (Browser)](./quick-start-browser) - Set up in browser environments
-- [Quick Start (Node.js)](./quick-start-nodejs) - Set up in Node.js environments
+- [Quick Start (Browser)](./quick-start/quick-start-browser) - Set up in browser environments
+- [Quick Start (Node.js)](./quick-start/quick-start-nodejs) - Set up in Node.js environments
 
 ### Swap Tutorials
 - [BTC to Smart Chain](./swaps/btc-to-smart-chain) - Bitcoin L1 to Solana/Starknet/EVM
