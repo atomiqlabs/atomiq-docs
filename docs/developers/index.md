@@ -17,11 +17,12 @@ See complete working examples: [atomiq-sdk-demo](https://github.com/atomiqlabs/a
 - [Quick Start (Node.js)](./quick-start/quick-start-nodejs) - Set up in Node.js environments
 
 ### Swap Tutorials
-- [BTC to Smart Chain](./swaps/btc-to-smart-chain) - Bitcoin L1 to Solana/Starknet/EVM
-- [Smart Chain to BTC](./swaps/smart-chain-to-btc) - Solana/Starknet/EVM to Bitcoin L1
-- [Lightning to Smart Chain](./swaps/lightning-to-smart-chain) - Lightning to smart chains
-- [Smart Chain to Lightning](./swaps/smart-chain-to-lightning) - Smart chains to Lightning
+- [BTC to Smart Chain](./swaps/btc-to-smart-chain) - Bitcoin L1 to Starknet/EVM
+- [Smart Chain to BTC](./swaps/smart-chain-to-btc) - Starknet/EVM to Bitcoin L1
+- [Lightning to Smart Chain](./swaps/lightning-to-smart-chain) - Lightning to Starknet/EVM
+- [Smart Chain to Lightning](./swaps/smart-chain-to-lightning) - Starknet/EVM to Lightning
 - [LNURL Swaps](./swaps/lnurl-swaps) - Reusable payment addresses
+- **Solana (Legacy)**: [BTC to Solana](./swaps/solana/btc-to-solana) | [Solana to BTC](./swaps/solana/solana-to-btc) | [Lightning to Solana](./swaps/solana/lightning-to-solana) | [Solana to Lightning](./swaps/solana/solana-to-lightning)
 
 ### Utilities
 - [Address Parser](./utilities/address-parser) - Parse any address format

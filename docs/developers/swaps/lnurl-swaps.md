@@ -67,11 +67,11 @@ if (success && swap.hasSuccessAction()) {
 
 ```typescript
 const swap = await swapper.swap(
-  Tokens.SOLANA.SOL,
+  Tokens.STARKNET.STRK,
   Tokens.BITCOIN.BTCLN,
-  1_000_000_000n,               // Spend 1 SOL
+  "100",                        // Spend 100 STRK
   SwapAmountType.EXACT_IN,      // Calculate output
-  solanaSigner.getAddress(),
+  starknetSigner.getAddress(),
   "user@walletofsatoshi.com"
 );
 
@@ -134,29 +134,6 @@ const success = await swap.execute(
 if (!success) {
   await swap.claim(starknetSigner);
 }
-```
-
-### For Solana (Legacy Protocol)
-
-```typescript
-const swap = await swapper.swap(
-  Tokens.BITCOIN.BTCLN,
-  Tokens.SOLANA.SOL,
-  10000n,
-  SwapAmountType.EXACT_IN,
-  lnurlWithdraw,
-  solanaSigner.getAddress()
-);
-
-await swap.execute(
-  solanaSigner,
-  undefined,  // No Lightning wallet needed
-  {
-    onSourceTransactionReceived: (hash) => console.log("Withdrawal requested"),
-    onDestinationCommitSent: (txId) => console.log("HTLC opened"),
-    onSwapSettled: (txId) => console.log("Complete")
-  }
-);
 ```
 
 ### Parsing LNURL-withdraw Data

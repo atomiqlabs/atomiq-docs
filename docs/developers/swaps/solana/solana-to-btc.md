@@ -1,24 +1,19 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 ---
 
-# Smart Chain to BTC
+# Solana to BTC
 
-This guide covers swapping smart chain tokens (STRK, EVM tokens) to Bitcoin L1 (on-chain).
+This guide covers swapping Solana tokens to Bitcoin L1 (on-chain).
 
 :::tip Runnable Examples
 See complete working examples:
-- [smartchain-to-btc/swapBasic.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btc/swapBasic.ts)
-- [smartchain-to-btc/swapAdvancedStarknet.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btc/swapAdvancedStarknet.ts)
-:::
-
-:::info Looking for Solana?
-See [Solana to BTC](./solana/solana-to-btc).
+- [smartchain-to-btc/swapAdvancedSolana.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btc/swapAdvancedSolana.ts)
 :::
 
 ## Overview
 
-Smart chain to BTC swaps use the same protocol across all chains. You lock tokens on the smart chain, and the LP sends Bitcoin to your address.
+Solana to BTC swaps use the same ToBTC protocol as other chains. You lock tokens on Solana, and the LP sends Bitcoin to your address.
 
 ## Getting a Quote
 
@@ -26,11 +21,11 @@ Smart chain to BTC swaps use the same protocol across all chains. You lock token
 import {ToBTCSwapState, SwapAmountType, FeeType} from "@atomiqlabs/sdk";
 
 const swap = await swapper.swap(
-  Tokens.STARKNET.STRK,           // From source token
+  Tokens.SOLANA.SOL,              // From SOL
   Tokens.BITCOIN.BTC,             // To BTC
   "0.00003",                      // Amount (3000 sats to receive)
   SwapAmountType.EXACT_OUT,       // Specify output amount
-  starknetSigner.getAddress(),    // Source address
+  solanaSigner.getAddress(),      // Source address
   "bc1q..."                       // Bitcoin destination address
 );
 
@@ -46,12 +41,6 @@ console.log("Est. network fee:", await swap.getSmartChainNetworkFee());
 
 // Bitcoin fee rate being used
 console.log("BTC fee rate:", swap.getBitcoinFeeRate(), "sats/vB");
-
-// Pricing information
-const priceInfo = swap.getPriceInfo();
-console.log("Swap price:", priceInfo.swapPrice);
-console.log("Market price:", priceInfo.marketPrice);
-console.log("Difference:", priceInfo.difference);
 
 // Fee breakdown
 for (const fee of swap.getFeeBreakdown()) {
@@ -69,7 +58,7 @@ swap.events.on("swapState", (swap) => {
 
 // Execute the swap
 const swapSuccessful = await swap.execute(
-  starknetSigner,  // Or evmSigner
+  solanaSigner,
   {
     onSourceTransactionSent: (txId) => {
       console.log(`Source tx sent: ${txId}`);
@@ -86,64 +75,24 @@ const swapSuccessful = await swap.execute(
 // Handle failure
 if (!swapSuccessful) {
   console.log("Swap failed, refunding...");
-  await swap.refund(starknetSigner);
+  await swap.refund(solanaSigner);
   console.log("Refunded!");
 } else {
   console.log("Success! BTC txId:", swap.getOutputTxId());
 }
 ```
 
-## Examples for Each Chain
-
-### Starknet
-
-```typescript
-import {StarknetSigner} from "@atomiqlabs/chain-starknet";
-
-const swap = await swapper.swap(
-  Tokens.STARKNET.STRK,
-  Tokens.BITCOIN.BTC,
-  "0.0001",
-  SwapAmountType.EXACT_OUT,
-  starknetSigner.getAddress(),
-  "bc1q..."
-);
-
-const success = await swap.execute(starknetSigner, { /* callbacks */ });
-if (!success) await swap.refund(starknetSigner);
-```
-
-### EVM (Citrea)
-
-```typescript
-import {EVMSigner} from "@atomiqlabs/chain-evm";
-
-const swap = await swapper.swap(
-  Tokens.CITREA.CBTC,
-  Tokens.BITCOIN.BTC,
-  "0.0001",
-  SwapAmountType.EXACT_OUT,
-  evmSigner.getAddress(),
-  "bc1q..."
-);
-
-const success = await swap.execute(evmSigner, { /* callbacks */ });
-if (!success) await swap.refund(evmSigner);
-```
-
 ## EXACT_IN vs EXACT_OUT
-
-You can specify either the input or output amount:
 
 ### EXACT_OUT (Specify BTC amount to receive)
 
 ```typescript
 const swap = await swapper.swap(
-  Tokens.STARKNET.STRK,
+  Tokens.SOLANA.SOL,
   Tokens.BITCOIN.BTC,
   "0.0001",                    // Receive exactly 0.0001 BTC (10,000 sats)
   SwapAmountType.EXACT_OUT,
-  starknetSigner.getAddress(),
+  solanaSigner.getAddress(),
   "bc1q..."
 );
 ```
@@ -152,11 +101,11 @@ const swap = await swapper.swap(
 
 ```typescript
 const swap = await swapper.swap(
-  Tokens.STARKNET.STRK,
+  Tokens.SOLANA.SOL,
   Tokens.BITCOIN.BTC,
-  "100",                       // Spend exactly 100 STRK
+  "1.5",                       // Spend exactly 1.5 SOL
   SwapAmountType.EXACT_IN,
-  starknetSigner.getAddress(),
+  solanaSigner.getAddress(),
   "bc1q..."
 );
 ```
@@ -168,17 +117,17 @@ If the LP fails to send the Bitcoin payment, you can refund your tokens:
 ```typescript
 // Check if refundable
 if (swap.isRefundable()) {
-  await swap.refund(starknetSigner);
+  await swap.refund(solanaSigner);
 }
 
 // Or get refundable swaps on startup
 const refundable = await swapper.getRefundableSwaps(
-  "STARKNET",
-  starknetSigner.getAddress()
+  "SOLANA",
+  solanaSigner.getAddress()
 );
 
 for (const swap of refundable) {
-  await swap.refund(starknetSigner);
+  await swap.refund(solanaSigner);
 }
 ```
 

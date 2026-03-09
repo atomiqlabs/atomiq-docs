@@ -4,7 +4,7 @@ sidebar_position: 2
 
 # BTC to Smart Chain
 
-This guide covers swapping Bitcoin L1 (on-chain) to smart chain tokens like SOL, STRK, or EVM tokens.
+This guide covers swapping Bitcoin L1 (on-chain) to Starknet or EVM tokens using the SPV-based protocol.
 
 :::tip Runnable Examples
 See complete working examples:
@@ -13,17 +13,11 @@ See complete working examples:
 - [btc-to-smartchain/swapAdvancedEVM.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btc-to-smartchain/swapAdvancedEVM.ts)
 :::
 
-## Protocol Differences
-
-:::info
-**Solana** uses the legacy swap protocol which requires opening a swap address on-chain before sending Bitcoin.
-
-**Starknet/EVM** uses the newer SPV-based protocol which is simpler - you just sign and send the Bitcoin transaction.
+:::info Looking for Solana?
+Solana uses a different (legacy) swap protocol. See [BTC to Solana](./solana/btc-to-solana).
 :::
 
-## BTC to Starknet/EVM (Recommended)
-
-### Getting a Quote
+## Getting a Quote
 
 ```typescript
 import {SpvFromBTCSwapState, SwapAmountType, FeeType} from "@atomiqlabs/sdk";
@@ -121,69 +115,6 @@ const swap = await swapper.swap(
 console.log("Gas drop:", swap.getGasDropOutput().toString());
 ```
 
-## BTC to Solana (Legacy Protocol)
-
-The Solana protocol requires an additional commitment step.
-
-### Getting a Quote
-
-```typescript
-import {FromBTCSwapState, SwapAmountType} from "@atomiqlabs/sdk";
-
-const swap = await swapper.swap(
-  Tokens.BITCOIN.BTC,
-  Tokens.SOLANA.SOL,
-  "0.0001",
-  SwapAmountType.EXACT_IN,
-  undefined,
-  solanaSigner.getAddress()
-);
-
-// Additional info for Solana swaps
-console.log("Security deposit:", swap.getSecurityDeposit().toString());
-console.log("Claimer bounty:", swap.getClaimerBounty().toString());
-```
-
-:::info Security Deposit
-Solana swaps require a security deposit in SOL that you get back when the swap succeeds. This deposit reserves liquidity from the LP.
-:::
-
-### Executing the Swap
-
-```typescript
-const automaticSettlementSuccess = await swap.execute(
-  solanaSigner,
-  {
-    address: bitcoinWallet.address,
-    publicKey: Buffer.from(bitcoinWallet.pubkey).toString("hex"),
-    signPsbt: (psbt, signInputs) => {
-      return bitcoinWallet.signPsbt(psbt.psbt, signInputs);
-    }
-  },
-  {
-    onDestinationCommitSent: (txId) => {
-      console.log(`Swap address opened: ${txId}`);
-    },
-    onSourceTransactionSent: (txId) => {
-      console.log(`Bitcoin tx sent: ${txId}`);
-    },
-    onSourceTransactionConfirmationStatus: (txId, confirmations, target, etaMs) => {
-      console.log(`Confirmations: ${confirmations}/${target}`);
-    },
-    onSourceTransactionConfirmed: (txId) => {
-      console.log(`Bitcoin tx confirmed: ${txId}`);
-    },
-    onSwapSettled: (txId) => {
-      console.log(`Swap settled: ${txId}`);
-    }
-  }
-);
-
-if (!automaticSettlementSuccess) {
-  await swap.claim(solanaSigner);
-}
-```
-
 ## Sending from External Wallet
 
 If you don't have programmatic access to the Bitcoin wallet:
@@ -210,8 +141,6 @@ if (!settled) {
 
 ## Swap States
 
-### SpvFromBTC States (Starknet/EVM)
-
 | State | Value | Description |
 |-------|-------|-------------|
 | `CLOSED` | -5 | Catastrophic failure (should never happen) |
@@ -227,20 +156,7 @@ if (!settled) {
 | `BTC_TX_CONFIRMED` | 5 | Bitcoin tx confirmed |
 | `CLAIM_CLAIMED` | 6 | Swap complete, funds claimed |
 
-### FromBTC States (Solana)
-
-| State | Value | Description |
-|-------|-------|-------------|
-| `EXPIRED` | -3 | Bitcoin swap address expired |
-| `QUOTE_EXPIRED` | -2 | Quote expired |
-| `QUOTE_SOFT_EXPIRED` | -1 | Quote probably expired |
-| `PR_CREATED` | 0 | Waiting for swap address to be opened |
-| `CLAIM_COMMITED` | 1 | Swap address opened |
-| `BTC_TX_CONFIRMED` | 2 | Bitcoin tx confirmed |
-| `CLAIM_CLAIMED` | 3 | Swap complete, funds claimed |
-
 ## API Reference
 
 - [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) - Starknet/EVM swap class
-- [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap) - Solana swap class
 - [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum

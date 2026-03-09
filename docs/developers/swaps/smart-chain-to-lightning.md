@@ -10,7 +10,10 @@ This guide covers swapping smart chain tokens to Bitcoin Lightning Network.
 See complete working examples:
 - [smartchain-to-btcln/swapBasic.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btcln/swapBasic.ts)
 - [smartchain-to-btcln/swapBasicLNURL.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btcln/swapBasicLNURL.ts)
-- [smartchain-to-btcln/swapAdvancedSolana.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btcln/swapAdvancedSolana.ts)
+:::
+
+:::info Looking for Solana?
+See [Solana to Lightning](./solana/solana-to-lightning).
 :::
 
 ## Overview
@@ -135,11 +138,11 @@ For exact input amount swaps, use a handler that generates invoices on demand:
 
 ```typescript
 const swap = await swapper.swap(
-  Tokens.SOLANA.SOL,
+  Tokens.STARKNET.STRK,
   Tokens.BITCOIN.BTCLN,
-  1_000_000_000n,                 // 1 SOL input
+  "100",                          // 100 STRK input
   SwapAmountType.EXACT_IN,       // Exact input
-  solanaSigner.getAddress(),
+  starknetSigner.getAddress(),
   {
     getInvoice: async (amountSats, abortSignal?) => {
       // Generate invoice for the calculated output amount
@@ -184,22 +187,6 @@ for (const swap of refundable) {
 ```
 
 ## Examples for Each Chain
-
-### Solana
-
-```typescript
-const swap = await swapper.swap(
-  Tokens.SOLANA.SOL,
-  Tokens.BITCOIN.BTCLN,
-  undefined,
-  SwapAmountType.EXACT_OUT,
-  solanaSigner.getAddress(),
-  lightningInvoice
-);
-
-const success = await swap.execute(solanaSigner, { /* callbacks */ });
-if (!success) await swap.refund(solanaSigner);
-```
 
 ### Starknet
 

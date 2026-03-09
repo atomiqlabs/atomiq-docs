@@ -94,6 +94,16 @@ const sidebars = {
         'developers/swaps/lightning-to-smart-chain',
         'developers/swaps/smart-chain-to-lightning',
         'developers/swaps/lnurl-swaps',
+        {
+          type: 'category',
+          label: 'Solana (Legacy)',
+          items: [
+            'developers/swaps/solana/btc-to-solana',
+            'developers/swaps/solana/solana-to-btc',
+            'developers/swaps/solana/lightning-to-solana',
+            'developers/swaps/solana/solana-to-lightning',
+          ],
+        },
       ],
     },
     {

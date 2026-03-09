@@ -4,7 +4,7 @@ sidebar_position: 4
 
 # Lightning to Smart Chain
 
-This guide covers swapping Bitcoin Lightning Network to smart chain tokens.
+This guide covers swapping Bitcoin Lightning Network to Starknet or EVM tokens using the auto-settlement protocol.
 
 :::tip Runnable Examples
 See complete working examples:
@@ -13,17 +13,11 @@ See complete working examples:
 - [btcln-to-smartchain/swapAdvancedStarknet.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapAdvancedStarknet.ts)
 :::
 
-## Protocol Differences
-
-:::info
-**Solana** uses the legacy protocol requiring an HTLC commitment on the destination chain.
-
-**Starknet/EVM** uses the newer auto-settlement protocol where the LP automatically settles the swap after receiving payment.
+:::info Looking for Solana?
+Solana uses a different (legacy) swap protocol. See [Lightning to Solana](./solana/lightning-to-solana).
 :::
 
-## Lightning to Starknet/EVM (Recommended)
-
-### Getting a Quote
+## Getting a Quote
 
 ```typescript
 import {FromBTCLNAutoSwapState, SwapAmountType, FeeType} from "@atomiqlabs/sdk";
@@ -112,55 +106,6 @@ if (!settled) {
 }
 ```
 
-## Lightning to Solana (Legacy Protocol)
-
-### Getting a Quote
-
-```typescript
-import {FromBTCLNSwapState, SwapAmountType} from "@atomiqlabs/sdk";
-
-const swap = await swapper.swap(
-  Tokens.BITCOIN.BTCLN,
-  Tokens.SOLANA.SOL,
-  10000n,                       // 10,000 sats
-  SwapAmountType.EXACT_IN,
-  undefined,
-  solanaSigner.getAddress()
-);
-
-// Additional info for Solana
-console.log("Security deposit:", swap.getSecurityDeposit().toString());
-console.log("Invoice:", swap.getAddress());
-```
-
-### Executing the Swap
-
-```typescript
-await swap.execute(
-  solanaSigner,
-  {
-    payInvoice: async (bolt11) => {
-      // Pay invoice
-      return "";
-    }
-  },
-  {
-    onSourceTransactionReceived: (paymentHash) => {
-      console.log(`Payment received: ${paymentHash}`);
-    },
-    onDestinationCommitSent: (txId) => {
-      console.log(`HTLC opened: ${txId}`);
-    },
-    onDestinationClaimSent: (txId) => {
-      console.log(`Claim sent: ${txId}`);
-    },
-    onSwapSettled: (txId) => {
-      console.log(`Swap settled: ${txId}`);
-    }
-  }
-);
-```
-
 ## Gas Drop
 
 Request native tokens for transaction fees:
@@ -224,8 +169,6 @@ const automaticSettlementSuccess = await swap.execute(
 
 ## Swap States
 
-### FromBTCLNAuto States (Starknet/EVM)
-
 | State | Value | Description |
 |-------|-------|-------------|
 | `FAILED` | -4 | Claiming failed, LN payment will refund |
@@ -237,21 +180,7 @@ const automaticSettlementSuccess = await swap.execute(
 | `CLAIM_COMMITED` | 2 | LP offered HTLC |
 | `CLAIM_CLAIMED` | 3 | Swap complete |
 
-### FromBTCLN States (Solana)
-
-| State | Value | Description |
-|-------|-------|-------------|
-| `FAILED` | -4 | Claiming failed, LN payment will refund |
-| `QUOTE_EXPIRED` | -3 | Quote expired |
-| `QUOTE_SOFT_EXPIRED` | -2 | Quote probably expired |
-| `EXPIRED` | -1 | Invoice expired |
-| `PR_CREATED` | 0 | Waiting for LN payment |
-| `PR_PAID` | 1 | Payment received |
-| `CLAIM_COMMITED` | 2 | HTLC initiated |
-| `CLAIM_CLAIMED` | 3 | Swap complete |
-
 ## API Reference
 
 - [FromBTCLNAutoSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap) - Starknet/EVM swap class
-- [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) - Solana swap class
 - [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum
