@@ -4,17 +4,20 @@ sidebar_position: 1
 
 # BTC to Solana
 
-This guide covers swapping Bitcoin L1 (on-chain) to Solana tokens using the legacy FromBTC protocol.
+Swap Bitcoin L1 (on-chain) to Solana tokens using the legacy FromBTC protocol.
 
 :::info Legacy Protocol
-Solana uses the legacy swap protocol which requires opening a swap address on-chain before sending Bitcoin. For Starknet/EVM swaps which use the newer SPV-based protocol, see [BTC to Smart Chain](../btc-to-smart-chain).
+Solana uses the legacy swap protocol which requires opening a swap address on-chain before sending Bitcoin. For Starknet/EVM swaps, see [BTC to Smart Chain](../btc-to-smart-chain).
 :::
 
-## Getting a Quote
+## Executing the Swap
+
+Create a [quote](../creating-quotes), then execute. The Solana protocol requires a signer for the commitment step:
 
 ```typescript
 import {FromBTCSwapState, SwapAmountType} from "@atomiqlabs/sdk";
 
+// Create a quote
 const swap = await swapper.swap(
   Tokens.BITCOIN.BTC,
   Tokens.SOLANA.SOL,
@@ -24,19 +27,8 @@ const swap = await swapper.swap(
   solanaSigner.getAddress()
 );
 
-// Additional info for Solana swaps
-console.log("Security deposit:", swap.getSecurityDeposit().toString());
-console.log("Claimer bounty:", swap.getClaimerBounty().toString());
-```
-
-:::info Security Deposit
-Solana swaps require a security deposit in SOL that you get back when the swap succeeds. This deposit reserves liquidity from the LP.
-:::
-
-## Executing the Swap
-
-```typescript
-const automaticSettlementSuccess = await swap.execute(
+// Execute - Solana signer needed for on-chain commitment
+const settled = await swap.execute(
   solanaSigner,
   {
     address: bitcoinWallet.address,
@@ -64,29 +56,30 @@ const automaticSettlementSuccess = await swap.execute(
   }
 );
 
-if (!automaticSettlementSuccess) {
+if (!settled) {
   await swap.claim(solanaSigner);
 }
 ```
+
+:::info Security Deposit
+Solana swaps require a security deposit in SOL that you get back when the swap succeeds. Check it with `swap.getSecurityDeposit()`.
+:::
 
 ## Sending from External Wallet
 
 If you don't have programmatic access to the Bitcoin wallet:
 
 ```typescript
-// Get the address/deeplink for external wallet
 const btcAddress = swap.getAddress();
 const deepLink = swap.getHyperlink();
 
 // IMPORTANT: Send the EXACT amount!
 console.log(`Send exactly ${swap.getInput()} to ${btcAddress}`);
 
-// Wait for the Bitcoin transaction
 await swap.waitForBitcoinTransaction((txId, confirmations, target, etaMs) => {
   console.log(`Waiting: ${confirmations}/${target} confirmations`);
 });
 
-// Then wait for settlement or claim manually
 const settled = await swap.waitTillClaimed(60);
 if (!settled) {
   await swap.claim(solanaSigner);

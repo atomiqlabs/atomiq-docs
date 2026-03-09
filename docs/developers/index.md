@@ -17,6 +17,7 @@ See complete working examples: [atomiq-sdk-demo](https://github.com/atomiqlabs/a
 - [Quick Start (Node.js)](./quick-start/quick-start-nodejs) - Set up in Node.js environments
 
 ### Swap Tutorials
+- [Creating Quotes](./swaps/creating-quotes) - How to create and inspect swap quotes
 - [BTC to Smart Chain](./swaps/btc-to-smart-chain) - Bitcoin L1 to Starknet/EVM
 - [Smart Chain to BTC](./swaps/smart-chain-to-btc) - Starknet/EVM to Bitcoin L1
 - [Lightning to Smart Chain](./swaps/lightning-to-smart-chain) - Lightning to Starknet/EVM

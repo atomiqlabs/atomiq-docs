@@ -29,6 +29,7 @@ Lightning swaps are instant and don't require Bitcoin confirmations, making them
 
 ## Tutorials
 
+- [Creating Quotes](./creating-quotes) - How to create and inspect swap quotes
 - [BTC to Smart Chain](./btc-to-smart-chain) - Swap Bitcoin L1 to Starknet or EVM tokens
 - [Smart Chain to BTC](./smart-chain-to-btc) - Swap Starknet/EVM tokens to Bitcoin L1
 - [Lightning to Smart Chain](./lightning-to-smart-chain) - Swap Lightning BTC to Starknet/EVM tokens

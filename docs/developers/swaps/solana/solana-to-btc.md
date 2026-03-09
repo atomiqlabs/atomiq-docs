@@ -4,57 +4,28 @@ sidebar_position: 2
 
 # Solana to BTC
 
-This guide covers swapping Solana tokens to Bitcoin L1 (on-chain).
+Swap Solana tokens to Bitcoin L1 (on-chain).
 
 :::tip Runnable Examples
-See complete working examples:
 - [smartchain-to-btc/swapAdvancedSolana.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btc/swapAdvancedSolana.ts)
 :::
 
-## Overview
+## Executing the Swap
 
-Solana to BTC swaps use the same ToBTC protocol as other chains. You lock tokens on Solana, and the LP sends Bitcoin to your address.
-
-## Getting a Quote
+Create a [quote](../creating-quotes), then execute with your Solana signer:
 
 ```typescript
-import {ToBTCSwapState, SwapAmountType, FeeType} from "@atomiqlabs/sdk";
+import {ToBTCSwapState, SwapAmountType} from "@atomiqlabs/sdk";
 
+// Create a quote
 const swap = await swapper.swap(
   Tokens.SOLANA.SOL,              // From SOL
   Tokens.BITCOIN.BTC,             // To BTC
   "0.00003",                      // Amount (3000 sats to receive)
-  SwapAmountType.EXACT_OUT,       // Specify output amount
+  SwapAmountType.EXACT_OUT,
   solanaSigner.getAddress(),      // Source address
   "bc1q..."                       // Bitcoin destination address
 );
-
-// Quote information
-console.log("Input (excluding fees):", swap.getInputWithoutFee().toString());
-console.log("Fees:", swap.getFee().amountInSrcToken.toString());
-console.log("Total input:", swap.getInput().toString());
-console.log("Output:", swap.getOutput().toString());
-console.log("Quote expires:", new Date(swap.getQuoteExpiry()));
-
-// Estimated network fee
-console.log("Est. network fee:", await swap.getSmartChainNetworkFee());
-
-// Bitcoin fee rate being used
-console.log("BTC fee rate:", swap.getBitcoinFeeRate(), "sats/vB");
-
-// Fee breakdown
-for (const fee of swap.getFeeBreakdown()) {
-  console.log(`${FeeType[fee.type]}: ${fee.fee.amountInSrcToken}`);
-}
-```
-
-## Executing the Swap
-
-```typescript
-// Listen for state changes (optional)
-swap.events.on("swapState", (swap) => {
-  console.log("State:", ToBTCSwapState[swap.getState()]);
-});
 
 // Execute the swap
 const swapSuccessful = await swap.execute(
@@ -72,50 +43,17 @@ const swapSuccessful = await swap.execute(
   }
 );
 
-// Handle failure
 if (!swapSuccessful) {
   console.log("Swap failed, refunding...");
   await swap.refund(solanaSigner);
-  console.log("Refunded!");
 } else {
   console.log("Success! BTC txId:", swap.getOutputTxId());
 }
 ```
 
-## EXACT_IN vs EXACT_OUT
-
-### EXACT_OUT (Specify BTC amount to receive)
-
-```typescript
-const swap = await swapper.swap(
-  Tokens.SOLANA.SOL,
-  Tokens.BITCOIN.BTC,
-  "0.0001",                    // Receive exactly 0.0001 BTC (10,000 sats)
-  SwapAmountType.EXACT_OUT,
-  solanaSigner.getAddress(),
-  "bc1q..."
-);
-```
-
-### EXACT_IN (Specify token amount to spend)
-
-```typescript
-const swap = await swapper.swap(
-  Tokens.SOLANA.SOL,
-  Tokens.BITCOIN.BTC,
-  "1.5",                       // Spend exactly 1.5 SOL
-  SwapAmountType.EXACT_IN,
-  solanaSigner.getAddress(),
-  "bc1q..."
-);
-```
-
 ## Refunding Failed Swaps
 
-If the LP fails to send the Bitcoin payment, you can refund your tokens:
-
 ```typescript
-// Check if refundable
 if (swap.isRefundable()) {
   await swap.refund(solanaSigner);
 }

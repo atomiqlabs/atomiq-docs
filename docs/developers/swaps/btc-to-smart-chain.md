@@ -1,13 +1,12 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # BTC to Smart Chain
 
-This guide covers swapping Bitcoin L1 (on-chain) to Starknet or EVM tokens using the SPV-based protocol.
+Swap Bitcoin L1 (on-chain) to Starknet or EVM tokens using the SPV-based protocol.
 
 :::tip Runnable Examples
-See complete working examples:
 - [btc-to-smartchain/swapBasic.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btc-to-smartchain/swapBasic.ts)
 - [btc-to-smartchain/swapAdvancedStarknet.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btc-to-smartchain/swapAdvancedStarknet.ts)
 - [btc-to-smartchain/swapAdvancedEVM.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btc-to-smartchain/swapAdvancedEVM.ts)
@@ -17,16 +16,19 @@ See complete working examples:
 Solana uses a different (legacy) swap protocol. See [BTC to Solana](./solana/btc-to-solana).
 :::
 
-## Getting a Quote
+## Executing the Swap
+
+Create a [quote](./creating-quotes), then execute with a Bitcoin wallet:
 
 ```typescript
-import {SpvFromBTCSwapState, SwapAmountType, FeeType} from "@atomiqlabs/sdk";
+import {SpvFromBTCSwapState, SwapAmountType} from "@atomiqlabs/sdk";
 
+// Create a quote
 const swap = await swapper.swap(
   Tokens.BITCOIN.BTC,           // From BTC
   Tokens.STARKNET.STRK,         // To destination token
   "0.00003",                    // Amount (3000 sats)
-  SwapAmountType.EXACT_IN,      // Specify input amount
+  SwapAmountType.EXACT_IN,
   undefined,                    // Source address (not used for BTC swaps)
   starknetSigner.getAddress(),  // Destination address
   {
@@ -34,35 +36,8 @@ const swap = await swapper.swap(
   }
 );
 
-// Quote information
-console.log("Input:", swap.getInputWithoutFee().toString());
-console.log("Fees:", swap.getFee().amountInSrcToken.toString());
-console.log("Total input:", swap.getInput().toString());
-console.log("Output:", swap.getOutput().toString());
-console.log("Quote expires:", new Date(swap.getQuoteExpiry()));
-
-// Pricing information
-const priceInfo = swap.getPriceInfo();
-console.log("Swap price:", priceInfo.swapPrice);
-console.log("Market price:", priceInfo.marketPrice);
-console.log("Difference:", priceInfo.difference);
-
-// Fee breakdown
-for (const fee of swap.getFeeBreakdown()) {
-  console.log(`${FeeType[fee.type]}: ${fee.fee.amountInSrcToken}`);
-}
-```
-
-### Executing the Swap
-
-```typescript
-// Listen for state changes (optional)
-swap.events.on("swapState", (swap) => {
-  console.log("State:", SpvFromBTCSwapState[swap.getState()]);
-});
-
 // Execute with Bitcoin wallet
-const automaticSettlementSuccess = await swap.execute(
+const settled = await swap.execute(
   {
     address: bitcoinWallet.address,
     publicKey: Buffer.from(bitcoinWallet.pubkey).toString("hex"),
@@ -88,15 +63,15 @@ const automaticSettlementSuccess = await swap.execute(
 );
 
 // Manual claim if automatic settlement fails
-if (!automaticSettlementSuccess) {
-  console.log("Auto-settlement failed, claiming manually...");
+if (!settled) {
+  // Auto-settlement failed, claiming manually
   await swap.claim(starknetSigner);
 }
 ```
 
-### Gas Drop
+## Gas Drop
 
-You can request native tokens on the destination chain to cover transaction fees:
+Request native tokens on the destination chain to cover transaction fees:
 
 ```typescript
 const swap = await swapper.swap(
@@ -111,7 +86,6 @@ const swap = await swapper.swap(
   }
 );
 
-// Check gas drop amount
 console.log("Gas drop:", swap.getGasDropOutput().toString());
 ```
 

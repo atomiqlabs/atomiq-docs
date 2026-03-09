@@ -4,17 +4,20 @@ sidebar_position: 3
 
 # Lightning to Solana
 
-This guide covers swapping Bitcoin Lightning Network to Solana tokens using the legacy FromBTCLN protocol.
+Swap Bitcoin Lightning Network to Solana tokens using the legacy FromBTCLN protocol.
 
 :::info Legacy Protocol
-Solana uses the legacy protocol requiring an HTLC commitment on the destination chain. For Starknet/EVM swaps which use the newer auto-settlement protocol, see [Lightning to Smart Chain](../lightning-to-smart-chain).
+Solana uses the legacy protocol requiring an HTLC commitment on the destination chain. For Starknet/EVM swaps, see [Lightning to Smart Chain](../lightning-to-smart-chain).
 :::
 
-## Getting a Quote
+## Executing the Swap
+
+Create a [quote](../creating-quotes), then execute. The Solana protocol requires a signer for the HTLC commitment:
 
 ```typescript
 import {FromBTCLNSwapState, SwapAmountType} from "@atomiqlabs/sdk";
 
+// Create a quote
 const swap = await swapper.swap(
   Tokens.BITCOIN.BTCLN,
   Tokens.SOLANA.SOL,
@@ -24,19 +27,15 @@ const swap = await swapper.swap(
   solanaSigner.getAddress()
 );
 
-// Additional info for Solana
 console.log("Security deposit:", swap.getSecurityDeposit().toString());
 console.log("Invoice:", swap.getAddress());
-```
 
-## Executing the Swap
-
-```typescript
+// Execute - Solana signer needed for HTLC commitment
 await swap.execute(
   solanaSigner,
   {
     payInvoice: async (bolt11) => {
-      // Pay invoice
+      // Pay invoice using your wallet
       return "";
     }
   },

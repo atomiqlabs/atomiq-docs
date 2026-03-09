@@ -89,6 +89,7 @@ const sidebars = {
       label: 'Swap Tutorials',
       link: { type: 'doc', id: 'developers/swaps/index' },
       items: [
+        'developers/swaps/creating-quotes',
         'developers/swaps/btc-to-smart-chain',
         'developers/swaps/smart-chain-to-btc',
         'developers/swaps/lightning-to-smart-chain',

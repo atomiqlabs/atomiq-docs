@@ -1,13 +1,12 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 # Lightning to Smart Chain
 
-This guide covers swapping Bitcoin Lightning Network to Starknet or EVM tokens using the auto-settlement protocol.
+Swap Bitcoin Lightning Network to Starknet or EVM tokens using the auto-settlement protocol.
 
 :::tip Runnable Examples
-See complete working examples:
 - [btcln-to-smartchain/swapBasic.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapBasic.ts)
 - [btcln-to-smartchain/swapBasicLNURL.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapBasicLNURL.ts)
 - [btcln-to-smartchain/swapAdvancedStarknet.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapAdvancedStarknet.ts)
@@ -17,16 +16,19 @@ See complete working examples:
 Solana uses a different (legacy) swap protocol. See [Lightning to Solana](./solana/lightning-to-solana).
 :::
 
-## Getting a Quote
+## Executing the Swap
+
+Create a [quote](./creating-quotes), then execute with a Lightning wallet:
 
 ```typescript
-import {FromBTCLNAutoSwapState, SwapAmountType, FeeType} from "@atomiqlabs/sdk";
+import {FromBTCLNAutoSwapState, SwapAmountType} from "@atomiqlabs/sdk";
 
+// Create a quote
 const swap = await swapper.swap(
   Tokens.BITCOIN.BTCLN,          // From Lightning
   Tokens.STARKNET.STRK,          // To destination token
   3000n,                         // Amount in sats
-  SwapAmountType.EXACT_IN,       // Specify input amount
+  SwapAmountType.EXACT_IN,
   undefined,                     // Source (not used for LN)
   starknetSigner.getAddress(),   // Destination address
   {
@@ -34,37 +36,16 @@ const swap = await swapper.swap(
   }
 );
 
-// Get the Lightning invoice to pay
-const invoice = swap.getAddress();
-const qrCodeData = swap.getHyperlink();
-
-console.log("Pay this invoice:", invoice);
-console.log("QR code data:", qrCodeData);
-
-// Quote information
-console.log("Input:", swap.getInputWithoutFee().toString());
-console.log("Fees:", swap.getFee().amountInSrcToken.toString());
-console.log("Output:", swap.getOutput().toString());
-console.log("Gas drop:", swap.getGasDropOutput().toString());
-console.log("Quote expires:", new Date(swap.getQuoteExpiry()));
-```
-
-### Executing with Lightning Wallet
-
-```typescript
-// Listen for state changes
-swap.events.on("swapState", (swap) => {
-  console.log("State:", FromBTCLNAutoSwapState[swap.getState()]);
-});
+// The quote includes a Lightning invoice to pay
+console.log("Pay this invoice:", swap.getAddress());
 
 // Execute - pass a wallet that can pay invoices
-const automaticSettlementSuccess = await swap.execute(
+const settled = await swap.execute(
   {
     payInvoice: async (bolt11) => {
       // Pay the invoice using WebLN, NWC, or your wallet
       console.log("Paying invoice:", bolt11);
-      // Return payment preimage or empty string
-      return "";
+      return "";  // Return payment preimage or empty string
     }
   },
   {
@@ -77,20 +58,18 @@ const automaticSettlementSuccess = await swap.execute(
   }
 );
 
-// Manual claim if needed
-if (!automaticSettlementSuccess) {
+if (!settled) {
   await swap.claim(starknetSigner);
 }
 ```
 
-### Manual Payment (External Wallet)
+## Manual Payment (External Wallet)
 
 If you don't have programmatic wallet access:
 
 ```typescript
 // Display invoice for user to pay manually
-const invoice = swap.getAddress();
-console.log("Please pay:", invoice);
+console.log("Please pay:", swap.getAddress());
 
 // Wait for payment to be received
 const paymentReceived = await swap.waitForPayment();
@@ -132,10 +111,9 @@ console.log("Plus gas drop:", swap.getGasDropOutput().toString(), "STRK");
 For browser wallets with WebLN support:
 
 ```typescript
-const automaticSettlementSuccess = await swap.execute(
+const settled = await swap.execute(
   {
     payInvoice: async (bolt11) => {
-      // Use WebLN
       if (typeof window !== 'undefined' && window.webln) {
         await window.webln.enable();
         const result = await window.webln.sendPayment(bolt11);
@@ -156,7 +134,7 @@ import {NWC} from "@getalby/sdk";
 const nwc = new NWC({ nostrWalletConnectUrl: "nostr+walletconnect://..." });
 await nwc.enable();
 
-const automaticSettlementSuccess = await swap.execute(
+const settled = await swap.execute(
   {
     payInvoice: async (bolt11) => {
       const result = await nwc.payInvoice(bolt11);

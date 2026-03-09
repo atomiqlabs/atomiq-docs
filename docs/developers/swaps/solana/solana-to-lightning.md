@@ -4,50 +4,32 @@ sidebar_position: 4
 
 # Solana to Lightning
 
-This guide covers swapping Solana tokens to Bitcoin Lightning Network.
+Swap Solana tokens to Bitcoin Lightning Network.
 
 :::tip Runnable Examples
-See complete working examples:
 - [smartchain-to-btcln/swapAdvancedSolana.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btcln/swapAdvancedSolana.ts)
 :::
 
-## Overview
+## Executing the Swap
 
-Solana to Lightning swaps use the same ToBTCLN protocol as other chains. You provide a Lightning invoice to pay, and the SDK handles locking tokens and waiting for the payment.
-
-## Basic Swap with Invoice
+Create a [quote](../creating-quotes) with a Lightning invoice, then execute:
 
 ```typescript
 import {ToBTCSwapState, SwapAmountType} from "@atomiqlabs/sdk";
 
 const lightningInvoice = "lnbc10u1p...";
-if (!swapper.Utils.isValidLightningInvoice(lightningInvoice)) {
-  throw new Error("Invalid Lightning invoice");
-}
 
+// Create a quote
 const swap = await swapper.swap(
   Tokens.SOLANA.SOL,              // From SOL
   Tokens.BITCOIN.BTCLN,           // To Lightning
-  undefined,                      // Amount comes from invoice!
-  SwapAmountType.EXACT_OUT,       // Invoice has fixed amount
+  undefined,                      // Amount comes from invoice
+  SwapAmountType.EXACT_OUT,
   solanaSigner.getAddress(),      // Source address
   lightningInvoice                // Lightning invoice to pay
 );
 
-// Quote information
-console.log("Input:", swap.getInputWithoutFee().toString());
-console.log("Fees:", swap.getFee().amountInSrcToken.toString());
-console.log("Total input:", swap.getInput().toString());
-console.log("Output (sats):", swap.getOutput().toString());
-```
-
-## Executing the Swap
-
-```typescript
-swap.events.on("swapState", (swap) => {
-  console.log("State:", ToBTCSwapState[swap.getState()]);
-});
-
+// Execute the swap
 const swapSuccessful = await swap.execute(
   solanaSigner,
   {
@@ -80,7 +62,7 @@ const swap = await swapper.swap(
   Tokens.SOLANA.SOL,
   Tokens.BITCOIN.BTCLN,
   1_000_000_000n,               // Spend 1 SOL
-  SwapAmountType.EXACT_IN,      // Calculate output
+  SwapAmountType.EXACT_IN,
   solanaSigner.getAddress(),
   "user@walletofsatoshi.com"
 );
@@ -97,15 +79,15 @@ const swap = await swapper.swap(
   Tokens.SOLANA.SOL,
   Tokens.BITCOIN.BTCLN,
   1_000_000_000n,                 // 1 SOL input
-  SwapAmountType.EXACT_IN,       // Exact input
+  SwapAmountType.EXACT_IN,
   solanaSigner.getAddress(),
   {
     getInvoice: async (amountSats, abortSignal?) => {
       const invoice = await myLnWallet.createInvoice(amountSats);
       return invoice;
     },
-    minMsats: 1_000_000n,        // Optional: 1000 sats minimum
-    maxMsats: 1_000_000_000n     // Optional: 1M sats maximum
+    minMsats: 1_000_000n,
+    maxMsats: 1_000_000_000n
   }
 );
 ```
@@ -113,14 +95,10 @@ const swap = await swapper.swap(
 ## Refunding Failed Swaps
 
 ```typescript
-if (!swapSuccessful) {
-  if (swap.isRefundable()) {
-    await swap.refund(solanaSigner);
-    console.log("Refunded!");
-  }
+if (swap.isRefundable()) {
+  await swap.refund(solanaSigner);
 }
 
-// Or check for refundable swaps on startup
 const refundable = await swapper.getRefundableSwaps(
   "SOLANA",
   solanaSigner.getAddress()
