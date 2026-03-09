@@ -67,7 +67,7 @@ const sidebars = {
       ],
     },
   ],
-
+  
   // SDK Tutorials (developer-focused)
   developersSidebar: [
     {
@@ -82,6 +82,7 @@ const sidebars = {
       items: [
         'developers/quick-start/quick-start-browser',
         'developers/quick-start/quick-start-nodejs',
+        'developers/quick-start/configuration',
       ],
     },
     {
@@ -107,23 +108,12 @@ const sidebars = {
         },
       ],
     },
-    {
-      type: 'category',
-      label: 'Utilities',
-      link: { type: 'doc', id: 'developers/utilities/index' },
-      items: [
-        'developers/utilities/address-parser',
-        'developers/utilities/wallet-balance',
-        'developers/utilities/supported-tokens',
-        'developers/utilities/swap-types',
-      ],
-    },
+
     {
       type: 'category',
       label: 'Swap Management',
       link: { type: 'doc', id: 'developers/swap-management/index' },
       items: [
-        'developers/swap-management/swap-states',
         'developers/swap-management/historical-swaps',
         'developers/swap-management/refunds',
         'developers/swap-management/claiming',
@@ -135,9 +125,19 @@ const sidebars = {
       link: { type: 'doc', id: 'developers/advanced/index' },
       items: [
         'developers/advanced/manual-transactions',
-        'developers/advanced/configuration',
         'developers/advanced/events',
         'developers/advanced/swap-limits',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Utilities',
+      link: { type: 'doc', id: 'developers/utilities/index' },
+      items: [
+        'developers/utilities/address-parser',
+        'developers/utilities/wallet-balance',
+        'developers/utilities/supported-tokens',
+        'developers/utilities/swap-types',
       ],
     },
     {

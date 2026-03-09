@@ -6,8 +6,9 @@ sidebar_position: 1
 
 The Atomiq SDK is a TypeScript multichain client for trustless cross-chain swaps between smart chains (Solana, Starknet, EVM) and Bitcoin (on-chain L1 and Lightning Network L2).
 
-:::tip Demo Repository
-See complete working examples: [atomiq-sdk-demo](https://github.com/atomiqlabs/atomiq-sdk-demo)
+:::tip Getting Started
+See complete working Node.js examples in the [atomiq-sdk-demo](https://github.com/atomiqlabs/atomiq-sdk-demo) repository.
+The repo contains [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/setup.ts) and [wallets.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/wallets.ts), which are good boilerplate to start from and build swaps on top of. For browser environments, see the [Quick Start (Browser)](./quick-start/quick-start-browser) guide.
 :::
 
 ## Documentation Sections
@@ -15,6 +16,7 @@ See complete working examples: [atomiq-sdk-demo](https://github.com/atomiqlabs/a
 ### Getting Started
 - [Quick Start (Browser)](./quick-start/quick-start-browser) - Set up in browser environments
 - [Quick Start (Node.js)](./quick-start/quick-start-nodejs) - Set up in Node.js environments
+- [Configuration](./quick-start/configuration) - Swapper options
 
 ### Swap Tutorials
 - [Creating Quotes](./swaps/creating-quotes) - How to create and inspect swap quotes
