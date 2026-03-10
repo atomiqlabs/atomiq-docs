@@ -14,11 +14,22 @@ The main SDK package containing:
 
 - [**Swapper**](/sdk-reference/api/atomiq-sdk/src/classes/Swapper) - The central class for managing all swap operations
 - [**SwapperFactory**](/sdk-reference/api/atomiq-sdk/src/classes/SwapperFactory) - Configuration and initialization
-- **Swap Classes** - Specific implementations for different swap types:
-  - [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap) / [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap) - Smart chain to Bitcoin
-  - [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap) / [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) / [FromBTCLNAutoSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap) / [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) - Bitcoin to smart chain
+- **Swap Classes** - Specific implementations and base abstractions for the different swap flows:
+  - [ISwap](/sdk-reference/api/atomiq-sdk/src/classes/ISwap) / [IEscrowSwap](/sdk-reference/api/atomiq-sdk/src/classes/IEscrowSwap) - Base and abstract swap building blocks
+  - [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap) / [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap) - Smart chain to Bitcoin and Lightning
+  - [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap) / [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) / [FromBTCLNAutoSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap) / [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) - Bitcoin and Lightning to smart chain
+  - [LnForGasSwap](/sdk-reference/api/atomiq-sdk/src/classes/LnForGasSwap) / [OnchainForGasSwap](/sdk-reference/api/atomiq-sdk/src/classes/OnchainForGasSwap) - Trusted gas swap flows
+  - [IAddressSwap](/sdk-reference/api/atomiq-sdk/src/interfaces/IAddressSwap) / [IBTCWalletSwap](/sdk-reference/api/atomiq-sdk/src/interfaces/IBTCWalletSwap) / [ISwapWithGasDrop](/sdk-reference/api/atomiq-sdk/src/interfaces/ISwapWithGasDrop) - Shared swap capability interfaces
 - **Bitcoin** - [BitcoinWallet](/sdk-reference/api/atomiq-sdk/src/classes/BitcoinWallet), [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet), headers, RPC
-- **Storage** - [IUnifiedStorage](/sdk-reference/api/atomiq-sdk/src/interfaces/IUnifiedStorage) interface for implementing custom storage backends
+- **Chains** - [ChainInterface](/sdk-reference/api/atomiq-sdk/src/interfaces/ChainInterface), [SwapContract](/sdk-reference/api/atomiq-sdk/src/interfaces/SwapContract), [SpvVaultContract](/sdk-reference/api/atomiq-sdk/src/classes/SpvVaultContract) for chain integrations and contract abstractions
+- **Errors** - [IntermediaryError](/sdk-reference/api/atomiq-sdk/src/classes/IntermediaryError), [RequestError](/sdk-reference/api/atomiq-sdk/src/classes/RequestError), [TransactionRevertedError](/sdk-reference/api/atomiq-sdk/src/classes/TransactionRevertedError) for SDK and on-chain failure handling
+- **LPs** - [Intermediary](/sdk-reference/api/atomiq-sdk/src/classes/Intermediary), [IntermediaryDiscovery](/sdk-reference/api/atomiq-sdk/src/classes/IntermediaryDiscovery) for working with liquidity providers
+- **Lightning** - [LightningNetworkApi](/sdk-reference/api/atomiq-sdk/src/interfaces/LightningNetworkApi), [LNURLPay](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLPay), [LNURLWithdraw](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLWithdraw) for Lightning payments and LNURL
+- **Messenger** - [Messenger](/sdk-reference/api/atomiq-sdk/src/interfaces/Messenger), [NostrMessenger](/sdk-reference/api/atomiq-sdk/src/classes/NostrMessenger) for data propagation/broadcasting layer between the SDK and Watchtowers
+- **Pricing** - [ISwapPrice](/sdk-reference/api/atomiq-sdk/src/classes/ISwapPrice) for swap price API & fees
+- **Storage** - [IUnifiedStorage](/sdk-reference/api/atomiq-sdk/src/interfaces/IUnifiedStorage) for implementing custom storage backends
+- **Swap Actions** - [SwapExecutionAction](/sdk-reference/api/atomiq-sdk/src/type-aliases/SwapExecutionAction) for execution step modeling
+- **Tokens** - [Token](/sdk-reference/api/atomiq-sdk/src/type-aliases/Token), [TokenAmount](/sdk-reference/api/atomiq-sdk/src/type-aliases/TokenAmount) for token metadata and amount handling
 - **Utilities** - [SwapperUtils](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils) and helpers for address parsing, balance checking, token identification
 
 ### **Chain Integrations**
