@@ -19,7 +19,9 @@ const sharedTypedocOptions = {
   useCodeBlocks: true,
   parametersFormat: 'table',
   typeDeclarationFormat: 'table',
-  sort: ['visibility', 'alphabetical'],
+  propertyMembersFormat: 'table',
+  classPropertiesFormat: 'table',
+  sort: ['visibility', 'enum-member-source-order', 'alphabetical'],
 };
 
 /** @type {import('@docusaurus/types').Config} */
@@ -83,6 +85,22 @@ const config = {
         readme: 'none',
         ...sharedTypedocOptions,
         mergeModulesMergeMode: 'module',
+      },
+    ],
+  ],
+
+  themes: [
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        indexDocs: true,
+        indexBlog: false,
+        indexPages: false,
+        docsRouteBasePath: ['/', 'sdk-reference'],
+        docsDir: ['docs', 'sdk-reference'],
+        hashed: true,
+        highlightSearchTermsOnTargetPage: true,
+        explicitSearchResultPath: true,
       },
     ],
   ],
