@@ -95,6 +95,96 @@ function renameChainLabels(items) {
   });
 }
 
+function collectDocItems(items) {
+  const docs = [];
+
+  for (const item of items) {
+    if (item.type === 'doc') {
+      docs.push({...item});
+      continue;
+    }
+
+    if (item.items && Array.isArray(item.items)) {
+      docs.push(...collectDocItems(item.items));
+    }
+  }
+
+  return docs;
+}
+
+function mergeNodeDocsIntoChains(items) {
+  const nodeDocTargets = {
+    'atomiq-chain-solana': {
+      'Events': ['SolanaChainEvents'],
+    },
+    'atomiq-chain-starknet': {
+      'Events': ['StarknetChainEvents'],
+      'Wallets': ['StarknetPersistentSigner'],
+    },
+    'atomiq-chain-evm': {
+      'Events': ['EVMChainEvents'],
+      'Wallets': ['EVMPersistentSigner'],
+    },
+  };
+
+  return items.map(item => {
+    if (item.type !== 'category' || !Array.isArray(item.items)) {
+      return item;
+    }
+
+    const targetConfig = nodeDocTargets[item.label];
+    if (!targetConfig) {
+      return item;
+    }
+
+    const nodeCategoryIndex = item.items.findIndex(child =>
+      child.type === 'category' && child.label === 'node'
+    );
+
+    if (nodeCategoryIndex === -1) {
+      return item;
+    }
+
+    const itemsWithoutNode = [...item.items];
+    const [nodeCategory] = itemsWithoutNode.splice(nodeCategoryIndex, 1);
+    const nodeDocs = collectDocItems(nodeCategory.items || []);
+    const nodeDocsByLabel = new Map(nodeDocs.map(doc => [doc.label, doc]));
+
+    const mergedItems = itemsWithoutNode.map(child => {
+      if (child.type !== 'category' || !Array.isArray(child.items)) {
+        return child;
+      }
+
+      const labelsToMerge = targetConfig[child.label];
+      if (!labelsToMerge) {
+        return child;
+      }
+
+      const mergedDocs = labelsToMerge
+        .map(label => nodeDocsByLabel.get(label))
+        .filter(Boolean)
+        .map(doc => ({
+          ...doc,
+          label: `${doc.label} (/node)`,
+        }));
+
+      if (mergedDocs.length === 0) {
+        return child;
+      }
+
+      return {
+        ...child,
+        items: [...child.items, ...mergedDocs],
+      };
+    });
+
+    return {
+      ...item,
+      items: mergedItems,
+    };
+  });
+}
+
 function sortItems(items, rootLabel) {
   items.sort((a, b) => {
     const aPrio = overridePriorities[rootLabel ?? null]?.[a.label];
@@ -216,7 +306,7 @@ const fixedSdk = sortItems(nestCategories(flattenSrcLevel(sdkItems)));
 
 // Apply transforms to chains and storage
 const fixedChains = renameChainLabels(
-  flattenSrcLevel(chainItems).map(chain => {
+  mergeNodeDocsIntoChains(flattenSrcLevel(chainItems)).map(chain => {
     // Apply nestCategories to each chain's items
     if (chain.type === 'category' && chain.items) {
       return {

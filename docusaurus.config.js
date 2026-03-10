@@ -69,8 +69,11 @@ const config = {
         entryPoints: [
           'repos/atomiq-sdk/src/index.ts',
           'repos/atomiq-chain-solana/src/index.ts',
+          'repos/atomiq-chain-solana/src/node/index.ts',
           'repos/atomiq-chain-starknet/src/index.ts',
+          'repos/atomiq-chain-starknet/src/node/index.ts',
           'repos/atomiq-chain-evm/src/index.ts',
+          'repos/atomiq-chain-evm/src/node/index.ts',
           'repos/atomiq-storage-sqlite/src/index.ts',
           'repos/atomiq-storage-rn-async/src/index.ts',
           'repos/atomiq-storage-memory-indexed-kv/src/index.ts',
