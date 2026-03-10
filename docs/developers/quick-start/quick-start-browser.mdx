@@ -30,6 +30,8 @@ npm install @atomiqlabs/chain-evm@latest
 
 ## Setup
 
+Not all chains support both Bitcoin testnets (testnet3 & testnet4), check the [network availability](/developers/quick-start/#network-availability).
+
 <Tabs groupId="network">
   <TabItem value="mainnet" label="Mainnet" default>
 
@@ -37,15 +39,9 @@ Set your RPC URLs:
 
 ```typescript
 const solanaRpc = "https://api.mainnet-beta.solana.com";
-const starknetRpc = "https://rpc.starknet.lava.build/";
+const starknetRpc = "https://rpc.starknet.lava.build/"; //Alternatively: https://starknet.api.onfinality.io/public or https://api.zan.top/public/starknet-mainnet
 const citreaRpc = "https://rpc.mainnet.citrea.xyz";
 ```
-
-:::tip Alternative RPC URLs
-You can use the following alternative RPC URLs for Starknet:
-- https://starknet.api.onfinality.io/public
-- https://api.zan.top/public/starknet-mainnet
-:::
 
 Create a swapper factory with your desired chain support. Use `as const` so TypeScript can properly infer the types:
 
@@ -76,7 +72,6 @@ const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
     },
     CITREA: {
       rpcUrl: citreaRpc, // Can also pass JsonRpcProvider object
-      chainType: "MAINNET"
     }
   },
   bitcoinNetwork: BitcoinNetwork.MAINNET
@@ -90,7 +85,7 @@ await swapper.init();
   <TabItem value="testnet3" label="Testnet3">
 
 :::info
-On testnets, only native tokens are generally supported (e.g. SOL, STRK, ETH, cBTC).
+On testnets, only native tokens are generally supported (e.g. SOL, STRK, cBTC).
 :::
 
 Set your testnet RPC URLs:
@@ -115,8 +110,12 @@ const Tokens: TypedTokens<SupportedChains> = Factory.Tokens;
 
 const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
   chains: {
-    SOLANA: { rpcUrl: solanaRpc },
-    STARKNET: { rpcUrl: starknetRpc }
+    SOLANA: {
+      rpcUrl: solanaRpc // Can also pass Connection object
+    },
+    STARKNET: {
+      rpcUrl: starknetRpc // Can also pass Provider object
+    }
   },
   bitcoinNetwork: BitcoinNetwork.TESTNET3
 });
@@ -128,7 +127,7 @@ await swapper.init();
   <TabItem value="testnet4" label="Testnet4">
 
 :::info
-On testnets, only native tokens are generally supported (e.g. SOL, STRK, ETH, cBTC).
+On testnets, only native tokens are generally supported (e.g. SOL, STRK, cBTC).
 :::
 
 Set your testnet RPC URLs:
@@ -153,10 +152,14 @@ const Tokens: TypedTokens<SupportedChains> = Factory.Tokens;
 
 const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
   chains: {
-    STARKNET: { rpcUrl: starknetRpc },
-    CITREA: { rpcUrl: citreaRpc, chainType: "TESTNET4" }
+    STARKNET: {
+      rpcUrl: starknetRpc // Can also pass Provider object
+    },
+    CITREA: {
+      rpcUrl: citreaRpc, // Can also pass JsonRpcProvider object
+    }
   },
-  bitcoinNetwork: BitcoinNetwork.TESTNET4
+  bitcoinNetwork: BitcoinNetwork.TESTNET3
 });
 
 await swapper.init();
@@ -166,15 +169,17 @@ await swapper.init();
 </Tabs>
 
 :::info
-Initialize the swapper with `await swapper.init();` shown above once when your app starts. Ideally, you should create only one swapper instance for your entire app, and use that instance for all your swaps. This checks existing in-progress swaps and does initial LP discovery.
+Initialize the swapper with `await swapper.init();` shown above once when your app starts. You should create **only one swapper instance** for your entire app, and use that instance for all your swaps. This checks existing in-progress swaps and does initial LP discovery.
 :::
 
 ## Setting Up Signers
 
+Atomiq's [`AbstractSigner`](/sdk-reference/api/atomiq-sdk/src/type-aliases/AbstractSigner) object wraps around the wallet object of the respective chain and makes it easy to approve transactions via it by passing it to the swap methods. You can alternatively skip this step, obtain the transactions required to be signed and [sign & send them manually](/developers/advanced/manual-transactions).
+
 ### Solana
 
 <details>
-<summary>Using Solana wallet adapter</summary>
+<summary>Using Solana wallet adapter in React</summary>
 
 Install the [Solana wallet adapter](https://github.com/anza-xyz/wallet-adapter):
 
@@ -183,9 +188,7 @@ npm install --save \
     @solana/wallet-adapter-base \
     @solana/wallet-adapter-react \
     @solana/wallet-adapter-react-ui \
-    @solana/wallet-adapter-wallets \
-    @solana/web3.js \
-    react
+    @solana/wallet-adapter-wallets
 ```
 
 Wrap your app with the wallet adapter providers:
@@ -199,12 +202,13 @@ import { SolanaSigner } from "@atomiqlabs/chain-solana";
 // In your component, create the signer from the connected wallet:
 function YourApp() {
   const anchorWallet = useAnchorWallet();
-  const wallet = new SolanaSigner(anchorWallet);
+  //Create atomiq signer object out of the anchor wallet, which you can then use to execute swaps
+  const wallet = useMemo(() => new SolanaSigner(anchorWallet), [anchorWallet]);
 
   return (
     <div>
       <h1>Your App</h1>
-      {/* Place a wallet button in your app to allow the user to connect their wallet */}
+      {/* Place a `WalletMultiButton` button in your app to allow the user to connect their wallet */}
       <WalletMultiButton />
     </div>
   );
@@ -230,34 +234,31 @@ function App() {
 ### Starknet
 
 <details>
-<summary>Using get-starknet</summary>
+<summary>Using get-starknet in the Browser</summary>
 
-Install [get-starknet](https://github.com/starknet-io/get-starknet) and the Starknet SDK:
+Install [get-starknet](https://github.com/starknet-io/get-starknet):
 
 ```bash
 npm install --save \
-    @starknet-io/get-starknet-core \
-    starknet
+    @starknet-io/get-starknet
 ```
 
 Connect the wallet and create a signer:
 
 ```tsx
-import { getStarknet } from "@starknet-io/get-starknet-core";
+import { connect, disconnect } from "@starknet-io/get-starknet"
 import { WalletAccount } from "starknet";
 import { StarknetBrowserSigner } from "@atomiqlabs/chain-starknet";
 
 const starknet = getStarknet();
 
 async function connectStarknetWallet() {
-  // Get available wallets (Argent, Braavos, etc.)
-  const availableWallets = await starknet.getAvailableWallets();
-
-  // Enable the first available wallet (or let the user choose)
-  const swo = await starknet.enable(availableWallets[0], { silent_mode: false });
+  // Connect the starknet wallet
+  const swo = await connect();
 
   // Use the same starknetRpc that was used to create the swapper earlier
   const walletAccount = await WalletAccount.connect(starknetRpc, swo);
+  //Create atomiq signer object out of the wallet account, which you can then use to execute swaps
   const wallet = new StarknetBrowserSigner(walletAccount);
 }
 ```
@@ -267,21 +268,22 @@ async function connectStarknetWallet() {
 ### EVM (Citrea, etc.)
 
 <details>
-<summary>Using Wagmi + ethers</summary>
+<summary>Using Wagmi + RainbowKit in React</summary>
 
-Install [Wagmi](https://wagmi.sh/) and ethers:
+Install [Wagmi](https://wagmi.sh/) and [RainbowKit](https://rainbowkit.com/):
 
 ```bash
-npm install --save \
+npm install --save @rainbow-me/rainbowkit \
     wagmi \
-    @tanstack/react-query \
-    ethers
+    viem@2.x \
+    @tanstack/react-query
 ```
 
 Set up Wagmi with your EVM chain and wrap your app:
 
 ```tsx
-import { createConfig, WagmiProvider, useAccount, useConnectors } from "wagmi";
+import { getDefaultConfig, RainbowKitProvider, ConnectButton } from '@rainbow-me/rainbowkit';
+import { WagmiProvider, useAccount } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserProvider } from "ethers";
 import { EVMBrowserSigner } from "@atomiqlabs/chain-evm";
@@ -294,54 +296,53 @@ const citreaChain = {
   rpcUrls: { default: { http: ["https://rpc.mainnet.citrea.xyz"] } },
 };
 
-const config = createConfig({
-  chains: [citreaChain],
-  multiInjectedProviderDiscovery: true, // Auto-discovers MetaMask, Rabby, etc.
+const config = getDefaultConfig({
+  appName: 'My RainbowKit App',
+  projectId: 'YOUR_PROJECT_ID', // Every dApp that relies on WalletConnect needs to obtain a projectId from https://dashboard.reown.com
+  chains: [citreaChain], // Include your desired EVM chain (can have multiple)
+  ssr: false, // If your dApp uses server side rendering (SSR)
 });
+
 const queryClient = new QueryClient();
+
+// In your component, create the signer from the connected wallet:
+function YourApp() {
+  const { connector, isConnected } = useAccount();
+
+  //Create atomiq signer object out of browser provider, which you can then use to execute swaps
+  const [wallet, setWallet] = useState<EVMBrowserSigner>();
+  useEffect(() => {
+    if(!isConnected) {
+      setWallet(undefined);
+      return;
+    }
+    const browserProvider = new BrowserProvider(provider);
+    browserProvider.getSigner().then(signer => {
+      setWallet(new EVMBrowserSigner(signer, signer.address));
+    })
+  });
+  const wallet = useMemo(() => new EVMBrowserSigner(anchorWallet), [anchorWallet]);
+
+  return (
+    <div>
+      <h1>Your App</h1>
+      {/* Place a `ConnectButton` button in your app to allow the user to connect their wallet */}
+      <ConnectButton />
+    </div>
+  );
+}
 
 function App() {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <YourApp />
+        <RainbowKitProvider>
+          <YourApp />
+        </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
 }
-```
-
-Then in your component, connect the wallet and create a signer:
-
-```tsx
-function YourApp() {
-  const connectors = useConnectors();
-  const { connector, isConnected } = useAccount();
-
-  async function connect(walletName: string) {
-    const found = connectors.find((c) => c.name === walletName);
-    await found.connect({ chainId: citreaChain.id });
-  }
-
-  async function createSigner() {
-    const provider = await connector.getProvider({ chainId: citreaChain.id });
-    const signer = await new BrowserProvider(provider).getSigner();
-    const wallet = new EVMBrowserSigner(signer, signer.address);
-  }
-}
-```
-
-</details>
-
-<details>
-<summary>Using private key (Node.js)</summary>
-
-```typescript
-import { BaseWallet, SigningKey } from "ethers";
-import { EVMSigner } from "@atomiqlabs/chain-evm";
-
-const wallet = new BaseWallet(new SigningKey(evmKey));
-const evmWallet = new EVMSigner(wallet, wallet.address);
 ```
 
 </details>
@@ -371,7 +372,7 @@ console.log("Expires:", new Date(swap.getQuoteExpiry()));
 // Execute the swap
 const success = await swap.execute(solanaSigner, {
   onSourceTransactionSent: (txId) => console.log("Tx sent:", txId),
-  onSwapSettled: (hash) => console.log("Payment sent!")
+  onSwapSettled: (btcTxId) => console.log("Bitcoin transaction sent:", btcTxId)
 });
 
 // Handle failure
