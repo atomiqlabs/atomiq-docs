@@ -4,40 +4,48 @@ sidebar_position: 2
 
 # Creating Quotes
 
-Every swap starts with a quote. Call `swapper.swap()` to create one — this contacts LPs, finds the best rate, and returns a swap object you can inspect before executing.
-
-## The `swapper.swap()` Method
+Every swap starts with a quote. Call `swapper.swap()` to create one — this contacts LPs, finds the best rate, and returns a swap object you can inspect before executing the swap.
 
 ```typescript
 import {SwapAmountType} from "@atomiqlabs/sdk";
 
 const swap = await swapper.swap(
   fromToken,          // Source token (e.g. Tokens.BITCOIN.BTC, Tokens.STARKNET.STRK)
-  toToken,            // Destination token
-  amount,             // Amount as string, bigint, or undefined (for invoice-based swaps)
-  amountType,         // SwapAmountType.EXACT_IN or SwapAmountType.EXACT_OUT
-  sourceAddress,      // Source wallet address (undefined for BTC/Lightning source)
-  destinationAddress, // Destination address, Lightning invoice, or LNURL
-  options?            // Optional: { gasAmount, comment }
+  toToken,            // Destination token (e.g. Tokens.CITREA.CBTC, Tokens.BITCOIN.BTCLN)
+  amount,             // Amount as string (in human readable format - "0.0001") or bigint (in base units - 10000n)
+  amountType,         // SwapAmountType.EXACT_IN (specifying exact input amount) or SwapAmountType.EXACT_OUT (specifying exact output amount)
+  sourceAddress,      // Source wallet address [not required for BTC/Lightning source]
+  destinationAddress, // Destination wallet address, Lightning invoice, or LNURL
+  options?            // Optional: { gasAmount }
 );
 ```
+
+:::info
+Preferably use the `Tokens.<chain>.<asset>` notation for `fromToken` and `toToken` for to get automatic swap type inference.
+
+You can alternatively also use ticker strings such as `"BTC"`, `"BTC-LN"`, `"WBTC"`, or chain + ticker combination, such as `"STARKNET-WBTC"`, `"SOLANA-WBTC"`, `"CITREA-CBTC"`. But these don't automatically infer the swap type of the returned quote. You can use the [isSwapType](/sdk-reference/api/atomiq-sdk/src/functions/isSwapType) type-guard to narrow down the type in those cases.
+:::
 
 ## Example
 
 ```typescript
 const swap = await swapper.swap(
-  Tokens.STARKNET.STRK,
-  Tokens.BITCOIN.BTC,
-  "0.0001",
+  Tokens.STARKNET.STRK,           // Correct token notation for automatic swap type inference
+  Tokens.BITCOIN.BTC,             // Correct token notation for automatic swap type inference
+  "0.0001",                       // Amount as human readable string
   SwapAmountType.EXACT_OUT,       // Receive exactly 0.0001 BTC
-  starknetSigner.getAddress(),
-  "bc1q..."
-);
+  starknetSigner.getAddress(),    // Sender wallet address, in this case Starknet wallet address
+  "bc1q..."                       // Destination address, in this case a Bitcoin on-chain address
+); // Type of swap will get correctly infered as `ToBTCSwap`
 ```
 
 ## Inspecting the Quote
 
+Once quote is created you can check the amounts, fees, pricing. This is fixed after a quote is received and valid until quote expiry. Atomiq protocol uses an RFQ model so there is no additional slippage!
+
 ### Amounts
+
+Amounts are returned as [TokenAmount](/sdk-reference/api/atomiq-sdk/src/type-aliases/TokenAmount) objects, making it easy to print them out, show them in human-readable format, get the amount in base units or estimate their value in USD-terms.
 
 ```typescript
 swap.getInput()              // Total input amount (including fees)
@@ -46,6 +54,8 @@ swap.getOutput()             // Output amount you'll receive
 ```
 
 ### Fees
+
+Fees are returned as [Fee](/sdk-reference/api/atomiq-sdk/src/type-aliases/Fee) objects, making it easy to get the fee denominated in input/output (source & destination) tokens or in USD. Relevant fee types returned by the `getFeeBreakdown()` function use the [FeeType](/sdk-reference/api/atomiq-sdk/src/enumerations/FeeType) enum.
 
 ```typescript
 import {FeeType} from "@atomiqlabs/sdk";
@@ -90,75 +100,43 @@ const swap = await swapper.swap(
 // Receive exactly 10,000 sats
 const swap = await swapper.swap(
   Tokens.STARKNET.STRK, Tokens.BITCOIN.BTC,
-  "0.0001", SwapAmountType.EXACT_OUT,
+  10000n, SwapAmountType.EXACT_OUT,
   starknetSigner.getAddress(), "bc1q..."
 );
 ```
 
-## Options
+## Gas Drop
 
-### Gas Drop
-
-Request native tokens on the destination chain (available for BTC/Lightning to smart chain swaps):
+When swapping from Bitcoin on-chain or lightning to smart chains (i.e. Starknet, EVM chains) and swapping to non-native token (e.g. WBTC on Starknet), you can additionally request to receive some amount of native token along with your swap - this ensures that you can have some native token ready to cover gas fees when doing your first transactions on the destination chain.
 
 ```typescript
+// Swapping 0.0001 BTC to WBTC on Starknet and requesting to also receive 1 STRK gas drop
 const swap = await swapper.swap(
-  Tokens.BITCOIN.BTC, Tokens.STARKNET.STRK,
+  Tokens.BITCOIN.BTC, Tokens.STARKNET.WBTC,
   "0.0001", SwapAmountType.EXACT_IN,
-  undefined, starknetSigner.getAddress(),
+  undefined,                                // Not required when using Bitcoin or Lightning as source
+  starknetSigner.getAddress(),              // Destination Starknet signer address
   {
-    gasAmount: 1_000_000_000_000_000_000n  // Request 1 STRK for gas
+    gasAmount: 1_000_000_000_000_000_000n   // Request 1 STRK in addition as gas drop
   }
 );
 
-swap.getGasDropOutput()    // Amount of native token gas drop
+swap.getGasDropOutput()                     // Amount of native token gas drop
 ```
 
-### Comment (LNURL-pay)
+When using `SwapAmountType.EXACT_IN`, the value of the gas drop gets deducted from the output token amount by the LP, while with `SwapAmountType.EXACT_OUT` the gas token value gets added to the input token amount.
 
-```typescript
-const swap = await swapper.swap(
-  Tokens.STARKNET.STRK, Tokens.BITCOIN.BTCLN,
-  10000n, SwapAmountType.EXACT_OUT,
-  starknetSigner.getAddress(), "user@walletofsatoshi.com",
-  {
-    comment: "Payment for coffee"
-  }
-);
-```
+:::warning
+When already swapping to the native token of the respective destination chain (i.e. STRK on Starknet, cBTC on Citrea, etc.) don't specify the `gasAmount`, as LPs usually don't hold the necessary gas drop liquidity for those tokens! This will lead to errors during quoting and make it unable for you to request the quote.
+:::
 
-## Swap-Specific Quote Info
+:::info
+This is so far not supported on **Solana**, which still uses legacy swap protocol.
+:::
 
-### To-Bitcoin Swaps
+[//]: # (TODO: Create a separate tab for this - executing the swaps.)
 
-```typescript
-swap.getBitcoinFeeRate()         // Bitcoin fee rate in sats/vB
-await swap.getSmartChainNetworkFee()  // Estimated smart chain network fee
-```
+## Executing the swap
 
-### Lightning Source Swaps
+After the quote is created you are ready to execute the swap. Executing the swap is handled differently for various swap types, therefore to see how to execute the specific see the respective tab:
 
-```typescript
-swap.getAddress()     // Lightning invoice (BOLT11) to pay
-swap.getHyperlink()   // Payment deeplink / QR code data
-```
-
-### Lightning Destination Swaps
-
-```typescript
-swap.isPayingToNonCustodialWallet()  // True if recipient must be online
-swap.willLikelyFail()                // True if payment is likely to fail
-```
-
-### Solana Swaps (Legacy)
-
-```typescript
-swap.getSecurityDeposit()    // SOL deposit (refunded on success)
-swap.getClaimerBounty()      // Bounty for the claimer
-```
-
-## API Reference
-
-- [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - EXACT_IN / EXACT_OUT
-- [FeeType](/sdk-reference/api/atomiq-sdk/src/enumerations/FeeType) - Fee type enum
-- [SwapperFactory](/sdk-reference/api/atomiq-sdk/src/classes/SwapperFactory) - Creating a swapper instance
