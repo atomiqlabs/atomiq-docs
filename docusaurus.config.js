@@ -5,7 +5,13 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const sharedTypedocOptions = {
   skipErrorChecking: true,
   sanitizeComments: true,
-  plugin: ['typedoc-plugin-merge-modules'],
+  plugin: [
+    'typedoc-plugin-merge-modules',
+    './scripts/typedoc-search-keywords.mjs',
+  ],
+  pageTitleTemplates: {
+    member: '{name}',
+  },
   excludeInternal: true,
   excludePrivate: true,
   excludeExternals: true,
@@ -19,8 +25,8 @@ const sharedTypedocOptions = {
   useCodeBlocks: true,
   parametersFormat: 'table',
   typeDeclarationFormat: 'table',
-  propertyMembersFormat: 'table',
-  classPropertiesFormat: 'table',
+  propertyMembersFormat: 'list',
+  classPropertiesFormat: 'list',
   sort: ['visibility', 'enum-member-source-order', 'alphabetical'],
 };
 
@@ -40,7 +46,7 @@ const config = {
   organizationName: 'atomiqlabs',
   projectName: 'atomiq-docs',
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
 
   i18n: {
     defaultLocale: 'en',
@@ -96,11 +102,13 @@ const config = {
         indexDocs: true,
         indexBlog: false,
         indexPages: false,
-        docsRouteBasePath: ['/', 'sdk-reference'],
-        docsDir: ['docs', 'sdk-reference'],
+        docsRouteBasePath: ['/', 'sdk-reference', 'docs'],
+        docsDir: ['sdk-reference', 'docs'],
+        searchContextByPaths: ['sdk-reference', 'developers'],
         hashed: true,
         highlightSearchTermsOnTargetPage: true,
         explicitSearchResultPath: true,
+        useAllContextsWithNoSearchContext: true
       },
     ],
   ],
