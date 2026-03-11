@@ -91,10 +91,10 @@ const sidebars = {
       link: { type: 'doc', id: 'developers/swaps/index' },
       items: [
         'developers/swaps/creating-quotes',
-        'developers/swaps/btc-to-smart-chain',
+        'developers/swaps/executing-swaps',
         'developers/swaps/smart-chain-to-btc',
+        'developers/swaps/btc-to-smart-chain',
         'developers/swaps/lightning-to-smart-chain',
-        'developers/swaps/smart-chain-to-lightning',
         'developers/swaps/lnurl-swaps',
         {
           type: 'category',

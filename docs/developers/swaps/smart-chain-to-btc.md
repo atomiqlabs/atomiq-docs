@@ -2,39 +2,44 @@
 sidebar_position: 4
 ---
 
-# Smart Chain to BTC
+# Smart Chain → BTC/Lightning
 
-Swap smart chain tokens (STRK, EVM tokens) to Bitcoin L1 (on-chain).
+Swap smart chain tokens (Solana, Starknet & EVM tokens) to Bitcoin L1 (on-chain) or Lightning L2. These swaps are based on the [HTLC](/overview/core-primitives/htlc) (for lightning) & [PrTLC](/overview/core-primitives/prtlc) (for on-chain) primitives.
 
 :::tip Runnable Examples
+For Smart chain → Bitcoin L1 (on-chain) swaps:
 - [smartchain-to-btc/swapBasic.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btc/swapBasic.ts)
+- [smartchain-to-btc/swapAdvancedSolana.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btc/swapAdvancedSolana.ts)
 - [smartchain-to-btc/swapAdvancedStarknet.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btc/swapAdvancedStarknet.ts)
-:::
+- [smartchain-to-btc/swapAdvancedEVM.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btc/swapAdvancedEVM.ts)
 
-:::info Looking for Solana?
-See [Solana to BTC](./solana/solana-to-btc).
+For Smart chain → Lightning L2 swaps:
+- [smartchain-to-btcln/swapBasic.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btcln/swapBasic.ts)
+- [smartchain-to-btcln/swapAdvancedSolana.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btcln/swapAdvancedSolana.ts)
+- [smartchain-to-btcln/swapAdvancedStarknet.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btcln/swapAdvancedStarknet.ts)
+- [smartchain-to-btcln/swapAdvancedEVM.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btcln/swapAdvancedEVM.ts)
 :::
 
 ## Executing the Swap
 
-Create a [quote](./creating-quotes), then execute with your smart chain signer:
+Here is a full flow for creating an executing the swap in the Smart Chain → BTC/Lightning direction via the `execute()` helper function, uses the [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap) & [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap) swap classes:
 
 ```typescript
-import {ToBTCSwapState, SwapAmountType} from "@atomiqlabs/sdk";
+import {SwapAmountType, ToBTCSwap, ToBTCLNSwap} from "@atomiqlabs/sdk";
 
 // Create a quote
-const swap = await swapper.swap(
-  Tokens.STARKNET.STRK,           // From source token
-  Tokens.BITCOIN.BTC,             // To BTC
+const swap: ToBTCSwap | ToBTCLNSwap = await swapper.swap(
+  Tokens.STARKNET.STRK,           // Any smart chain asset, e.g. SOL on Solana, STRK on Starknet or cBTC on Citrea
+  Tokens.BITCOIN.BTC,             // Or `Tokens.BITCOIN.BTCLN` when swapping into Lightning
   "0.00003",                      // Amount (3000 sats to receive)
-  SwapAmountType.EXACT_OUT,
-  starknetSigner.getAddress(),    // Source address
-  "bc1q..."                       // Bitcoin destination address
-);
+  SwapAmountType.EXACT_OUT,       // NOTE: When swapping to BOLT11 lightning invoice, only EXACT_OUT mode is supported
+  starknetSigner.getAddress(),    // Source signer address
+  "bc1q..."                       // Bitcoin on-chain address, BOLT11 lightning invoice or LNURL-pay link
+); // Type gets infered as ToBTCSwap (for Bitcoin on-chain) or ToBTCLNSwap (for Lightning)
 
 // Execute the swap
 const swapSuccessful = await swap.execute(
-  starknetSigner, // Or evmSigner
+  starknetSigner, // Pass in the signer on the source chain to sign the transactions
   {
     onSourceTransactionSent: (txId) => {
       console.log(`Source tx sent: ${txId}`);
@@ -48,43 +53,86 @@ const swapSuccessful = await swap.execute(
   }
 );
 
+// When swapping to lightning you can also additionally check:
+// swap.willLikelyFail() - The swap will likely fail due to lightning network routing error
+// swap.isPayingToNonCustodialWallet() - Destination wallet is probably a non-custodial wallet, which needs to be online to accept the payment
+
 if (!swapSuccessful) {
+  // Handle the edge-case when LP fails to process the swap
   console.log("Swap failed, refunding...");
+  // Refund funds back to the 
   await swap.refund(starknetSigner);
   console.log("Refunded!");
 } else {
-  console.log("Success! BTC txId:", swap.getOutputTxId());
+  console.log("Success! Output transaction ID: ", swap.getOutputTxId());
+  // For lightning network swaps you can get the payment preimage with swap.getSecret()
 }
 ```
 
-### EVM Example
+:::warning
+When swapping to Bitcoin Lightning and using BOLT11 lightning network invoices ("lnbc10u1p...") the invoice needs to have a fixed amount and therefore only `EXACT_OUT` swap mode is supported.
+
+For swapping variable amounts with `EXACT_IN` support to Bitcoin Lightning use [LNURL-pay links or lightning network addresses](#lnurl-pay-swaps)
+:::
+
+## Manual Execution Flow
 
 ```typescript
-import {EVMSigner} from "@atomiqlabs/chain-evm";
+import {SwapAmountType, ToBTCSwap, ToBTCLNSwap} from "@atomiqlabs/sdk";
 
+// Create a quote
 const swap = await swapper.swap(
-  Tokens.CITREA.CBTC, Tokens.BITCOIN.BTC,
-  "0.0001", SwapAmountType.EXACT_OUT,
-  evmSigner.getAddress(), "bc1q..."
-);
+  Tokens.STARKNET.STRK,           // Any smart chain asset, e.g. SOL on Solana, STRK on Starknet or cBTC on Citrea
+  Tokens.BITCOIN.BTC,             // Or `Tokens.BITCOIN.BTCLN` when swapping into Lightning
+  "0.00003",                      // Amount (3000 sats to receive)
+  SwapAmountType.EXACT_OUT,       // NOTE: When swapping to BOLT11 lightning invoice, only EXACT_OUT mode is supported
+  starknetSigner.getAddress(),    // Source signer address
+  "bc1q..."                       // Bitcoin on-chain address, BOLT11 lightning invoice or LNURL-pay link
+); // Type gets infered as ToBTCSwap (for Bitcoin on-chain) or ToBTCLNSwap (for Lightning)
 
-const success = await swap.execute(evmSigner, { /* callbacks */ });
-if (!success) await swap.refund(evmSigner);
+// 1. Initiate the swap on the source chain
+const txsCommit = await swap.txsCommit(); // Or use swap.commit(starknetSigner) with existing signer
+... // Sign and send transactions here
+// Important to wait till SDK processes the swap initialization
+await swap.waitTillCommited();
+
+// 2. Wait for the swap to execute and for the destination tx to be sent
+const swapSuccessful = await swap.waitForPayment();
+
+// 3. Refund in case of failure
+if(!swapSuccessful) {
+  const txsRefund = await swap.txsRefund(); // Or use swap.refund(starknetSigner) with existing signer
+  ... // Sign and send refund transactions here
+}
 ```
 
-## Refunding Failed Swaps
+:::info
+The transactions returned by the `txs*` functions use the following types:
+- For Solana, uses the [SolanaTx](/sdk-reference/api/atomiq-chain-solana/src/type-aliases/SolanaTx) type
+- For Starknet, uses the [StarknetTx](/sdk-reference/api/atomiq-chain-starknet/src/type-aliases/StarknetTx) type
+- For EVM, uses the `ethers` [TransactionRequest](https://docs.ethers.org/v6/api/providers/#TransactionRequest) type
 
-If the LP fails to send the Bitcoin payment, you can refund your tokens:
+For more information about how to sign and send these transactions manually refer to the [Manual Transactions](/developers/advanced/manual-transactions) page.
+:::
+
+## Refunding Past Failed Swaps
+
+The swaps might only transition into the refundable state after several hours (in case of LP non-cooperativeness combined with Lightning swaps even multiple days). Therefore there are a few helper functions to allow you to determine whether the swap is already refundable & to list all refundable swaps.
+
+Checking if a single swap is refundable and refunding it:
 
 ```typescript
 if (swap.isRefundable()) {
-  await swap.refund(starknetSigner);
+  await swap.refund(signer);
 }
+```
 
-// Or get refundable swaps on startup
+Getting all swaps that are refundable and refunding them:
+
+```typescript
 const refundable = await swapper.getRefundableSwaps(
-  "STARKNET",
-  starknetSigner.getAddress()
+  "STARKNET",                   // Allows you to specify to only get refundable swaps on `STARKNET`
+  starknetSigner.getAddress()   // Allows you to specify to only get refundable swpas for the signer address
 );
 
 for (const swap of refundable) {
@@ -92,21 +140,129 @@ for (const swap of refundable) {
 }
 ```
 
+:::info
+It is a good practice to get the refundable swaps on your app's startup and either refunding them automatically or prompting the user to refund.
+:::
+
+## LNURL-pay swaps
+
+LNURL-pay links ("lnurl1p...") and static lightning addresses ("user@example.com") are reusable and allow payer to set an amount. Hence, they can be used to swap into Lightning with `EXACT_IN` mode.
+
+Additionally, they also support attaching an optional comment to the payment (which you can pass in the `swap()` function options), and also expose a success action, which can be displayed to the user after a successful payment.
+
+You can parse LNURLs either with the generic [`SwapperUtils.parseAddress()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#parseaddress) function exposed by the swapper as `swapper.Utils.parseAddress()` or with the specific [`SwapperUtils.getLNURLTypeAndData()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#getlnurltypeanddata) function, which return the [LNURLPay](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLPay) or [LNURLWithdraw](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLWithdraw) object allowing you to read the LNURL's details.
+
+```typescript
+// LNURL-pay link or Lightning address ("user@example.com")
+const lnurlOrLightningAddress: string = "lnurl1...";
+// Check if it has correct format
+if(!swapper.Utils.isValidLNURL(lnurlOrLightningAddress))
+  throw new Error("Invalid LNURL specified!");
+// Fetch the details of the LNURL, it can be either LNURL-pay or LNURL-withdraw
+const lnurlDetails: LNURLPay | LNURLWithdraw = await swapper.Utils.getLNURLTypeAndData();
+// Check if the LNURL is of the LNURL-pay type
+if(!isLNURLPay(lnurlDetails))
+  throw new Error("LNURL isn't of the LNURL-pay type!");
+
+// Create swap with LNURL-pay or Lightning address
+const swap = await swapper.swap(
+  Tokens.STARKNET.STRK,             // Swap STRK
+  Tokens.BITCOIN.BTCLN,             // To Lightning BTC
+  "100",                            // Now we can specify amount, and even an input amount!
+  SwapAmountType.EXACT_IN,          // With LNURL-pay we can use EXACT_IN mode on Lightning!
+  starknetSigner.getAddress(),      // Source signer address
+  lnurlDetails,                     // Fetched details or raw LNURL-pay link or Lightning address string
+  {
+    comment: "Payment for coffee"   // Optional comment
+  }
+);
+
+... // Handle swap execution
+
+// LNURL-pay link might also contain a success action, this can be displayed to the user
+//  upon successful payment
+if (swap.hasSuccessAction()) {
+  const action = swap.getSuccessAction();
+  console.log("Description:", action.description);
+  console.log("Text:", action.text);        // May be null
+  console.log("URL:", action.url);          // May be null
+}
+```
+
 ## Swap States
 
-| State | Value | Description |
-|-------|-------|-------------|
-| `REFUNDED` | -3 | Swap failed and was refunded |
-| `QUOTE_EXPIRED` | -2 | Quote expired before execution |
-| `QUOTE_SOFT_EXPIRED` | -1 | Quote probably expired (may succeed if tx in flight) |
-| `CREATED` | 0 | Quote created, waiting for execution |
-| `COMMITED` | 1 | Init transaction sent |
-| `SOFT_CLAIMED` | 2 | LP processing (BTC tx sent but unconfirmed) |
-| `CLAIMED` | 3 | Swap complete, BTC sent |
-| `REFUNDABLE` | 4 | LP failed, can refund |
+Read the current state of the swap with either in its [ToBTCSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/ToBTCSwapState) enum form with [`getState()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstate) or in human readable [SwapStateInfo](/sdk-reference/api/atomiq-sdk/src/type-aliases/SwapStateInfo) form with description with [`getStateInfo()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstateinfo):
+
+```typescript
+import {ToBTCSwapState, SwapStateInfo} from "@atomiqlabs/sdk";
+
+const state: ToBTCSwapState = swap.getState();
+console.log(`State state (numeric): ${state}`);
+
+const richState: SwapStateInfo<ToBTCSwapState> = swap.getStateInfo();
+console.log(`State name: ${richState.name}`);
+console.log(`State description: ${richState.description}`);
+```
+
+Subscribe to swap state updates with:
+
+```typescript
+swap.events.on("swapState", () => {
+  const state: ToBTCSwapState = swap.getState();
+});
+```
+
+### Table of States
+
+| State | Value | Description                                                     |
+|-------|-------|-----------------------------------------------------------------|
+| `REFUNDED` | -3 | Swap failed and was refunded                                    |
+| `QUOTE_EXPIRED` | -2 | Quote expired before execution                                  |
+| `QUOTE_SOFT_EXPIRED` | -1 | Quote probably expired (may still succeed if init tx in flight) |
+| `CREATED` | 0 | Quote created, waiting for execution                            |
+| `COMMITED` | 1 | Init transaction sent                                           |
+| `SOFT_CLAIMED` | 2 | LP processing (BTC tx sent, but not yet confirmed)              |
+| `CLAIMED` | 3 | Swap complete, BTC sent                                         |
+| `REFUNDABLE` | 4 | LP failed, can refund                                           |
+
+
+## EXACT_IN Lightning Swaps
+
+:::info
+This is an advanced feature, you should only use this if you have programmatic API to fetch invoices from a lightning network wallet and want to support `EXACT_IN` swaps.
+:::
+
+The main limitation of regular lightning network swaps (Smart chains → Lightning), is the fact that exactIn swaps are not possible (as invoices need to have a fixed amount). LNURL-pay links solve this issue, but are not supported by all the wallets. Therefore, the SDK exposes a hook/callback that can be implemented by lightning wallets directly, which request fixed amount invoices on-demand. This then makes exact input amount swaps possible. The way it works:
+
+1. SDK sends a request to the LP saying it wants to swap `x` USDC to BTC, with a dummy invoice (either 1 sat or as specified in the `minMsats` parameter - this is requested from the `getInvoice()` function) - this dummy invoice is used to estimate the routing fees by the LP (extra care must be taken for both invoices, dummy and the real one to have the same destination node public key & routing hints).
+2. LP responds with the output amount of `y` BTC
+3. SDK calls the provided `getInvoice()` callback to request the real invoice for the `y` amount of BTC (in satoshis)
+4. SDK forwards the returned fixed amount (`y` BTC) lightning network invoice back to the LP to finish creating the quote
+
+To get the `EXACT_IN` quote for Smart Chain → Lightning swap from the SDK:
+
+```typescript
+const swap = await swapper.swap(
+  Tokens.STARKNET.STRK,
+  Tokens.BITCOIN.BTCLN,
+  "100",                          // 100 STRK input
+  SwapAmountType.EXACT_IN,
+  starknetSigner.getAddress(),
+  {
+    getInvoice: async (amountSats, abortSignal?) => {
+      // Generate invoice for the calculated output amount
+      const invoice = await myLnWallet.createInvoice(amountSats);
+      return invoice;
+    },
+    minMsats: 1_000_000n,        // Optional: 1000 sats minimum
+    maxMsats: 1_000_000_000n     // Optional: 1M sats maximum
+  }
+);
+```
 
 ## API Reference
 
 - [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap) - Swap class for Smart Chain to BTC
+- [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap) - Swap class for Smart Chain to Lightning
 - [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum
 - [ToBTCSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/ToBTCSwapState) - Swap states

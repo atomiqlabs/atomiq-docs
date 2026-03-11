@@ -1,0 +1,328 @@
+---
+sidebar_position: 3
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Executing Swaps
+
+After you create and inspect a quote with `swapper.swap(...)`, the usual next step is `swap.execute(...)`.
+
+`execute()` is the high-level execution path used by the SDK. It is state-aware, so it resumes from the current swap state, performs the next on-chain or off-chain action, and then waits for automatic settlement when the protocol supports it. Generally the `execute()` function follows this syntax:
+
+```typescript
+import {isRefundableSwap, isClaimableSwap} from "@atomiqlabs/sdk";
+
+const result = await swap.execute(/* source signer or wallet */, /* optional callbacks */, /* optional options */);
+
+if (result === false) {
+  // In case of Smart chain -> BTC/Lightning swaps:
+  // - the swap has failed and the user can refund with swap.refund(...)
+  if(isRefundableSwap(swap)) await swap.refund(/* source chain signer or wallet - always a smart chain signer */);
+  
+  // In case of BTC/Lightning -> Smart chain swaps:
+  // - the swap wasn't settled automatically, call swap.claim(...) to settle the swap manually with the destination chain signer.
+  if(isClaimableSwap(swap)) await swap.claim(/* destination chain signer or wallet - always a smart chain signer */);
+}
+```
+
+The high-level flow is shared across swap types, but the `execute(...)` signature is not identical everywhere, in general the swaps:
+- take a signer/wallet on the source chain
+- return a `boolean` indicating whether the execution was successful or not (in this case the user should either `refund()` on the source chain or `claim()` on the destination chain manually).
+
+:::tip
+If you need low-level control instead of `execute()` or want to get raw transactions and PSBTs that you sign and send manually, see the respective swap pages.
+:::
+
+## Swap Types
+
+An overview of `execute()` function arguments for various swap types
+
+:::info
+Swaps from Bitcoin on-chain (L1) and Lightning (L2) to **Solana** use legacy swap protocols and are described below in the [Legacy Swaps](#legacy-swaps) section.
+:::
+
+<Tabs groupId="execute-arguments">
+  <TabItem value="smart-chain-to-btc" label="Smart chain → BTC/Lightning" default>
+
+> Swap classes: [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap) and [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap)
+
+Same flow is shared for both, Smart chain → BTC & Smart chain → Lightning swaps.
+
+Typical usage of the [execute()](/sdk-reference/api/atomiq-sdk/src/classes/IToBTCSwap#execute) function:
+
+```typescript
+// Returns whether the swap was successfully executed by the LP, if not the user can refund
+const swapSuccess = await swap.execute(srcSigner, callbacks?, options?);
+// Refund on failure, this returns the funds back to the signer's wallet
+if (!swapSuccess) await swap.refund(srcSigner);
+```
+
+Type of the signer is dependent on the source network:
+- For Solana -> BTC swaps: [SolanaSigner](/sdk-reference/api/atomiq-chain-solana/src/classes/SolanaSigner), or native `@coral-xyz/anchor` [Wallet](https://solana-foundation.github.io/anchor/ts/classes/Wallet.html)
+- For Starknet -> BTC swaps: [StarknetSigner](/sdk-reference/api/atomiq-chain-starknet/src/classes/StarknetSigner), [StarknetBrowserSigner](/sdk-reference/api/atomiq-chain-starknet/src/classes/StarknetBrowserSigner), or native `starknet` [Account](https://starknetjs.com/docs/API/classes/Account)
+- For EVM -> BTC swaps: [EVMSigner](/sdk-reference/api/atomiq-chain-evm/src/classes/EVMSigner), or native `ethers` [Signer](https://docs.ethers.org/v6/api/providers/#Signer)
+
+<h3>Callbacks</h3>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `onSourceTransactionSent` | `(sourceTxId: string) => void` | Fired when the source smart-chain commit transaction is sent. |
+| `onSourceTransactionConfirmed` | `(sourceTxId: string) => void` | Fired when the source smart-chain transaction is confirmed. |
+| `onSwapSettled` | `(destinationTxId: string) => void` | Fired when the BTC or Lightning payment is sent. |
+
+<h3>Options</h3>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `abortSignal` | `AbortSignal` | Cancels execution or waiting. |
+| `paymentCheckIntervalSeconds` | `number` | Polling interval used while waiting for the LP to process the payment. |
+| `maxWaitTillSwapProcessedSeconds` | `number` | Maximum time to wait for the LP to process the swap. Defaults to `120`. If the LP doesn't process the swap an `Error` is thrown, you can then get the swap expiration time with `swap.getExpiry()` after which you can refund unilaterally. |
+
+:::info
+For more details about the swap, swap states, going through swap steps manually or getting the transactions to sign and send outside the SDK refer to the respective [Smart Chain → Bitcoin swap](/developers/swaps/smart-chain-to-btc).
+:::
+
+  </TabItem>
+  <TabItem value="btc-to-spv" label="BTC → Smart chain">
+
+> Swap classes: [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap)
+
+Typical usage of the [execute()](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap#execute) function:
+
+```typescript
+// Returns whether the swap was successfully executed automatically, if not the user can claim manually
+const automaticallySettled = await swap.execute(bitcoinWallet, callbacks?, options?);
+// Claim on failure, this settles the funds to the destination chain signer
+if (!automaticallySettled) await swap.claim(destinationSmartChainSigner);
+```
+
+Type of the source wallet can be:
+- A class extending the abstract [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet), e.g. the built-in [SingleAddressBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/classes/SingleAddressBitcoinWallet)
+- A simple object implementing [MinimalBitcoinWalletInterfaceWithSigner](/sdk-reference/api/atomiq-sdk/src/type-aliases/MinimalBitcoinWalletInterfaceWithSigner) type:
+      ```typescript
+      const bitcoinWallet: MinimalBitcoinWalletInterfaceWithSigner = {
+          address: "bc1p..", // Wallet address
+          publicKey: "03030cbd...", // Wallet public key
+          signPsbt: (psbtToSign: {psbt: Transaction, psbtHex: string, psbtBase64: string}, signInputs: number[]) => {
+              ... // Sign the inputs specified by `signInputs` of the provided PSBT here.
+              return signedPsbt; // Can be in base64 or hex serialized format, or `@scure/bitcoin-js` Transaction object.
+          }
+      }
+      ```
+
+<h3>Callbacks</h3>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `onSourceTransactionSent` | `(sourceTxId: string) => void` | Fired when the BTC swap transaction is sent. |
+| `onSourceTransactionConfirmationStatus` | `(sourceTxId?: string, confirmations?: number, targetConfirations?: number, etaMs?: number) => void` | Progress callback while waiting for the BTC transaction to confirm. |
+| `onSourceTransactionConfirmed` | `(sourceTxId: string) => void` | Fired once the BTC transaction is confirmed. |
+| `onSwapSettled` | `(destinationTxId: string) => void` | Fired when the destination-chain settlement succeeds automatically or is fronted. |
+
+<h3>Options</h3>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `feeRate` | `number` | Bitcoin fee rate to use when the SDK sends the BTC transaction. |
+| `abortSignal` | `AbortSignal` | Cancels execution or waiting. |
+| `btcTxCheckIntervalSeconds` | `number` | Polling interval while waiting for the BTC transaction to confirm. |
+| `maxWaitTillAutomaticSettlementSeconds` | `number` | Maximum time to wait for automatic destination settlement. Defaults to `60`. |
+
+:::info
+For more details about the swap, swap states, going through swap steps manually or getting the raw PSBT to sign outside the SDK refer to the respective [Bitcoin → Smart Chain swap](/developers/swaps/btc-to-smart-chain).
+:::
+
+  </TabItem>
+  <TabItem value="lightning-to-auto" label="Lightning → Smart chain">
+
+> Swap classes: [FromBTCLNAutoSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap)
+
+Typical usage of the [execute()](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#execute) function:
+
+```typescript
+// Returns whether the swap was successfully executed automatically, if not the user can claim manually
+const automaticallySettled = await swap.execute(lightningWalletOrLnurlWithdraw?, callbacks?, options?);
+// Claim on failure, this settles the funds to the destination chain signer
+if (!automaticallySettled) await swap.claim(destinationSmartChainSigner);
+```
+
+Type of the lightning network source can be:
+- A simple object implementing [MinimalLightningNetworkWalletInterface](/sdk-reference/api/atomiq-sdk/src/type-aliases/MinimalLightningNetworkWalletInterface):
+      ```typescript
+      const lightningWallet: MinimalLightningNetworkWalletInterface = {
+          payInvoice: (bolt11PaymentRequest: string) => {
+              ... // Pay the provided bolt11 payment request
+              return bolt11PaymentHash; //Return the hexadecimal payment hash
+          }
+      }
+      ```
+- LNURL-withdraw as `string` or [LNURLWithdraw](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLWithdraw) object from [SwapperUtils.parseAddress()](sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#parseaddress)
+- Pass `null` or `undefined` if the invoice will be paid externally:
+      ```typescript
+      const bolt11PaymentInvoice = swap.getAddress(); // Returns the lightning network invoice to be displayed and paid by the user
+      const lightningPaymentDeeplink = swap.getHyperlink(); // Or get a `lightning:` deeplink that can be displayed as QR code
+      // Display the invoice and/or deeplink in a QR code to the user
+      // Call execute without a wallet for it to wait till an external payment arrives
+      const automaticallySettled = await swap.execute(null, callbacks?, options?);
+      ```
+
+<h3>Callbacks</h3>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `onSourceTransactionReceived` | `(sourceTxId: string) => void` | Fired when the Lightning payment is received by the LP. |
+| `onSwapSettled` | `(destinationTxId: string) => void` | Fired when the destination-chain settlement succeeds automatically. |
+
+<h3>Options</h3>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `abortSignal` | `AbortSignal` | Cancels execution or waiting. |
+| `lightningTxCheckIntervalSeconds` | `number` | Polling interval while waiting for the Lightning payment to arrive. |
+| `maxWaitTillAutomaticSettlementSeconds` | `number` | Maximum time to wait for automatic destination settlement. Defaults to `60`. |
+| `secret` | `string` | Secret/pre-image to broadcast to watchtowers. Usually only needed when the swap was recovered or the pre-image was generated outside the SDK. |
+
+:::info
+For more details about the swap, swap states, going through swap steps manually or getting the transactions to sign and send outside the SDK refer to the respective [Lightning → Smart Chain swap](/developers/swaps/lightning-to-smart-chain).
+:::
+
+  </TabItem>
+</Tabs>
+
+### Legacy Swaps
+
+These swaps use the legacy protocol in the Bitcoin/Lightning → Solana direction, and require a destination **Solana** wallet to sign and send transactions.
+
+<Tabs>
+
+    <TabItem value="btc-to-solana-legacy" label="BTC → Solana">
+
+> Swap classes: [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap)
+
+Typical usage of the [execute()](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#execute) function:
+
+```typescript
+// Returns whether the swap was successfully executed automatically, if not the user can claim manually
+const automaticallySettled = await swap.execute(dstSigner, bitcoinWallet?, callbacks?, options?);
+// Claim on failure, this settles the funds to the destination chain signer
+if (!automaticallySettled) await swap.claim(dstSigner);
+```
+
+Type of the destination `dstSigner` signer: [SolanaSigner](/sdk-reference/api/atomiq-chain-solana/src/classes/SolanaSigner), or native `@coral-xyz/anchor` [Wallet](https://solana-foundation.github.io/anchor/ts/classes/Wallet.html)
+
+Type of the source bitcoin wallet can be:
+- A class extending the abstract [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet), e.g. the built-in [SingleAddressBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/classes/SingleAddressBitcoinWallet)
+- A simple object implementing [MinimalBitcoinWalletInterfaceWithSigner](/sdk-reference/api/atomiq-sdk/src/type-aliases/MinimalBitcoinWalletInterfaceWithSigner) type:
+      ```typescript
+      const bitcoinWallet: MinimalBitcoinWalletInterfaceWithSigner = {
+          address: "bc1p..", // Wallet address
+          publicKey: "03030cbd...", // Wallet public key
+          signPsbt: (psbtToSign: {psbt: Transaction, psbtHex: string, psbtBase64: string}, signInputs: number[]) => {
+              ... // Sign the inputs specified by `signInputs` of the provided PSBT here.
+              return signedPsbt; // Can be in base64 or hex serialized format, or `@scure/bitcoin-js` Transaction object.
+          }
+      }
+      ```
+
+<h3>Callbacks</h3>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `onDestinationCommitSent` | `(destinationCommitTxId: string) => void` | Fired when the destination-chain commit/open-address transaction is sent. |
+| `onSourceTransactionSent` | `(sourceTxId: string) => void` | Fired when the BTC funding transaction is sent. |
+| `onSourceTransactionConfirmationStatus` | `(sourceTxId?: string, confirmations?: number, targetConfirations?: number, etaMs?: number) => void` | Progress callback while waiting for the BTC transaction to confirm. |
+| `onSourceTransactionConfirmed` | `(sourceTxId: string) => void` | Fired once the BTC transaction is confirmed. |
+| `onSwapSettled` | `(destinationTxId: string) => void` | Fired when the destination-chain settlement is completed automatically. |
+
+<h3>Options</h3>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `feeRate` | `number` | Bitcoin fee rate to use when the SDK sends the BTC transaction. |
+| `abortSignal` | `AbortSignal` | Cancels execution or waiting. |
+| `btcTxCheckIntervalSeconds` | `number` | Polling interval while waiting for the BTC transaction to confirm. |
+| `maxWaitTillAutomaticSettlementSeconds` | `number` | Maximum time to wait for automatic destination settlement. Defaults to `60`. |
+
+:::info
+For more details about the swap, swap states, going through swap steps manually or getting the transactions to sign and send outside the SDK refer to the respective [Bitcoin → Smart Chain swap](/developers/swaps/btc-to-smart-chain).
+:::
+
+    </TabItem>
+    <TabItem value="lightning-to-solana-legacy" label="Lightning → Solana">
+
+> Swap classes: [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap)
+
+Typical usage of the [execute()](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap#execute) function:
+
+```typescript
+// Executes the full legacy flow, always returns `true`, so there is not edge-case to cover
+await swap.execute(dstSigner, lightningWalletOrLnurlWithdraw?, callbacks?, options?);
+```
+
+Type of the destination `dstSigner` signer: [SolanaSigner](/sdk-reference/api/atomiq-chain-solana/src/classes/SolanaSigner), or native `@coral-xyz/anchor` [Wallet](https://solana-foundation.github.io/anchor/ts/classes/Wallet.html)
+
+Type of the lightning network source can be:
+- A simple object implementing [MinimalLightningNetworkWalletInterface](/sdk-reference/api/atomiq-sdk/src/type-aliases/MinimalLightningNetworkWalletInterface):
+      ```typescript
+      const lightningWallet: MinimalLightningNetworkWalletInterface = {
+          payInvoice: (bolt11PaymentRequest: string) => {
+              ... // Pay the provided bolt11 payment request
+              return bolt11PaymentHash; //Return the hexadecimal payment hash
+          }
+      }
+      ```
+- LNURL-withdraw as `string` or [LNURLWithdraw](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLWithdraw) object from [SwapperUtils.parseAddress()](sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#parseaddress)
+- Pass `null` or `undefined` if the invoice will be paid externally:
+      ```typescript
+      const bolt11PaymentInvoice = swap.getAddress(); // Returns the lightning network invoice to be displayed and paid by the user
+      const lightningPaymentDeeplink = swap.getHyperlink(); // Or get a `lightning:` deeplink that can be displayed as QR code
+      // Display the invoice and/or deeplink in a QR code to the user
+      // Call execute without a wallet for it to wait till an external payment arrives
+      const automaticallySettled = await swap.execute(null, callbacks?, options?);
+      ```
+
+<h3>Callbacks</h3>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `onSourceTransactionReceived` | `(sourceTxId: string) => void` | Fired when the Lightning payment is received by the LP. |
+| `onDestinationCommitSent` | `(destinationCommitTxId: string) => void` | Fired when the destination-chain commit transaction is sent. |
+| `onDestinationClaimSent` | `(destinationClaimTxId: string) => void` | Fired when the destination-chain claim transaction is sent. |
+| `onSwapSettled` | `(destinationTxId: string) => void` | Fired when the destination-chain funds are claimed and the swap is settled. |
+
+<h3>Options</h3>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `abortSignal` | `AbortSignal` | Cancels execution or waiting. |
+| `lightningTxCheckIntervalSeconds` | `number` | Polling interval while waiting for the Lightning payment to arrive. |
+| `delayBetweenCommitAndClaimSeconds` | `number` | Optional delay inserted between sending commit and claim transaction on the destination network. |
+| `secret` | `string` | Override the swap secret/pre-image. Usually only needed when the swap was recovered or the pre-image was generated outside the SDK. |
+
+:::info
+For more details about the swap, swap states, going through swap steps manually or getting the transactions to sign and send outside the SDK refer to the respective [Lightning → Smart Chain swap](/developers/swaps/lightning-to-smart-chain).
+:::
+
+    </TabItem>
+</Tabs>
+
+## Summary of Failure Modes and Fallbacks
+
+When `execute()` returns `false` and does not fully finish the swap automatically:
+
+| Swap family | Failure Mode | Manual fallback |
+|-------------|-----------------|----------------|
+| Smart chain -> BTC L1 / Lightning | LP didn't process the swap | `swap.refund(sourceSigner)` |
+| BTC L1 -> Starknet / EVM | Swap wasn't settled automatically | `swap.claim(destinationSigner)` |
+| Lightning -> Starknet / EVM | Swap wasn't settled automatically | `swap.claim(destinationSigner)` |
+
+### Legacy Swaps
+
+| Swap family | Failure Mode | Manual fallback |
+|-------------|-----------------|----------------|
+| BTC L1 -> Solana (legacy) | Swap wasn't settled automatically | `swap.claim(destinationSigner)` |
+| Lightning -> Solana (legacy) | None | - |
+
+For complete end-to-end walkthroughs, see the swap tutorial pages in this section and the examples in `Multichain/sdk/README.md`.

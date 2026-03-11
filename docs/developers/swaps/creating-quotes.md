@@ -71,6 +71,8 @@ for (const fee of swap.getFeeBreakdown()) {
 
 ### Pricing
 
+Return the information about the swap price, the current market price and the difference between the two.
+
 ```typescript
 const priceInfo = swap.getPriceInfo();
 priceInfo.swapPrice       // Effective swap price
@@ -80,9 +82,36 @@ priceInfo.difference      // Difference between swap and market price
 
 ### Quote Expiry
 
+Every created quote has an expiry time until which it needs to be executed, trying to execute the quote after expiry will lead to reverted transactions.
+
 ```typescript
 swap.getQuoteExpiry()     // Timestamp (ms) when the quote expires
 ```
+
+### Checking Swap State
+
+Check the current lifecycle state of the swap, the main state-check helpers are:
+
+- `swap.isQuoteExpired()` - whether the quote has definitely expired and cannot be initiated anymore
+- `swap.isQuoteSoftExpired()` - whether the quote is close enough to expiry that there might not be enough time buffer left to execute it, it is usually good practice to show the quote as expired to the user at this point already
+- `swap.isFinished()` - whether the swap reached a terminal state (can be either success or fail)
+- `swap.isSuccessful()` - whether the swap finished successfully
+- `swap.isFailed()` - whether the swap failed, for example because it was refunded
+
+```typescript
+if (swap.isQuoteExpired()) {
+  throw new Error("Quote expired");
+}
+
+if (swap.isFinished()) {
+  if (swap.isSuccessful()) console.log("Swap finished successfully");
+  if (swap.isFailed()) console.log("Swap finished in a failed state");
+}
+```
+
+:::info
+If you need the raw swap type specific state value, use [`getState()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstate). If you want something human-readable, use [`getStateInfo()`](http://localhost:3000/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstateinfo), more details about this can be found on the [TODO: Swap states page](/broken-link)
+:::
 
 ## EXACT_IN vs EXACT_OUT
 
@@ -133,8 +162,6 @@ When already swapping to the native token of the respective destination chain (i
 :::info
 This is so far not supported on **Solana**, which still uses legacy swap protocol.
 :::
-
-[//]: # (TODO: Create a separate tab for this - executing the swaps.)
 
 ## Executing the swap
 
