@@ -29,6 +29,10 @@ npm install @atomiqlabs/chain-evm@latest
 
 ## Setup
 
+:::tip
+See [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/setup.ts) in the demo repo for a ready-to-use version of the setup below.
+:::
+
 <Tabs groupId="network">
   <TabItem value="mainnet" label="Mainnet" default>
 
@@ -183,6 +187,10 @@ Initialize the swapper with `await swapper.init();` once when your app starts. Y
 ## Setting Up Signers
 
 Atomiq's [`AbstractSigner`](/sdk-reference/api/atomiq-sdk/src/type-aliases/AbstractSigner) object wraps around the wallet object of the respective chain and makes it easy to approve transactions via it by passing it to the swap methods. You can alternatively skip this step, obtain the transactions required to be signed and [sign & send them manually](/developers/advanced/manual-transactions).
+
+:::tip
+See [wallets.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/wallets.ts) in the demo repo for a ready-to-use version of the signers below.
+:::
 
 ### Solana
 
