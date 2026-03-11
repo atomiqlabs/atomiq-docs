@@ -26,6 +26,11 @@ Every action method has a corresponding `txs*` method:
 
 ## Solana
 
+:::tip Runnable Examples
+- [smartchain-to-btc/swapAdvancedSolana.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btc/swapAdvancedSolana.ts)
+- [smartchain-to-btcln/swapAdvancedSolana.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btcln/swapAdvancedSolana.ts)
+:::
+
 ```typescript
 import {Connection} from "@solana/web3.js";
 
@@ -102,6 +107,12 @@ async function manualSolanaSwap(swap: ToBTCSwap<SolanaChainType>) {
 
 ## Starknet
 
+:::tip Runnable Examples
+- [smartchain-to-btc/swapAdvancedStarknet.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/smartchain-to-btc/swapAdvancedStarknet.ts)
+- [btc-to-smartchain/swapAdvancedStarknet.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btc-to-smartchain/swapAdvancedStarknet.ts)
+- [btcln-to-smartchain/swapAdvancedStarknet.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapAdvancedStarknet.ts)
+:::
+
 ```typescript
 import {Account} from "starknet";
 
@@ -152,6 +163,10 @@ async function manualStarknetSwap(swap: SpvFromBTCSwap<StarknetChainType>) {
 ```
 
 ## EVM (Citrea, etc.)
+
+:::tip Runnable Example
+- [btc-to-smartchain/swapAdvancedEVM.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btc-to-smartchain/swapAdvancedEVM.ts)
+:::
 
 ```typescript
 import {Wallet} from "ethers";
