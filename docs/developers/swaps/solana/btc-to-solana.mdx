@@ -2,6 +2,9 @@
 sidebar_position: 1
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Bitcoin -> Solana
 
 Swap Bitcoin L1 (on-chain) to Solana tokens. Solana still uses the legacy [PrTLC](/overview/core-primitives/prtlc/) based Bitcoin -> smart chain flow, verified through the on-chain [Bitcoin light client](/overview/core-primitives/bitcoin-light-client/). Unlike the newer [UTXO-controlled vault](/overview/core-primitives/utxo-controlled-vault/) protocol used on Starknet and EVM, the user must first initialize a destination-side swap escrow on Solana and lock a SOL deposit before sending BTC.
@@ -75,12 +78,22 @@ if (!automaticallySettled) {
 ```
 
 :::warning
-`execute()` requires a Solana signer because the legacy Solana flow must open the destination-side PrTLC before a usable Bitcoin swap address exists.
+`execute()` requires a Solana signer because the legacy Solana flow must open the destination-side PrTLC before a usable Bitcoin swap address exists, use [SolanaSigner](/sdk-reference/api/atomiq-chain-solana/src/classes/SolanaSigner), or native `@coral-xyz/anchor` [Wallet](https://solana-foundation.github.io/anchor/ts/classes/Wallet.html).
 
 This flow assumes a single-address (non-HD) Bitcoin wallet capable of signing PSBTs. If you want to handle the Bitcoin payment manually from an external wallet instead, use the manual flow below.
 :::
 
 ## Manual Execution Flow
+
+Choose the Bitcoin payment flow that matches your wallet integration:
+- use **Bitcoin wallet** if you already implement [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) or [MinimalBitcoinWalletInterfaceWithSigner](/sdk-reference/api/atomiq-sdk/src/type-aliases/MinimalBitcoinWalletInterfaceWithSigner) and want the SDK to send the BTC transaction after the Solana commit step.
+- use **Funded PSBT** if you want a signable PSBT for a single-address non-HD Bitcoin wallet.
+- use **External wallet** if you want to pay the exact amount from an external wallet via [`getAddress()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#getaddress) or [`getHyperlink()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#gethyperlink).
+
+<Tabs groupId="manual-execution-flow">
+<TabItem value="bitcoin-wallet" label="Bitcoin wallet" default>
+
+Pass the `bitcoinWallet` argument which follows the [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) interface or [MinimalBitcoinWalletInterfaceWithSigner](/sdk-reference/api/atomiq-sdk/src/type-aliases/MinimalBitcoinWalletInterfaceWithSigner) type to the [`sendBitcoinTransaction()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#sendbitcointransaction) function.
 
 ```typescript
 import {SwapAmountType} from "@atomiqlabs/sdk";
@@ -96,20 +109,97 @@ const swap = await swapper.swap(
 );
 
 // 1. Commit the swap on Solana to open the Bitcoin swap address
-const txsCommit = await swap.txsCommit(); // Or use `swap.commit(solanaSigner)`
-// Sign and send these Solana transactions here
-...
-// Important: wait until the SDK processes the commit before using the address
-await swap.waitTillCommited();
+await swap.commit(solanaSigner);
 
-// 2. Send the Bitcoin payment
+// 2. Let the SDK build, sign, and send the Bitcoin transaction through your wallet integration
+const bitcoinTxId = await swap.sendBitcoinTransaction(bitcoinWallet);
+
+// 3. Wait for the Bitcoin transaction to reach the required confirmation count
+await swap.waitForBitcoinTransaction((txId, confirmations, targetConfirmations, txEtaMs) => {
+  console.log(`${confirmations}/${targetConfirmations} confirmations, ETA ${txEtaMs / 1000}s`);
+});
+
+// 4. Wait for watchtower settlement on Solana
+const automaticallySettled = await swap.waitTillClaimed(30);
+
+// 5. If watchtowers do not settle in time, claim manually
+if (!automaticallySettled) {
+  await swap.claim(solanaSigner);
+}
+```
+
+</TabItem>
+<TabItem value="funded-psbt" label="Funded PSBT">
+
+Get the funded PSBT from the [`getFundedPsbt()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#getfundedpsbt) function to sign with an external single-address non-BIP32 wallet (e.g. Xverse, Unisat, Phantom, etc.).
+
+```typescript
+import {SwapAmountType} from "@atomiqlabs/sdk";
+
+// Create a quote
+const swap = await swapper.swap(
+  Tokens.BITCOIN.BTC,
+  Tokens.SOLANA.SOL,
+  "0.0001",
+  SwapAmountType.EXACT_IN,
+  undefined,
+  solanaSigner.getAddress()
+);
+
+// 1. Commit the swap on Solana to open the Bitcoin swap address
+await swap.commit(solanaSigner);
+
+// 2. Ask the SDK for a funded PSBT for a non-HD single-address Bitcoin wallet
 const {psbtBase64, signInputs} = await swap.getFundedPsbt({
   address: "bc1q...",
   publicKey: "03..."
 });
-// Or use `swap.getAddress()` / `swap.getHyperlink()` and pay the exact amount from an external wallet
+
+// 3. Pass psbtBase64 (or psbtHex) and signInputs to an external signer like Xverse, Unisat, Phantom, etc.
 const signedPsbt = await externalBitcoinWallet.signPsbt(psbtBase64, signInputs);
+
+// 4. Submit the signed PSBT back to the SDK - supports hexadecimal and base64 formats
 const bitcoinTxId = await swap.submitPsbt(signedPsbt);
+
+// 5. Wait for the Bitcoin transaction to reach the required confirmation count
+await swap.waitForBitcoinTransaction((txId, confirmations, targetConfirmations, txEtaMs) => {
+  console.log(`${confirmations}/${targetConfirmations} confirmations, ETA ${txEtaMs / 1000}s`);
+});
+
+// 6. Wait for watchtower settlement on Solana
+const automaticallySettled = await swap.waitTillClaimed(30);
+
+// 7. If watchtowers do not settle in time, claim manually
+if (!automaticallySettled) {
+  await swap.claim(solanaSigner);
+}
+```
+
+</TabItem>
+<TabItem value="external-wallet" label="External wallet">
+
+Use the committed Bitcoin swap address directly from an external wallet. This is the legacy Solana-specific flow that does not require PSBT signing, but the paid amount must match [`getInput()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getinput) exactly.
+
+```typescript
+import {SwapAmountType} from "@atomiqlabs/sdk";
+
+// Create a quote
+const swap = await swapper.swap(
+  Tokens.BITCOIN.BTC,
+  Tokens.SOLANA.SOL,
+  "0.0001",
+  SwapAmountType.EXACT_IN,
+  undefined,
+  solanaSigner.getAddress()
+);
+
+// 1. Commit the swap on Solana to open the Bitcoin swap address
+await swap.commit(solanaSigner);
+
+// 2. Show the exact-address payment request to the external Bitcoin wallet
+const btcSwapAddress = swap.getAddress();
+const btcDeepLink = swap.getHyperlink();
+const exactInputAmount = swap.getInput().toString();
 
 // 3. Wait for the Bitcoin transaction to reach the required confirmation count
 await swap.waitForBitcoinTransaction((txId, confirmations, targetConfirmations, txEtaMs) => {
@@ -129,8 +219,11 @@ if (!automaticallySettled) {
 `getAddress()` and `getHyperlink()` only work after the swap has been committed. When paying from an external wallet, the amount must match [`getInput()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getinput) exactly. Sending a different amount can lead to loss of funds.
 :::
 
+</TabItem>
+</Tabs>
+
 :::info
-If you need to sign the Solana transactions manually, use [`txsCommit()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#txscommit) (like in the example) and [`txsClaim()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#txsclaim) instead of [`claim()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#claim). The returned transactions use the [SolanaTx](/sdk-reference/api/atomiq-chain-solana/src/type-aliases/SolanaTx) type.
+If you need to sign the Solana transactions manually, use [`txsCommit()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#txscommit) instead of [`commit()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#commit) and [`txsClaim()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#txsclaim) instead of [`claim()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#claim). The returned transactions use the [SolanaTx](/sdk-reference/api/atomiq-chain-solana/src/type-aliases/SolanaTx) type.
 
 For more information about how to sign and send these transactions manually refer to the [Manual Transactions](/developers/advanced/manual-transactions) page.
 :::
@@ -167,23 +260,30 @@ It is a good practice to query claimable swaps on your app's startup and either 
 This legacy flow is more time-sensitive than the newer Bitcoin -> Smart chain protocol, because the LP can refund the PrTLC after expiry if no successful claim happens in time.
 :::
 
-## Security Deposit And Watchtower Bounty
+## Native SOL Requirements
 
-Legacy Bitcoin -> Solana swaps require native SOL to initialize the destination-side PrTLC. The deposit has two parts:
+Legacy Bitcoin -> Solana swaps require native SOL for both the pre-funded destination-side security deposit, claimer bounty and the Solana transaction fees needed to open the PrTLC.
 
-- `getSecurityDeposit()`: the slashable SOL deposit that the LP can keep if the user never sends the Bitcoin payment.
+- `getSecurityDeposit()`: the slashable SOL deposit that the LP can keep if the user never sends the Bitcoin payment after initiating the swap on Solana.
 - `getClaimerBounty()`: the SOL reward reserved for watchtowers that claim the swap automatically after Bitcoin confirmation.
+- `getTotalDeposit()`: the total SOL amount locked during initialization, combining the security deposit and claimer bounty (a maximum of claimer bounty and security deposit, not a sum).
 
-You can inspect these amounts, along with the total native-token amount locked during initialization:
+You can inspect the total native-token requirements before calling `commit()` or `execute()`:
 
 ```typescript
+const feeCheck = await swap.hasEnoughForTxFees();
+
+console.log("Enough SOL:", feeCheck.enoughBalance);
+console.log("Wallet balance:", feeCheck.balance.toString());
+console.log("Required SOL:", feeCheck.required.toString());
+
 console.log("Security deposit:", swap.getSecurityDeposit().toString());
 console.log("Claimer bounty:", swap.getClaimerBounty().toString());
 console.log("Total locked deposit:", swap.getTotalDeposit().toString());
 ```
 
 :::warning
-You need enough SOL to cover the legacy deposit requirements and the Solana transaction fees before calling `commit()` or `execute()`. This cold-start requirement is specific to the legacy Solana flow and does not exist in the newer Bitcoin -> Smart chain protocol used on Starknet and EVM.
+You need enough SOL to cover the legacy deposit requirement and the destination-chain initialization fee before calling `commit()` or `execute()`. This cold-start requirement is specific to the legacy Solana flow and does not exist in the newer Bitcoin -> Smart chain protocol used on Starknet and EVM.
 :::
 
 ## Swap States

@@ -113,6 +113,8 @@ const swapper = Factory.newSwapper({
 
 ---
 
+Here is the full configuration example as passed to the `Factory.newSwapper()` function:
+
 ```typescript
 const swapper = Factory.newSwapper({
   chains: {

@@ -2,6 +2,9 @@
 sidebar_position: 3
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Bitcoin → Smart Chain
 
 Swap Bitcoin L1 (on-chain) to Starknet or EVM tokens. These swaps are based on the [UTXO-controlled vault](/overview/core-primitives/utxo-controlled-vault/) primitive and verified through the on-chain [Bitcoin light client](/overview/core-primitives/bitcoin-light-client/).
@@ -76,10 +79,20 @@ if (!automaticallySettled) {
 ```
 
 :::warning
-`execute()` requires a single-address (non-HD) Bitcoin wallet capable of signing PSBTs. If your signing flow is handled by an external wallet UI, or you use a BIP-32 HD wallet, use the manual PSBT flow below with `getFundedPsbt()` / `submitPsbt()` or `getPsbt()` / `submitPsbt()`.
+`execute()` requires a single-address (non-BIP32) Bitcoin wallet capable of signing PSBTs. If your signing flow is handled by an external wallet UI, or you use a BIP-32 HD wallet, use the manual **Funded PSBT** or **Raw PSBT** flow below.
 :::
 
 ## Manual Execution Flow
+
+Choose the Bitcoin signing flow that matches your wallet integration:
+- use **Bitcoin wallet** flow if you have a wallet which already implements [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) (e.g. the built-in [SingleAddressBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/classes/SingleAddressBitcoinWallet)) or [MinimalBitcoinWalletInterfaceWithSigner](/sdk-reference/api/atomiq-sdk/src/type-aliases/MinimalBitcoinWalletInterfaceWithSigner).
+- use **Funded PSBT** if you have a single address bitcoin wallet (non-HD) and want to get a PSBT already funded with wallet input UTXOs.
+- use **Raw PSBT** if you want full control of the PSBT construction, allowing you to add arbitrary inputs and outputs to the PSBT yourself.
+
+<Tabs groupId="manual-execution-flow">
+<TabItem value="sendbitcointransaction" label="Bitcoin wallet" default>
+
+Pass the `bitcoinWallet` argument which follows the [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) interface or [MinimalBitcoinWalletInterfaceWithSigner](/sdk-reference/api/atomiq-sdk/src/type-aliases/MinimalBitcoinWalletInterfaceWithSigner) type to the [`sendBitcoinTransaction()`](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap#sendbitcointransaction) function.
 
 ```typescript
 import {SwapAmountType} from "@atomiqlabs/sdk";
@@ -97,15 +110,8 @@ const swap = await swapper.swap(
   }
 );
 
-// 1. Get a funded PSBT, sign it with the user's Bitcoin wallet, and submit it
-const {psbtBase64, signInputs} = await swap.getFundedPsbt({
-  address: "bc1q...",
-  publicKey: "03..."
-}); // Or use `swap.getPsbt()` and fund the PSBT yourself from external wallet (check the info tab below)
-// Pass psbtBase64 (or psbtHex) and signInputs to an external signer like Xverse, Unisat, Phantom, etc.
-const signedPsbt = await externalBitcoinWallet.signPsbt(psbtBase64, signInputs);
-// Submit the signed PSBT back to the SDK
-const bitcoinTxId = await swap.submitPsbt(signedPsbt);
+// 1. Let the SDK build, sign, and submit the Bitcoin transaction through your IBitcoinWallet implementation
+const bitcoinTxId = await swap.sendBitcoinTransaction(bitcoinWallet);
 
 // 2. Wait for the Bitcoin transaction to reach the required confirmation count
 await swap.waitForBitcoinTransaction((txId, confirmations, targetConfirmations, txEtaMs) => {
@@ -121,9 +127,106 @@ if (!automaticallySettled) {
 }
 ```
 
-:::info
-If you need to build the Bitcoin transaction yourself, use [`getPsbt()`](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap#getpsbt) instead. After funding the PSBT, you must set the second input's `nSequence` (input index `1`) to the returned `in1sequence`, sign every input except the first one, and then submit it with [`submitPsbt()`](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap#submitpsbt).
+</TabItem>
+<TabItem value="getfundedpsbt" label="Funded PSBT">
+
+Get the funded PSBT from the [`getFundedPsbt()`](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap#getfundedpsbt) function to sign with an external single-address non-BIP32 wallet (e.g.: Xverse, Unisat, Phantom, etc.).
+
+```typescript
+import {SwapAmountType} from "@atomiqlabs/sdk";
+
+// Create a quote
+const swap = await swapper.swap(
+  Tokens.BITCOIN.BTC,
+  Tokens.STARKNET.STRK,
+  "0.00003",
+  SwapAmountType.EXACT_IN,
+  undefined,
+  starknetSigner.getAddress(),
+  {
+    gasAmount: 0n
+  }
+);
+
+// 1. Ask the SDK for a funded PSBT for a non-HD single-address Bitcoin wallet
+const {psbtBase64, signInputs} = await swap.getFundedPsbt({
+  address: "bc1q...",
+  publicKey: "03..."
+});
+
+// 2. Pass psbtBase64 (or psbtHex) and signInputs to an external signer like Xverse, Unisat, Phantom, etc.
+const signedPsbt = await externalBitcoinWallet.signPsbt(psbtBase64, signInputs);
+
+// 3. Submit the signed PSBT back to the SDK - supports hexadecimal and base64 formats
+const bitcoinTxId = await swap.submitPsbt(signedPsbt);
+
+// 4. Wait for the Bitcoin transaction to reach the required confirmation count
+await swap.waitForBitcoinTransaction((txId, confirmations, targetConfirmations, txEtaMs) => {
+  console.log(`${confirmations}/${targetConfirmations} confirmations, ETA ${txEtaMs / 1000}s`);
+});
+
+// 5. Wait for automatic settlement or fronting on the destination chain
+const automaticallySettled = await swap.waitTillClaimedOrFronted(60);
+
+// 6. If automatic settlement does not happen in time, claim manually
+if (!automaticallySettled) {
+  await swap.claim(starknetSigner);
+}
+```
+
+</TabItem>
+<TabItem value="getpsbt" label="Raw PSBT">
+
+Get the raw PSBT from the [`getPsbt`](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap#getpsbt) function to which you can add arbitrary inputs and outputs.
+
+```typescript
+import {SwapAmountType} from "@atomiqlabs/sdk";
+
+// Create a quote
+const swap = await swapper.swap(
+  Tokens.BITCOIN.BTC,
+  Tokens.STARKNET.STRK,
+  "0.00003",
+  SwapAmountType.EXACT_IN,
+  undefined,
+  starknetSigner.getAddress(),
+  {
+    gasAmount: 0n
+  }
+);
+
+// 1. Get the raw swap PSBT and fund it with your own wallet flow
+const {psbt, psbtHex, psbtBase64, in1sequence} = await swap.getPsbt();
+... // Add your own inputs and outputs to the PSBT
+
+// 2. IMPORTANT: Preserve the required nSequence on the second input (input index 1)
+// e.g.: psbt.updateInput(1, {sequence: in1sequence});
+
+// 3. Sign every input except the first one, which belongs to the LP vault
+...
+
+// 4. Submit the fully funded and signed PSBT back to the SDK - supports hexadecimal and base64 formats
+const bitcoinTxId = await swap.submitPsbt(psbt);
+
+// 5. Wait for the Bitcoin transaction to reach the required confirmation count
+await swap.waitForBitcoinTransaction((txId, confirmations, targetConfirmations, txEtaMs) => {
+  console.log(`${confirmations}/${targetConfirmations} confirmations, ETA ${txEtaMs / 1000}s`);
+});
+
+// 6. Wait for automatic settlement or fronting on the destination chain
+const automaticallySettled = await swap.waitTillClaimedOrFronted(60);
+
+// 7. If automatic settlement does not happen in time, claim manually
+if (!automaticallySettled) {
+  await swap.claim(starknetSigner);
+}
+```
+
+:::warning
+Make sure that you set the second input's `nSequence` (input index `1`) to the returned `in1sequence` after funding the PSBT, then sign every input except the first one and submit the PSBT with [`submitPsbt()`](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap#submitpsbt).
 :::
+</TabItem>
+</Tabs>
 
 :::warning
 Legacy non-SegWit Bitcoin inputs are not allowed in the submitted PSBT. Use witness-type inputs such as P2WPKH, P2WSH or P2TR.

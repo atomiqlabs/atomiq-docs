@@ -163,7 +163,22 @@ When already swapping to the native token of the respective destination chain (i
 This is so far not supported on **Solana**, which still uses legacy swap protocol.
 :::
 
-## Executing the swap
+## Next Steps
 
-After the quote is created you are ready to execute the swap. Executing the swap is handled differently for various swap types, therefore to see how to execute the specific see the respective tab:
+### Executing the Swap
+
+Guides you through executing various swap types using the high-level `execute()` function.
+
+**[Executing Swaps →](/developers/quick-start/executing-swaps)**
+
+---
+
+### Swap Types
+
+Lower-level swap-specific guides providing in-depth explanations and manual swap signing flows for different swap types.
+
+**[Swap Types →](/developers/swaps/)**
+
+---
+
 

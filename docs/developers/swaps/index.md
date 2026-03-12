@@ -13,11 +13,11 @@ The SDK supports swaps between Bitcoin (both L1 on-chain and L2 Lightning Networ
 | Source | Destination | Protocol | Page |
 |--------|-------------|----------|------|
 | BTC L1 | Starknet/EVM | SPV (SpvFromBTC) | [BTC to Smart Chain](./btc-to-smart-chain) |
-| Starknet/EVM | BTC L1 | ToBTC | [Smart Chain to BTC](./smart-chain-to-btc) |
+| Starknet/EVM | BTC L1 | ToBTC | [Smart Chain to BTC](./smart-chain-to-btc.mdx) |
 | BTC Lightning | Starknet/EVM | Auto (FromBTCLNAuto) | [Lightning to Smart Chain](./lightning-to-smart-chain) |
 | Starknet/EVM | BTC Lightning | ToBTCLN | [Smart Chain to Lightning](./smart-chain-to-lightning) |
-| LNURL-withdraw | Smart Chain | - | [LNURL Swaps](./lnurl-swaps) |
-| Smart Chain | LNURL-pay | - | [LNURL Swaps](./lnurl-swaps) |
+| LNURL-withdraw | Smart Chain | - | [LNURL Swaps](../utilities/lnurl-swaps.md) |
+| Smart Chain | LNURL-pay | - | [LNURL Swaps](../utilities/lnurl-swaps.md) |
 | BTC L1 | Solana | Legacy (FromBTC) | [BTC to Solana](./solana/btc-to-solana) |
 | Solana | BTC L1 | ToBTC | [Solana to BTC](./solana/solana-to-btc) |
 | BTC Lightning | Solana | Legacy (FromBTCLN) | [Lightning to Solana](./solana/lightning-to-solana) |
@@ -29,12 +29,12 @@ Lightning swaps are instant and don't require Bitcoin confirmations, making them
 
 ## Tutorials
 
-- [Creating Quotes](./creating-quotes) - How to create and inspect swap quotes
+- [Creating Quotes](../quick-start/creating-quotes.md) - How to create and inspect swap quotes
 - [BTC to Smart Chain](./btc-to-smart-chain) - Swap Bitcoin L1 to Starknet or EVM tokens
-- [Smart Chain to BTC](./smart-chain-to-btc) - Swap Starknet/EVM tokens to Bitcoin L1
+- [Smart Chain to BTC](./smart-chain-to-btc.mdx) - Swap Starknet/EVM tokens to Bitcoin L1
 - [Lightning to Smart Chain](./lightning-to-smart-chain) - Swap Lightning BTC to Starknet/EVM tokens
 - [Smart Chain to Lightning](./smart-chain-to-lightning) - Swap Starknet/EVM tokens to Lightning BTC
-- [LNURL Swaps](./lnurl-swaps) - Use LNURL-pay and LNURL-withdraw for reusable addresses
+- [LNURL Swaps](../utilities/lnurl-swaps.md) - Use LNURL-pay and LNURL-withdraw for reusable addresses
 
 ### Solana (Legacy)
 

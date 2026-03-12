@@ -82,23 +82,21 @@ const sidebars = {
       items: [
         'developers/quick-start/quick-start-browser',
         'developers/quick-start/quick-start-nodejs',
-        'developers/quick-start/configuration',
+        'developers/quick-start/creating-quotes',
+        'developers/quick-start/executing-swaps',
       ],
     },
     {
       type: 'category',
-      label: 'Swap Tutorials',
+      label: 'Swap Types',
       link: { type: 'doc', id: 'developers/swaps/index' },
       items: [
-        'developers/swaps/creating-quotes',
-        'developers/swaps/executing-swaps',
         'developers/swaps/smart-chain-to-btc',
         'developers/swaps/btc-to-smart-chain',
         'developers/swaps/lightning-to-smart-chain',
-        'developers/swaps/lnurl-swaps',
         {
           type: 'category',
-          label: 'Solana (Legacy)',
+          label: 'Legacy (Solana)',
           items: [
             'developers/swaps/solana/btc-to-solana',
             'developers/swaps/solana/lightning-to-solana',
@@ -125,6 +123,7 @@ const sidebars = {
         'developers/advanced/manual-transactions',
         'developers/advanced/events',
         'developers/advanced/swap-limits',
+        'developers/advanced/configuration'
       ],
     },
     {
@@ -136,6 +135,7 @@ const sidebars = {
         'developers/utilities/wallet-balance',
         'developers/utilities/supported-tokens',
         'developers/utilities/swap-types',
+        'developers/utilities/lnurl-swaps',
       ],
     },
     {

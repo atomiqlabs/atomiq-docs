@@ -16,15 +16,15 @@ The repo contains [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/
 ### Getting Started
 - [Quick Start (Browser)](./quick-start/quick-start-browser) - Set up in browser environments
 - [Quick Start (Node.js)](./quick-start/quick-start-nodejs) - Set up in Node.js environments
-- [Configuration](./quick-start/configuration) - Swapper options
+- [Configuration](advanced/configuration.md) - Swapper options
 
 ### Swap Tutorials
-- [Creating Quotes](./swaps/creating-quotes) - How to create and inspect swap quotes
+- [Creating Quotes](quick-start/creating-quotes.md) - How to create and inspect swap quotes
 - [BTC to Smart Chain](./swaps/btc-to-smart-chain) - Bitcoin L1 to Starknet/EVM
-- [Smart Chain to BTC](./swaps/smart-chain-to-btc) - Starknet/EVM to Bitcoin L1
+- [Smart Chain to BTC](./swaps/smart-chain-to-btc.mdx) - Starknet/EVM to Bitcoin L1
 - [Lightning to Smart Chain](./swaps/lightning-to-smart-chain) - Lightning to Starknet/EVM
 - [Smart Chain to Lightning](./swaps/smart-chain-to-lightning) - Starknet/EVM to Lightning
-- [LNURL Swaps](./swaps/lnurl-swaps) - Reusable payment addresses
+- [LNURL Swaps](utilities/lnurl-swaps.md) - Reusable payment addresses
 - **Solana (Legacy)**: [BTC to Solana](./swaps/solana/btc-to-solana) | [Solana to BTC](./swaps/solana/solana-to-btc) | [Lightning to Solana](./swaps/solana/lightning-to-solana) | [Solana to Lightning](./swaps/solana/solana-to-lightning)
 
 ### Utilities

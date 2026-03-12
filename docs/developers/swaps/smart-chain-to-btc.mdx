@@ -2,6 +2,9 @@
 sidebar_position: 4
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Smart Chain → BTC/Lightning
 
 Swap smart chain tokens (Solana, Starknet & EVM tokens) to Bitcoin L1 (on-chain) or Lightning L2. These swaps are based on the [HTLC](/overview/core-primitives/htlc) (for lightning) & [PrTLC](/overview/core-primitives/prtlc) (for on-chain) primitives.
@@ -22,20 +25,70 @@ For Smart chain → Lightning L2 swaps:
 
 ## Executing the Swap
 
-Here is a full flow for creating an executing the swap in the Smart Chain → BTC/Lightning direction via the `execute()` helper function, uses the [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap) & [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap) swap classes:
+Here is a full flow for creating an executing the swap in the Smart Chain → BTC/Lightning direction via the `execute()` helper function. The flow is the same for all the cases, with the only differences being:
+- Smart chain → Lightning swaps require `EXACT_OUT` mode and a BOLT11 invoice with explicit amount in sats.
+- Smart chain → LNURL-pay swaps allow `EXACT_IN` mode, support passing additional comment & reading success actions after payment.
+
+<Tabs groupId="swap-type">
+<TabItem value="smart-chain-to-btc" label="Smart chain → BTC" default>
+Uses the [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap) swap class.
 
 ```typescript
-import {SwapAmountType, ToBTCSwap, ToBTCLNSwap} from "@atomiqlabs/sdk";
+import {SwapAmountType, ToBTCSwap} from "@atomiqlabs/sdk";
 
 // Create a quote
-const swap: ToBTCSwap | ToBTCLNSwap = await swapper.swap(
+const swap: ToBTCSwap = await swapper.swap(
   Tokens.STARKNET.STRK,           // Any smart chain asset, e.g. SOL on Solana, STRK on Starknet or cBTC on Citrea
   Tokens.BITCOIN.BTC,             // Or `Tokens.BITCOIN.BTCLN` when swapping into Lightning
   "0.00003",                      // Amount (3000 sats to receive)
   SwapAmountType.EXACT_OUT,       // NOTE: When swapping to BOLT11 lightning invoice, only EXACT_OUT mode is supported
   starknetSigner.getAddress(),    // Source signer address
   "bc1q..."                       // Bitcoin on-chain address, BOLT11 lightning invoice or LNURL-pay link
-); // Type gets infered as ToBTCSwap (for Bitcoin on-chain) or ToBTCLNSwap (for Lightning)
+); // Type gets infered as ToBTCSwap (for Bitcoin on-chain)
+
+// Execute the swap
+const swapSuccessful = await swap.execute(
+  starknetSigner, // Pass in the signer on the source chain to sign the transactions
+  {
+    onSourceTransactionSent: (txId) => {
+      console.log(`Source tx sent: ${txId}`);
+    },
+    onSourceTransactionConfirmed: (txId) => {
+      console.log(`Source tx confirmed: ${txId}`);
+    },
+    onSwapSettled: (btcTxId) => {
+      console.log(`Bitcoin tx sent: ${btcTxId}`);
+    }
+  }
+);
+
+if (!swapSuccessful) {
+  // Handle the edge-case when LP fails to process the swap
+  console.log("Swap failed, refunding...");
+  // Refund funds back to the 
+  await swap.refund(starknetSigner);
+  console.log("Refunded!");
+} else {
+  console.log("Success! Output transaction ID: ", swap.getOutputTxId());
+  // For lightning network swaps you can get the payment preimage with swap.getSecret()
+}
+```
+</TabItem>
+<TabItem value="smart-chain-to-lightning" label="Smart chain → Lightning">
+Uses the [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap) swap class.
+
+```typescript
+import {SwapAmountType, ToBTCLNSwap} from "@atomiqlabs/sdk";
+
+// Create a quote
+const swap: ToBTCLNSwap = await swapper.swap(
+  Tokens.STARKNET.STRK,           // Any smart chain asset, e.g. SOL on Solana, STRK on Starknet or cBTC on Citrea
+  Tokens.BITCOIN.BTCLN,           // Swap into Lightning BTC
+  undefined,                      // Amount is determined by the passed BOLT11 lightning invoice
+  SwapAmountType.EXACT_OUT,       // When swapping to BOLT11 lightning invoice, only EXACT_OUT mode is supported
+  starknetSigner.getAddress(),    // Source signer address
+  "lnbc10u1p..."                  // BOLT11 lightning invoice, needs to have a fixed amount of sats!
+); // Type gets infered as ToBTCLNSwap (for Lightning)
 
 // Execute the swap
 const swapSuccessful = await swap.execute(
@@ -54,13 +107,19 @@ const swapSuccessful = await swap.execute(
 );
 
 // When swapping to lightning you can also additionally check:
-// swap.willLikelyFail() - The swap will likely fail due to lightning network routing error
-// swap.isPayingToNonCustodialWallet() - Destination wallet is probably a non-custodial wallet, which needs to be online to accept the payment
+// The swap will likely fail due to lightning network routing error
+if (swap.willLikelyFail()) {
+  console.log("Lightning network payment cannot be routed, ensure the recipient is online and has channels!");
+}
+// Destination wallet is probably a non-custodial wallet, which needs to be online to accept the payment
+if (swap.isPayingToNonCustodialWallet()) {
+  console.log("Destination lightning wallet is non-custodial, ensure it is online to accept the payment!");
+}
 
 if (!swapSuccessful) {
   // Handle the edge-case when LP fails to process the swap
   console.log("Swap failed, refunding...");
-  // Refund funds back to the 
+  // Refund funds back to the
   await swap.refund(starknetSigner);
   console.log("Refunded!");
 } else {
@@ -72,13 +131,85 @@ if (!swapSuccessful) {
 :::warning
 When swapping to Bitcoin Lightning and using BOLT11 lightning network invoices ("lnbc10u1p...") the invoice needs to have a fixed amount and therefore only `EXACT_OUT` swap mode is supported.
 
-For swapping variable amounts with `EXACT_IN` support to Bitcoin Lightning use [LNURL-pay links or lightning network addresses](#lnurl-pay-swaps)
+For swapping variable amounts in `EXACT_IN` mode to Bitcoin Lightning check the **Smart chain → LNURL-pay** tab, or the [EXACT_IN Lightning Swaps](#exact_in-lightning-swaps) section below if you have programatic API access to the destination lightning network wallet.
 :::
+</TabItem>
+<TabItem value="smart-chain-to-lnurl" label="Smart chain → LNURL-pay">
+Uses the [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap) swap class.
+
+```typescript
+import {SwapAmountType, ToBTCLNSwap} from "@atomiqlabs/sdk";
+
+// Create swap with LNURL-pay or Lightning address
+const swap: ToBTCLNSwap = await swapper.swap(
+  Tokens.STARKNET.STRK,             // Swap STRK
+  Tokens.BITCOIN.BTCLN,             // To Lightning BTC
+  "100",                            // Now we can specify amount, and even an input amount!
+  SwapAmountType.EXACT_IN,          // With LNURL-pay we can use EXACT_IN mode on Lightning!
+  starknetSigner.getAddress(),      // Source signer address
+  "lnurl1...",                      // LNURL-pay link or Lightning address ("user@example.com")
+  {
+    comment: "Payment for coffee"   // Optional comment
+  }
+); // Type gets infered as ToBTCLNSwap (for Lightning)
+
+// When swapping to lightning you can also additionally check:
+// The swap will likely fail due to lightning network routing error
+if (swap.willLikelyFail()) {
+  console.log("Lightning network payment cannot be routed, ensure the recipient is online and has channels!");
+}
+// Destination wallet is probably a non-custodial wallet, which needs to be online to accept the payment
+if (swap.isPayingToNonCustodialWallet()) {
+  console.log("Destination lightning wallet is non-custodial, ensure it is online to accept the payment!");
+}
+
+// Execute the swap
+const swapSuccessful = await swap.execute(
+  starknetSigner, // Pass in the signer on the source chain to sign the transactions
+  {
+    onSourceTransactionSent: (txId) => {
+      console.log(`Source tx sent: ${txId}`);
+    },
+    onSourceTransactionConfirmed: (txId) => {
+      console.log(`Source tx confirmed: ${txId}`);
+    },
+    onSwapSettled: (btcTxId) => {
+      console.log(`Bitcoin tx sent: ${btcTxId}`);
+    }
+  }
+);
+
+if (!swapSuccessful) {
+  // Handle the edge-case when LP fails to process the swap
+  console.log("Swap failed, refunding...");
+  // Refund funds back to the
+  await swap.refund(starknetSigner);
+  console.log("Refunded!");
+  return;
+}
+
+// LNURL-pay link might also contain a success action, this can be displayed to the user
+//  upon successful payment
+if (swap.hasSuccessAction()) {
+  const action = swap.getSuccessAction();
+  console.log("Description:", action.description);
+  console.log("Text:", action.text);        // May be null
+  console.log("URL:", action.url);          // May be null
+}
+```
+
+:::info
+For more information about how to parse LNURLs, distinguish between LNURL-withdraw and LNURL-pay variants, check out the [LNURL-pay](#lnurl-pay) section.
+:::
+</TabItem>
+</Tabs>
 
 ## Manual Execution Flow
 
+<Tabs groupId="execution-type">
+<TabItem value="signer-object" label="Signer object" default>
 ```typescript
-import {SwapAmountType, ToBTCSwap, ToBTCLNSwap} from "@atomiqlabs/sdk";
+import {SwapAmountType} from "@atomiqlabs/sdk";
 
 // Create a quote
 const swap = await swapper.swap(
@@ -91,7 +222,40 @@ const swap = await swapper.swap(
 ); // Type gets infered as ToBTCSwap (for Bitcoin on-chain) or ToBTCLNSwap (for Lightning)
 
 // 1. Initiate the swap on the source chain
-const txsCommit = await swap.txsCommit(); // Or use swap.commit(starknetSigner) with existing signer
+await swap.commit(starknetSigner);
+
+// 2. Wait for the swap to execute and for the destination tx to be sent
+const swapSuccessful = await swap.waitForPayment();
+
+// 3. Refund in case of failure
+if(!swapSuccessful) {
+  await swap.refund(starknetSigner);
+}
+```
+
+:::info
+Type of the signer object passed to the [`commit()`](/sdk-reference/api/atomiq-sdk/src/classes/IToBTCSwap#commit) & [`refund()`](/sdk-reference/api/atomiq-sdk/src/classes/IToBTCSwap#refund) functions is dependent on the source network:
+- For **Solana** swaps: [SolanaSigner](/sdk-reference/api/atomiq-chain-solana/src/classes/SolanaSigner), or native `@coral-xyz/anchor` [Wallet](https://solana-foundation.github.io/anchor/ts/classes/Wallet.html)
+- For **Starknet** swaps: [StarknetSigner](/sdk-reference/api/atomiq-chain-starknet/src/classes/StarknetSigner), [StarknetBrowserSigner](/sdk-reference/api/atomiq-chain-starknet/src/classes/StarknetBrowserSigner), or native `starknet` [Account](https://starknetjs.com/docs/API/classes/Account)
+- For **EVM** swaps: [EVMSigner](/sdk-reference/api/atomiq-chain-evm/src/classes/EVMSigner), or native `ethers` [Signer](https://docs.ethers.org/v6/api/providers/#Signer)
+:::
+</TabItem>
+<TabItem value="manual-txs" label="Manually sign transactions" default>
+```typescript
+import {SwapAmountType} from "@atomiqlabs/sdk";
+
+// Create a quote
+const swap = await swapper.swap(
+  Tokens.STARKNET.STRK,           // Any smart chain asset, e.g. SOL on Solana, STRK on Starknet or cBTC on Citrea
+  Tokens.BITCOIN.BTC,             // Or `Tokens.BITCOIN.BTCLN` when swapping into Lightning
+  "0.00003",                      // Amount (3000 sats to receive)
+  SwapAmountType.EXACT_OUT,       // NOTE: When swapping to BOLT11 lightning invoice, only EXACT_OUT mode is supported
+  starknetSigner.getAddress(),    // Source signer address
+  "bc1q..."                       // Bitcoin on-chain address, BOLT11 lightning invoice or LNURL-pay link
+); // Type gets infered as ToBTCSwap (for Bitcoin on-chain) or ToBTCLNSwap (for Lightning)
+
+// 1. Initiate the swap on the source chain
+const txsCommit = await swap.txsCommit();
 ... // Sign and send transactions here
 // Important to wait till SDK processes the swap initialization
 await swap.waitTillCommited();
@@ -103,17 +267,21 @@ const swapSuccessful = await swap.waitForPayment();
 if(!swapSuccessful) {
   const txsRefund = await swap.txsRefund(); // Or use swap.refund(starknetSigner) with existing signer
   ... // Sign and send refund transactions here
+  // Important to wait till SDK processes the swap refund and updates the swap state
+  await swap.waitTillRefunded();
 }
 ```
 
 :::info
 The transactions returned by the `txs*` functions use the following types:
-- For Solana, uses the [SolanaTx](/sdk-reference/api/atomiq-chain-solana/src/type-aliases/SolanaTx) type
-- For Starknet, uses the [StarknetTx](/sdk-reference/api/atomiq-chain-starknet/src/type-aliases/StarknetTx) type
-- For EVM, uses the `ethers` [TransactionRequest](https://docs.ethers.org/v6/api/providers/#TransactionRequest) type
+- For **Solana**, uses the [SolanaTx](/sdk-reference/api/atomiq-chain-solana/src/type-aliases/SolanaTx) type
+- For **Starknet**, uses the [StarknetTx](/sdk-reference/api/atomiq-chain-starknet/src/type-aliases/StarknetTx) type
+- For **EVM**, uses the `ethers` [TransactionRequest](https://docs.ethers.org/v6/api/providers/#TransactionRequest) type
 
 For more information about how to sign and send these transactions manually refer to the [Manual Transactions](/developers/advanced/manual-transactions) page.
 :::
+</TabItem>
+</Tabs>
 
 ## Refunding Past Failed Swaps
 
@@ -144,7 +312,7 @@ for (const swap of refundable) {
 It is a good practice to get the refundable swaps on your app's startup and either refunding them automatically or prompting the user to refund.
 :::
 
-## LNURL-pay swaps
+## LNURL-pay
 
 LNURL-pay links ("lnurl1p...") and static lightning addresses ("user@example.com") are reusable and allow payer to set an amount. Hence, they can be used to swap into Lightning with `EXACT_IN` mode.
 
@@ -164,6 +332,11 @@ const lnurlDetails: LNURLPay | LNURLWithdraw = await swapper.Utils.getLNURLTypeA
 if(!isLNURLPay(lnurlDetails))
   throw new Error("LNURL isn't of the LNURL-pay type!");
 
+//You can check the details of the LNURL-pay link, for the full details refer to the `LNURLPay` typedoc page.
+const swapMinimumSats: bigint = lnurlDetails.min;
+const swapMaximumSats: bigint = lnurlDetails.max;
+const shortDescription: string = lnurlDetails.shortDescription;
+
 // Create swap with LNURL-pay or Lightning address
 const swap = await swapper.swap(
   Tokens.STARKNET.STRK,             // Swap STRK
@@ -178,15 +351,6 @@ const swap = await swapper.swap(
 );
 
 ... // Handle swap execution
-
-// LNURL-pay link might also contain a success action, this can be displayed to the user
-//  upon successful payment
-if (swap.hasSuccessAction()) {
-  const action = swap.getSuccessAction();
-  console.log("Description:", action.description);
-  console.log("Text:", action.text);        // May be null
-  console.log("URL:", action.url);          // May be null
-}
 ```
 
 ## Swap States
