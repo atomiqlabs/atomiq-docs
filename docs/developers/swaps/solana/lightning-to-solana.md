@@ -2,101 +2,246 @@
 sidebar_position: 3
 ---
 
-# Lightning to Solana
+# Lightning -> Solana
 
-Swap Bitcoin Lightning Network to Solana tokens using the legacy FromBTCLN protocol.
+Swap Bitcoin Lightning to Solana tokens. Solana still uses the legacy [HTLC](/overview/core-primitives/htlc/) based Lightning -> smart chain flow. The user pays a Lightning invoice first, then manually initializes and claims the destination-side HTLC on Solana, revealing the secret that lets the LP settle the Lightning payment.
 
-:::info Legacy Protocol
-Solana uses the legacy protocol requiring an HTLC commitment on the destination chain. For Starknet/EVM swaps, see [Lightning to Smart Chain](../lightning-to-smart-chain).
+Unlike the newer LP-initiated Lightning -> smart chain protocol used on Starknet and EVM, this legacy Solana flow requires native SOL upfront for the destination transactions and a security deposit. There is no watchtower auto-claim path here: after the Lightning payment is received by the LP, the user must initialize and settle the swap on Solana themselves.
+
+:::info Looking for the newer flow?
+Starknet and EVM use the newer LP-initiated HTLC protocol. See [Lightning -> Smart Chain](../lightning-to-smart-chain).
 :::
 
 ## Executing the Swap
 
-Create a [quote](../creating-quotes), then execute. The Solana protocol requires a signer for the HTLC commitment:
+Here is a full flow for creating and executing the swap in the Lightning -> Solana direction via the `execute()` helper function, using the [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) swap class:
 
 ```typescript
-import {FromBTCLNSwapState, SwapAmountType} from "@atomiqlabs/sdk";
+import {SwapAmountType} from "@atomiqlabs/sdk";
+
+// Create a quote
+const swap = await swapper.swap(
+  Tokens.BITCOIN.BTCLN,       // Lightning BTC input
+  Tokens.SOLANA.SOL,          // Destination Solana token
+  10_000n,                    // Amount in sats
+  SwapAmountType.EXACT_IN,
+  undefined,                  // Source address is not used for standard Lightning source swaps
+  solanaSigner.getAddress()   // Destination Solana address
+); // Type gets inferred as FromBTCLNSwap
+
+// Inspect the Lightning invoice and native-SOL requirements
+console.log("Invoice:", swap.getAddress());
+console.log("Deep link:", swap.getHyperlink());
+console.log("Security deposit:", swap.getSecurityDeposit().toString());
+
+// Execute the swap
+await swap.execute(
+  solanaSigner,               // Destination signer used to commit and claim the HTLC on Solana
+  {
+    payInvoice: async (bolt11) => {
+      // Pay the BOLT11 invoice with WebLN, NWC, or any other Lightning wallet integration
+      return ""; // Return the payment preimage if your wallet exposes it, otherwise an empty string is fine
+    }
+  }, // Or pass `null` / `undefined` here to pay `swap.getAddress()` externally, or pass an LNURL-withdraw link here
+  {
+    onSourceTransactionReceived: (paymentHash) => {
+      console.log(`Lightning payment received by LP: ${paymentHash}`);
+    },
+    onDestinationCommitSent: (txId) => {
+      console.log(`HTLC committed on Solana: ${txId}`);
+    },
+    onDestinationClaimSent: (txId) => {
+      console.log(`HTLC claimed on Solana: ${txId}`);
+    },
+    onSwapSettled: (destinationTxId) => {
+      console.log(`Swap settled on Solana: ${destinationTxId}`);
+    }
+  }
+);
+
+console.log("Success! Output transaction ID:", swap.getOutputTxId());
+```
+
+:::warning
+`execute()` requires a destination-chain signer and enough native SOL, because the legacy Solana flow must actively commit and claim the HTLC on Solana.
+
+If the Lightning payment is handled by an external wallet UI instead, use the manual flow below or pass `null` / `undefined` as the Lightning wallet and pay the invoice separately.
+:::
+
+## Manual Execution Flow
+
+```typescript
+import {SwapAmountType} from "@atomiqlabs/sdk";
 
 // Create a quote
 const swap = await swapper.swap(
   Tokens.BITCOIN.BTCLN,
   Tokens.SOLANA.SOL,
-  10000n,                       // 10,000 sats
+  10_000n,
   SwapAmountType.EXACT_IN,
   undefined,
   solanaSigner.getAddress()
 );
 
-console.log("Security deposit:", swap.getSecurityDeposit().toString());
-console.log("Invoice:", swap.getAddress());
+// 1. Show the Lightning invoice to the user
+const lightningInvoice = swap.getAddress();
+const lightningUri = swap.getHyperlink();
 
-// Execute - Solana signer needed for HTLC commitment
-await swap.execute(
-  solanaSigner,
-  {
-    payInvoice: async (bolt11) => {
-      // Pay invoice using your wallet
-      return "";
-    }
-  },
-  {
-    onSourceTransactionReceived: (paymentHash) => {
-      console.log(`Payment received: ${paymentHash}`);
-    },
-    onDestinationCommitSent: (txId) => {
-      console.log(`HTLC opened: ${txId}`);
-    },
-    onDestinationClaimSent: (txId) => {
-      console.log(`Claim sent: ${txId}`);
-    },
-    onSwapSettled: (txId) => {
-      console.log(`Swap settled: ${txId}`);
-    }
-  }
-);
+// 2. Wait for the Lightning payment to be received by the LP
+const paymentReceived = await swap.waitForPayment();
+if (!paymentReceived) {
+  console.log("Lightning payment was not received before the quote expired.");
+  return;
+}
+
+// 3. Commit and claim the HTLC on Solana
+await swap.commitAndClaim(solanaSigner);
 ```
 
-## LNURL-withdraw
+:::info
+If you need to sign the Solana transactions manually, use [`txsCommitAndClaim()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap#txscommitandclaim) instead, send the returned transactions sequentially, wait for each one to confirm before sending the next one, and then call [`waitTillClaimed()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap#waittillclaimed) so the SDK updates the swap state. The returned Solana transactions use the [SolanaTx](/sdk-reference/api/atomiq-chain-solana/src/type-aliases/SolanaTx) type.
 
-LNURL-withdraw lets you pull funds from a service that holds your Bitcoin:
+For more information about how to sign and send these transactions manually refer to the [Manual Transactions](/developers/advanced/manual-transactions) page.
+:::
+
+:::warning
+When sending `txsCommitAndClaim()` manually, do not broadcast the claim transaction before the commit transaction is confirmed. Revealing the HTLC preimage too early can let the LP settle the Lightning payment before your Solana claim is safely in place.
+:::
+
+## Claiming Past Unsettled Swaps
+
+If the app was offline after the Lightning payment was received and the HTLC was already committed (but not claimed/settled) on Solana, the swap can still be manually claimed as long as the HTLC has not expired yet.
+
+Checking if a single swap is claimable and claiming it:
 
 ```typescript
-const lnurlWithdraw = "lnurl1dp68gurn8ghj7...";
+if (swap.isClaimable()) {
+  await swap.claim(solanaSigner);
+}
+```
 
+Getting all swaps that are claimable and claiming them:
+
+```typescript
+const claimable = await swapper.getClaimableSwaps(
+  "SOLANA",                  // Only get claimable swaps on SOLANA
+  solanaSigner.getAddress()  // Only get claimable swaps for this destination address
+); // This returns claimable Bitcoin -> Solana and Lightning -> Solana swaps
+
+for (const swap of claimable) {
+  // All the claimable swap types have the same `claim()` function signature
+  await swap.claim(solanaSigner);
+}
+```
+
+:::info
+It is a good practice to query claimable swaps on your app's startup and either claim them automatically or prompt the user to claim them.
+
+Unlike the newer Lightning -> Smart chain flow, there is no watchtower fallback here. Settlement remains time-limited by the HTLC expiry, so this recovery check should run promptly.
+:::
+
+## Native SOL Requirements
+
+Legacy Lightning -> Solana swaps require native SOL for both the slashable security deposit and the destination-chain transaction fees.
+
+There is no watchtower claimer bounty in this legacy flow, because settlement is user-driven.
+
+- `getSecurityDeposit()`: the SOL bond the LP can keep if the user pays the Lightning invoice but never completes the Solana-side HTLC flow.
+- `getCommitAndClaimNetworkFee()`: the estimated Solana network fee for the commit and claim transactions combined.
+
+You can inspect the total native-token requirements before executing the swap:
+
+```typescript
+const feeCheck = await swap.hasEnoughForTxFees();
+
+console.log("Enough SOL:", feeCheck.enoughBalance);
+console.log("Wallet balance:", feeCheck.balance.toString());
+console.log("Required SOL:", feeCheck.required.toString());
+
+console.log("Security deposit:", swap.getSecurityDeposit().toString());
+console.log("Commit + claim fee:", (await swap.getCommitAndClaimNetworkFee()).toString());
+```
+
+:::warning
+You need enough SOL to cover the legacy deposit requirement and both destination transactions before calling `execute()` or `commitAndClaim()`. This cold-start requirement is specific to the legacy Solana flow and does not exist in the newer Lightning -> Smart chain protocol used on Starknet and EVM.
+:::
+
+## LNURL-withdraw Swaps
+
+An LNURL-withdraw link can be used as the Lightning source. The SDK will generate a BOLT11 invoice for the quote and submit it to the LNURL-withdraw service automatically when you call `waitForPayment()` or `execute()`.
+
+```typescript
 const swap = await swapper.swap(
   Tokens.BITCOIN.BTCLN,
   Tokens.SOLANA.SOL,
-  10000n,
+  10_000n,
   SwapAmountType.EXACT_IN,
-  lnurlWithdraw,
+  "lnurl1...",                // LNURL-withdraw link as the source
   solanaSigner.getAddress()
 );
 
 await swap.execute(
   solanaSigner,
-  undefined,  // No Lightning wallet needed
+  undefined,                  // No wallet is needed, funds come from the LNURL-withdraw source
   {
-    onSourceTransactionReceived: (hash) => console.log("Withdrawal requested"),
-    onDestinationCommitSent: (txId) => console.log("HTLC opened"),
-    onSwapSettled: (txId) => console.log("Complete")
+    onSourceTransactionReceived: (paymentHash) => {
+      console.log(`Lightning payment received by LP: ${paymentHash}`);
+    },
+    onDestinationCommitSent: (txId) => {
+      console.log(`HTLC committed on Solana: ${txId}`);
+    },
+    onDestinationClaimSent: (txId) => {
+      console.log(`HTLC claimed on Solana: ${txId}`);
+    },
+    onSwapSettled: (destinationTxId) => {
+      console.log(`Swap settled on Solana: ${destinationTxId}`);
+    }
   }
 );
 ```
 
+:::tip
+If you created a normal Lightning quote first and later want to fund it from an LNURL-withdraw source instead, call [`settleWithLNURLWithdraw(lnurl)`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap#settlewithlnurlwithdraw) before or during `waitForPayment()`/`execute()`. This is useful when you want to display a standard invoice QR code and also allow LNURL-withdraw or NFC-card settlement.
+:::
+
 ## Swap States
+
+Read the current state of the swap in its [FromBTCLNSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/FromBTCLNSwapState) enum form with [`getState()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstate) or in human readable [SwapStateInfo](/sdk-reference/api/atomiq-sdk/src/type-aliases/SwapStateInfo) form with description with [`getStateInfo()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstateinfo):
+
+```typescript
+import {FromBTCLNSwapState, SwapStateInfo} from "@atomiqlabs/sdk";
+
+const state: FromBTCLNSwapState = swap.getState();
+console.log(`State (numeric): ${state}`);
+
+const richState: SwapStateInfo<FromBTCLNSwapState> = swap.getStateInfo();
+console.log(`State name: ${richState.name}`);
+console.log(`State description: ${richState.description}`);
+```
+
+Subscribe to swap state updates with:
+
+```typescript
+swap.events.on("swapState", () => {
+  const state: FromBTCLNSwapState = swap.getState();
+});
+```
+
+### Table of States
 
 | State | Value | Description |
 |-------|-------|-------------|
-| `FAILED` | -4 | Claiming failed, LN payment will refund |
-| `QUOTE_EXPIRED` | -3 | Quote expired |
-| `QUOTE_SOFT_EXPIRED` | -2 | Quote probably expired |
-| `EXPIRED` | -1 | Invoice expired |
-| `PR_CREATED` | 0 | Waiting for LN payment |
-| `PR_PAID` | 1 | Payment received |
-| `CLAIM_COMMITED` | 2 | HTLC initiated |
-| `CLAIM_CLAIMED` | 3 | Swap complete |
+| `FAILED` | -4 | The user did not settle the destination HTLC before expiry, so the Lightning payment refunds. |
+| `QUOTE_EXPIRED` | -3 | Swap quote expired and can no longer be executed. |
+| `QUOTE_SOFT_EXPIRED` | -2 | Swap should be treated as expired, though it might still succeed if the destination initialization is already in flight. |
+| `EXPIRED` | -1 | The destination HTLC expired, so it is no longer safe to claim on Solana. |
+| `PR_CREATED` | 0 | Quote created. Pay the invoice from `getAddress()` or `getHyperlink()`, then continue with `waitForPayment()`. |
+| `PR_PAID` | 1 | The LP received the Lightning payment. Continue by settling on Solana with `commitAndClaim()`, or with `commit()` and `claim()` separately if needed. |
+| `CLAIM_COMMITED` | 2 | The destination HTLC exists on Solana. Continue by claiming it with `claim()` or `txsClaim()`. |
+| `CLAIM_CLAIMED` | 3 | Swap settled on Solana and the revealed secret lets the LP settle the Lightning payment. |
 
 ## API Reference
 
-- [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) - Solana swap class
+- [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) - Swap class for Lightning -> Solana
 - [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum
+- [FromBTCLNSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/FromBTCLNSwapState) - Swap states

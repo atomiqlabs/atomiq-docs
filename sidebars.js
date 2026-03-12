@@ -101,9 +101,7 @@ const sidebars = {
           label: 'Solana (Legacy)',
           items: [
             'developers/swaps/solana/btc-to-solana',
-            'developers/swaps/solana/solana-to-btc',
             'developers/swaps/solana/lightning-to-solana',
-            'developers/swaps/solana/solana-to-lightning',
           ],
         },
       ],

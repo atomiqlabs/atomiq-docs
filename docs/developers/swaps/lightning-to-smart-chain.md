@@ -2,14 +2,15 @@
 sidebar_position: 5
 ---
 
-# Lightning to Smart Chain
+# Lightning → Smart Chain
 
-Swap Bitcoin Lightning Network to Starknet or EVM tokens using the auto-settlement protocol.
+Swap Bitcoin Lightning to Starknet or EVM tokens. These swaps are based on an LP-initiated [HTLC](/overview/core-primitives/htlc/) on the destination chain. After the LP receives the Lightning payment, it creates the HTLC and the user broadcasts the payment secret over Nostr so [watchtowers](/overview/actors/) can claim on the user's behalf. The user can always self-claim as a fallback.
 
 :::tip Runnable Examples
 - [btcln-to-smartchain/swapBasic.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapBasic.ts)
 - [btcln-to-smartchain/swapBasicLNURL.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapBasicLNURL.ts)
 - [btcln-to-smartchain/swapAdvancedStarknet.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapAdvancedStarknet.ts)
+- [btcln-to-smartchain/swapAdvancedEVM.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapAdvancedEVM.ts)
 :::
 
 :::info Looking for Solana?
@@ -18,147 +19,235 @@ Solana uses a different (legacy) swap protocol. See [Lightning to Solana](./sola
 
 ## Executing the Swap
 
-Create a [quote](./creating-quotes), then execute with a Lightning wallet:
+Here is a full flow for creating and executing the swap in the Lightning -> Smart chain direction via the `execute()` helper function, using the [FromBTCLNAutoSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap) swap class:
 
 ```typescript
-import {FromBTCLNAutoSwapState, SwapAmountType} from "@atomiqlabs/sdk";
+import {SwapAmountType} from "@atomiqlabs/sdk";
 
 // Create a quote
 const swap = await swapper.swap(
-  Tokens.BITCOIN.BTCLN,          // From Lightning
-  Tokens.STARKNET.STRK,          // To destination token
-  3000n,                         // Amount in sats
+  Tokens.BITCOIN.BTCLN,         // Lightning BTC input
+  Tokens.STARKNET.STRK,         // Destination smart-chain token, e.g. STRK on Starknet or cBTC on Citrea
+  10_000n,                      // Amount in sats
   SwapAmountType.EXACT_IN,
-  undefined,                     // Source (not used for LN)
-  starknetSigner.getAddress(),   // Destination address
+  undefined,                    // Source address is not used for standard Lightning source swaps
+  starknetSigner.getAddress(),  // Destination smart-chain address
   {
-    gasAmount: 0n                // Optional: request gas drop
+    gasAmount: 0n               // Optional: request native destination token as gas drop
   }
-);
+); // Type gets inferred as FromBTCLNAutoSwap
 
-// The quote includes a Lightning invoice to pay
-console.log("Pay this invoice:", swap.getAddress());
+// The quote includes the Lightning invoice that has to be paid
+console.log("Invoice:", swap.getAddress());
+console.log("Deep link:", swap.getHyperlink());
 
-// Execute - pass a wallet that can pay invoices
-const settled = await swap.execute(
+// Execute the swap
+const automaticallySettled = await swap.execute(
   {
     payInvoice: async (bolt11) => {
-      // Pay the invoice using WebLN, NWC, or your wallet
-      console.log("Paying invoice:", bolt11);
-      return "";  // Return payment preimage or empty string
+      // Pay the BOLT11 invoice with WebLN, NWC, or any other Lightning wallet integration
+      return ""; // Return the payment preimage if your wallet exposes it, otherwise an empty string is fine
     }
-  },
+  }, // Or pass `null` or `undefined` here to wait till an external payment to the `swap.getAddress()` arrives
+  // Alternatively you can also pass an LNURL-withdraw link that should be used as a source here
   {
     onSourceTransactionReceived: (paymentHash) => {
-      console.log(`Payment received: ${paymentHash}`);
+      console.log(`Lightning payment received by LP: ${paymentHash}`);
     },
-    onSwapSettled: (txId) => {
-      console.log(`Swap settled: ${txId}`);
+    onSwapSettled: (destinationTxId) => {
+      console.log(`Swap settled on destination chain: ${destinationTxId}`);
     }
   }
 );
 
-if (!settled) {
+if (!automaticallySettled) {
+  // Handle the edge-case when watchtowers do not settle the HTLC automatically
+  console.log("Automatic settlement timed out, claiming manually...");
   await swap.claim(starknetSigner);
+  console.log("Claimed!");
+} else {
+  console.log("Success! Output transaction ID:", swap.getOutputTxId());
 }
 ```
 
-## Manual Payment (External Wallet)
+:::warning
+Ensure that the SDK stays online when the lightning network payment is sent, this is necessary since the SDK needs to actively broadcast the swap secret over Nostr upon receiving the swap HTLC.
+:::
 
-If you don't have programmatic wallet access:
+## Manual Execution Flow
 
 ```typescript
-// Display invoice for user to pay manually
-console.log("Please pay:", swap.getAddress());
+import {SwapAmountType} from "@atomiqlabs/sdk";
 
-// Wait for payment to be received
+// Create a quote
+const swap = await swapper.swap(
+  Tokens.BITCOIN.BTCLN,
+  Tokens.STARKNET.STRK,
+  10_000n,
+  SwapAmountType.EXACT_IN,
+  undefined,
+  starknetSigner.getAddress(),
+  {
+    gasAmount: 0n
+  }
+);
+
+// 1. Show the invoice to the user
+const lightningInvoice = swap.getAddress();
+const lightningUri = swap.getHyperlink();
+
+// 2. Wait for the Lightning payment and for the LP to create the destination HTLC
 const paymentReceived = await swap.waitForPayment();
 if (!paymentReceived) {
-  console.log("Payment not received in time");
+  console.log("Lightning payment was not received before the quote expired.");
   return;
 }
 
-// Wait for automatic settlement
-const settled = await swap.waitTillClaimed(60);
-if (!settled) {
+// 3. Wait for watchtower settlement on the destination chain
+const automaticallySettled = await swap.waitTillClaimed(60);
+
+// 4. If watchtowers do not settle in time, claim manually
+if (!automaticallySettled) {
   await swap.claim(starknetSigner);
 }
 ```
 
+:::info
+If you need to sign the destination-chain claim manually, use [`txsClaim()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#txsclaim) instead of [`claim()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#claim).
+
+The returned transactions use the following types:
+- For Starknet, uses the [StarknetTx](/sdk-reference/api/atomiq-chain-starknet/src/type-aliases/StarknetTx) type
+- For EVM, uses the `ethers` [TransactionRequest](https://docs.ethers.org/v6/api/providers/#TransactionRequest) type
+
+For more information about how to sign and send these transactions manually refer to the [Manual Transactions](/developers/advanced/manual-transactions) page.
+:::
+
+## Claiming Past Unsettled Swaps
+
+If the app was offline when the LP created the destination HTLC and/or the watchtowers didn't settle the swap automatically, the swap can still be manually claimed as long as the HTLC has not expired yet.
+
+Checking if a single swap is claimable and claiming it:
+
+```typescript
+if (swap.isClaimable()) {
+  await swap.claim(starknetSigner);
+}
+```
+
+Getting all swaps that are claimable and claiming them:
+
+```typescript
+const claimable = await swapper.getClaimableSwaps(
+  "STARKNET",                   // Only get claimable swaps on STARKNET
+  starknetSigner.getAddress()   // Only get claimable swaps for this destination address
+); // This returns all claimable swaps, which could be either Bitcoin -> Smart chain or Lightning -> Smart chain
+
+for (const swap of claimable) {
+  // All the claimable swap types have the same `claim()` function signature
+  await swap.claim(starknetSigner);
+}
+```
+
+:::info
+It is a good practice to query claimable swaps on your app's startup and either claim them automatically or prompt the user to claim them.
+
+Unlike Bitcoin → Smart chain swaps, Lightning → Smart chain swaps are only claimable until the destination HTLC expires, so this recovery check should run promptly.
+:::
+
 ## Gas Drop
 
-Request native tokens for transaction fees:
+You can request native tokens on the destination chain along with the main swap output. This helps cover gas fees for the first transactions on the destination chain.
+
+```typescript
+const swap = await swapper.swap(
+  Tokens.BITCOIN.BTCLN,
+  Tokens.STARKNET.WBTC,
+  20_000n,
+  SwapAmountType.EXACT_IN,
+  undefined,
+  starknetSigner.getAddress(),
+  {
+    gasAmount: 1_000_000_000_000_000_000n // Request 1 STRK as gas drop
+  }
+);
+
+console.log("Main output:", swap.getOutput().toString());
+console.log("Gas drop:", swap.getGasDropOutput().toString());
+```
+
+## LNURL-withdraw Swaps
+
+An LNURL-withdraw link can be used as the Lightning source. The SDK will generate a BOLT11 invoice for the quote and submit it to the LNURL-withdraw service automatically when you call [`waitForPayment()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#waitforpayment) or [`execute()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#execute).
 
 ```typescript
 const swap = await swapper.swap(
   Tokens.BITCOIN.BTCLN,
   Tokens.STARKNET.STRK,
-  10000n,
+  10_000n,
   SwapAmountType.EXACT_IN,
-  undefined,
+  "lnurl1...",                  // LNURL-withdraw link as the source
   starknetSigner.getAddress(),
   {
-    gasAmount: 1_000_000_000_000_000_000n // 1 STRK for gas
+    gasAmount: 0n
   }
 );
 
-console.log("Will receive:", swap.getOutput().toString(), "STRK");
-console.log("Plus gas drop:", swap.getGasDropOutput().toString(), "STRK");
-```
-
-## WebLN Integration
-
-For browser wallets with WebLN support:
-
-```typescript
-const settled = await swap.execute(
+// No wallet is needed, funds come from the LNURL-withdraw source
+const automaticallySettled = await swap.execute(
+  undefined,
   {
-    payInvoice: async (bolt11) => {
-      if (typeof window !== 'undefined' && window.webln) {
-        await window.webln.enable();
-        const result = await window.webln.sendPayment(bolt11);
-        return result.preimage;
-      }
-      throw new Error("WebLN not available");
+    onSourceTransactionReceived: (paymentHash) => {
+      console.log(`Lightning payment received by LP: ${paymentHash}`);
+    },
+    onSwapSettled: (destinationTxId) => {
+      console.log(`Swap settled on destination chain: ${destinationTxId}`);
     }
-  },
-  { /* callbacks */ }
+  }
 );
-```
 
-## Nostr Wallet Connect (NWC)
-
-```typescript
-import {NWC} from "@getalby/sdk";
-
-const nwc = new NWC({ nostrWalletConnectUrl: "nostr+walletconnect://..." });
-await nwc.enable();
-
-const settled = await swap.execute(
-  {
-    payInvoice: async (bolt11) => {
-      const result = await nwc.payInvoice(bolt11);
-      return result.preimage;
-    }
-  },
-  { /* callbacks */ }
-);
+if (!automaticallySettled) {
+  await swap.claim(starknetSigner);
+}
 ```
 
 ## Swap States
 
+Read the current state of the swap in its [FromBTCLNAutoSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/FromBTCLNAutoSwapState) enum form with [`getState()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstate) or in human readable [SwapStateInfo](/sdk-reference/api/atomiq-sdk/src/type-aliases/SwapStateInfo) form with description with [`getStateInfo()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstateinfo):
+
+```typescript
+import {FromBTCLNAutoSwapState, SwapStateInfo} from "@atomiqlabs/sdk";
+
+const state: FromBTCLNAutoSwapState = swap.getState();
+console.log(`State (numeric): ${state}`);
+
+const richState: SwapStateInfo<FromBTCLNAutoSwapState> = swap.getStateInfo();
+console.log(`State name: ${richState.name}`);
+console.log(`State description: ${richState.description}`);
+```
+
+Subscribe to swap state updates with:
+
+```typescript
+swap.events.on("swapState", () => {
+  const state: FromBTCLNAutoSwapState = swap.getState();
+});
+```
+
+### Table of States
+
 | State | Value | Description |
 |-------|-------|-------------|
-| `FAILED` | -4 | Claiming failed, LN payment will refund |
-| `QUOTE_EXPIRED` | -3 | Quote expired |
-| `QUOTE_SOFT_EXPIRED` | -2 | Quote probably expired |
-| `EXPIRED` | -1 | Invoice expired |
-| `PR_CREATED` | 0 | Waiting for LN payment |
-| `PR_PAID` | 1 | Payment received, not yet settled |
-| `CLAIM_COMMITED` | 2 | LP offered HTLC |
-| `CLAIM_CLAIMED` | 3 | Swap complete |
+| `FAILED` | -4 | The destination HTLC was not claimed before expiry, so the Lightning payment refunds. |
+| `QUOTE_EXPIRED` | -3 | Swap quote expired and can no longer be executed. |
+| `QUOTE_SOFT_EXPIRED` | -2 | Swap should be treated as expired, though it might still succeed if payment is already in flight. |
+| `EXPIRED` | -1 | The destination HTLC expired, so it is no longer safe to claim and the incoming Lightning payment will refund. |
+| `PR_CREATED` | 0 | Quote created. Pay the invoice from `getAddress()` or `getHyperlink()`, then wait with `waitForPayment()`. |
+| `PR_PAID` | 1 | The LP received the Lightning payment, but the destination HTLC is not created yet. Continue waiting with `waitForPayment()`. |
+| `CLAIM_COMMITED` | 2 | The destination HTLC exists. Wait for watchtowers with `waitTillClaimed()` or claim manually with `claim()` / `txsClaim()`. |
+| `CLAIM_CLAIMED` | 3 | Swap settled on the destination chain and the Lightning payment can complete. |
 
 ## API Reference
 
-- [FromBTCLNAutoSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap) - Starknet/EVM swap class
+- [FromBTCLNAutoSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap) - Swap class for Lightning -> Smart chain
 - [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum
+- [FromBTCLNAutoSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/FromBTCLNAutoSwapState) - Swap states

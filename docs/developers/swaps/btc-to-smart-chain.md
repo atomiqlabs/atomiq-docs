@@ -2,9 +2,11 @@
 sidebar_position: 3
 ---
 
-# BTC to Smart Chain
+# Bitcoin → Smart Chain
 
-Swap Bitcoin L1 (on-chain) to Starknet or EVM tokens using the SPV-based protocol.
+Swap Bitcoin L1 (on-chain) to Starknet or EVM tokens. These swaps are based on the [UTXO-controlled vault](/overview/core-primitives/utxo-controlled-vault/) primitive and verified through the on-chain [Bitcoin light client](/overview/core-primitives/bitcoin-light-client/).
+
+The user and LP cooperatively sign a single Bitcoin transaction that atomically sends BTC to the LP and authorizes the smart-chain payout to the user. Users do not need destination-chain gas upfront, and watchtowers or liquidity fronters can settle the swap automatically once the Bitcoin transaction is confirmed.
 
 :::tip Runnable Examples
 - [btc-to-smartchain/swapBasic.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btc-to-smartchain/swapBasic.ts)
@@ -18,32 +20,33 @@ Solana uses a different (legacy) swap protocol. See [BTC to Solana](./solana/btc
 
 ## Executing the Swap
 
-Create a [quote](./creating-quotes), then execute with a Bitcoin wallet:
+Here is a full flow for creating and executing the swap in the Bitcoin -> Smart chain direction via the `execute()` helper function, uses the [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) swap class:
 
 ```typescript
-import {SpvFromBTCSwapState, SwapAmountType} from "@atomiqlabs/sdk";
+import {SwapAmountType} from "@atomiqlabs/sdk";
 
 // Create a quote
 const swap = await swapper.swap(
-  Tokens.BITCOIN.BTC,           // From BTC
-  Tokens.STARKNET.STRK,         // To destination token
-  "0.00003",                    // Amount (3000 sats)
+  Tokens.BITCOIN.BTC,           // Bitcoin on-chain input
+  Tokens.STARKNET.STRK,         // Destination smart-chain token, e.g. STRK on Starknet or cBTC on Citrea
+  "0.00003",                    // Amount (3000 sats to send)
   SwapAmountType.EXACT_IN,
-  undefined,                    // Source address (not used for BTC swaps)
-  starknetSigner.getAddress(),  // Destination address
+  undefined,                    // Source address is not used for BTC source swaps
+  starknetSigner.getAddress(),  // Destination smart-chain address
   {
-    gasAmount: 0n               // Optional: request gas drop on destination
+    gasAmount: 0n               // Optional: request native destination token as gas drop
   }
-);
+); // Type gets inferred as SpvFromBTCSwap
 
-// Execute with Bitcoin wallet
-const settled = await swap.execute(
+// Execute the swap
+const automaticallySettled = await swap.execute(
   {
-    address: bitcoinWallet.address,
-    publicKey: Buffer.from(bitcoinWallet.pubkey).toString("hex"),
+    address: "bc1q...",         // User's Bitcoin address
+    publicKey: "03...",         // User's Bitcoin public key
     signPsbt: (psbt, signInputs) => {
-      // Sign the PSBT - can return hex or base64
-      return bitcoinWallet.signPsbt(psbt.psbt, signInputs);
+      // Sign the PSBT with the Bitcoin wallet
+      // Return the signed PSBT in hex or base64 format
+      return "<signed PSBT>";
     }
   },
   {
@@ -51,86 +54,179 @@ const settled = await swap.execute(
       console.log(`Bitcoin tx sent: ${txId}`);
     },
     onSourceTransactionConfirmationStatus: (txId, confirmations, target, etaMs) => {
-      console.log(`Confirmations: ${confirmations}/${target}, ETA: ${etaMs/1000}s`);
+      console.log(`Confirmations: ${confirmations}/${target}, ETA: ${etaMs / 1000}s`);
     },
     onSourceTransactionConfirmed: (txId) => {
       console.log(`Bitcoin tx confirmed: ${txId}`);
     },
-    onSwapSettled: (txId) => {
-      console.log(`Swap settled: ${txId}`);
+    onSwapSettled: (destinationTxId) => {
+      console.log(`Swap settled on destination chain: ${destinationTxId}`);
     }
   }
 );
 
-// Manual claim if automatic settlement fails
-if (!settled) {
-  // Auto-settlement failed, claiming manually
+if (!automaticallySettled) {
+  // Handle the edge-case when automatic settlement does not happen in time
+  console.log("Automatic settlement timed out, claiming manually...");
+  await swap.claim(starknetSigner);
+  console.log("Claimed!");
+} else {
+  console.log("Success! Output transaction ID: ", swap.getOutputTxId());
+}
+```
+
+:::warning
+`execute()` requires a single-address (non-HD) Bitcoin wallet capable of signing PSBTs. If your signing flow is handled by an external wallet UI, or you use a BIP-32 HD wallet, use the manual PSBT flow below with `getFundedPsbt()` / `submitPsbt()` or `getPsbt()` / `submitPsbt()`.
+:::
+
+## Manual Execution Flow
+
+```typescript
+import {SwapAmountType} from "@atomiqlabs/sdk";
+
+// Create a quote
+const swap = await swapper.swap(
+  Tokens.BITCOIN.BTC,
+  Tokens.STARKNET.STRK,
+  "0.00003",
+  SwapAmountType.EXACT_IN,
+  undefined,
+  starknetSigner.getAddress(),
+  {
+    gasAmount: 0n
+  }
+);
+
+// 1. Get a funded PSBT, sign it with the user's Bitcoin wallet, and submit it
+const {psbtBase64, signInputs} = await swap.getFundedPsbt({
+  address: "bc1q...",
+  publicKey: "03..."
+}); // Or use `swap.getPsbt()` and fund the PSBT yourself from external wallet (check the info tab below)
+// Pass psbtBase64 (or psbtHex) and signInputs to an external signer like Xverse, Unisat, Phantom, etc.
+const signedPsbt = await externalBitcoinWallet.signPsbt(psbtBase64, signInputs);
+// Submit the signed PSBT back to the SDK
+const bitcoinTxId = await swap.submitPsbt(signedPsbt);
+
+// 2. Wait for the Bitcoin transaction to reach the required confirmation count
+await swap.waitForBitcoinTransaction((txId, confirmations, targetConfirmations, txEtaMs) => {
+  console.log(`${confirmations}/${targetConfirmations} confirmations, ETA ${txEtaMs / 1000}s`);
+});
+
+// 3. Wait for automatic settlement or fronting on the destination chain
+const automaticallySettled = await swap.waitTillClaimedOrFronted(60);
+
+// 4. If automatic settlement does not happen in time, claim manually
+if (!automaticallySettled) {
   await swap.claim(starknetSigner);
 }
 ```
 
+:::info
+If you need to build the Bitcoin transaction yourself, use [`getPsbt()`](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap#getpsbt) instead. After funding the PSBT, you must set the second input's `nSequence` (input index `1`) to the returned `in1sequence`, sign every input except the first one, and then submit it with [`submitPsbt()`](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap#submitpsbt).
+:::
+
+:::warning
+Legacy non-SegWit Bitcoin inputs are not allowed in the submitted PSBT. Use witness-type inputs such as P2WPKH, P2WSH or P2TR.
+:::
+
+## Claiming Past Unsettled Swaps
+
+If the app was offline and the automatic settlement did not happen, the swap can be manually claimed on the destination chain.
+
+Checking if a single swap is claimable and claiming it:
+
+```typescript
+if (swap.isClaimable()) {
+  await swap.claim(starknetSigner);
+}
+```
+
+Getting all swaps that are claimable and claiming them:
+
+```typescript
+const claimable = await swapper.getClaimableSwaps(
+  "STARKNET",                   // Only get claimable swaps on STARKNET
+  starknetSigner.getAddress()   // Only get claimable swaps for this destination address
+); // This returns all claimable swaps, which could be either Bitcoin -> Smart chain or Lightning -> Smart chain
+
+for (const swap of claimable) {
+  // All the claimable swap types have the same `claim()` function signature
+  await swap.claim(starknetSigner);
+}
+```
+
+:::info
+It is a good practice to query claimable swaps on your app's startup and either claim them automatically or prompt the user to claim them.
+
+Bitcoin → Smart chain swaps can be claimed at **any time** after the swap Bitcoin transaction gets enough confirmations. After the swap is settled on Bitcoin, the swap becomes claimable forever - there is no timelock.
+:::
+
 ## Gas Drop
 
-Request native tokens on the destination chain to cover transaction fees:
+You can request native tokens on the destination chain along with the main swap output. This helps cover gas fees for the first transactions on the destination chain.
 
 ```typescript
 const swap = await swapper.swap(
   Tokens.BITCOIN.BTC,
-  Tokens.STARKNET.STRK,
+  Tokens.STARKNET.WBTC,
   "0.0001",
   SwapAmountType.EXACT_IN,
   undefined,
   starknetSigner.getAddress(),
   {
-    gasAmount: 1_000_000_000_000_000_000n // Request 1 STRK for gas
+    gasAmount: 1_000_000_000_000_000_000n // Request 1 STRK as gas drop
   }
 );
 
 console.log("Gas drop:", swap.getGasDropOutput().toString());
 ```
 
-## Sending from External Wallet
-
-If you don't have programmatic access to the Bitcoin wallet:
-
-```typescript
-// Get the address/deeplink for external wallet
-const btcAddress = swap.getAddress();
-const deepLink = swap.getHyperlink();
-
-// IMPORTANT: Send the EXACT amount!
-console.log(`Send exactly ${swap.getInput()} to ${btcAddress}`);
-
-// Wait for the Bitcoin transaction
-await swap.waitForBitcoinTransaction((txId, confirmations, target, etaMs) => {
-  console.log(`Waiting: ${confirmations}/${target} confirmations`);
-});
-
-// Then wait for settlement or claim manually
-const settled = await swap.waitTillClaimed(60);
-if (!settled) {
-  await swap.claim(destinationSigner);
-}
-```
+:::warning
+When already swapping to the native token of the respective destination chain (i.e. STRK on Starknet, cBTC on Citrea, etc.) don't specify the `gasAmount`, as LPs usually don't hold the necessary gas drop liquidity for those tokens! This will lead to errors during quoting and make it unable for you to request the quote.
+:::
 
 ## Swap States
 
+Read the current state of the swap in its [SpvFromBTCSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/SpvFromBTCSwapState) enum form with [`getState()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstate) or in human readable [SwapStateInfo](/sdk-reference/api/atomiq-sdk/src/type-aliases/SwapStateInfo) form with description with [`getStateInfo()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstateinfo):
+
+```typescript
+import {SpvFromBTCSwapState, SwapStateInfo} from "@atomiqlabs/sdk";
+
+const state: SpvFromBTCSwapState = swap.getState();
+console.log(`State (numeric): ${state}`);
+
+const richState: SwapStateInfo<SpvFromBTCSwapState> = swap.getStateInfo();
+console.log(`State name: ${richState.name}`);
+console.log(`State description: ${richState.description}`);
+```
+
+Subscribe to swap state updates with:
+
+```typescript
+swap.events.on("swapState", () => {
+  const state: SpvFromBTCSwapState = swap.getState();
+});
+```
+
+### Table of States
+
 | State | Value | Description |
 |-------|-------|-------------|
-| `CLOSED` | -5 | Catastrophic failure (should never happen) |
-| `FAILED` | -4 | Bitcoin tx was double-spent |
-| `DECLINED` | -3 | LP declined to process the swap |
-| `QUOTE_EXPIRED` | -2 | Quote expired before execution |
-| `QUOTE_SOFT_EXPIRED` | -1 | Quote probably expired (may succeed if tx in flight) |
-| `CREATED` | 0 | Waiting for Bitcoin tx signature |
-| `SIGNED` | 1 | Bitcoin tx signed |
-| `POSTED` | 2 | Posted to LP |
-| `BROADCASTED` | 3 | LP broadcast Bitcoin tx |
-| `FRONTED` | 4 | Funds fronted early to user |
-| `BTC_TX_CONFIRMED` | 5 | Bitcoin tx confirmed |
-| `CLAIM_CLAIMED` | 6 | Swap complete, funds claimed |
+| `CLOSED` | -5 | Catastrophic failure has occurred when processing the swap on the smart-chain side. |
+| `FAILED` | -4 | Some of the bitcoin swap transaction inputs were double-spent, so the swap failed and no BTC was sent. |
+| `DECLINED` | -3 | The intermediary (LP) declined to co-sign the submitted PSBT. |
+| `QUOTE_EXPIRED` | -2 | Swap has expired for good and there is no way it can be executed anymore. |
+| `QUOTE_SOFT_EXPIRED` | -1 | Swap is almost expired and should be presented as expired, though it still might be processed. |
+| `CREATED` | 0 | Swap was created, waiting for the user to sign and submit the Bitcoin swap PSBT. |
+| `SIGNED` | 1 | Swap Bitcoin PSBT was submitted by the client to the SDK. |
+| `POSTED` | 2 | Swap PSBT was sent to the intermediary (LP), waiting for co-sign and broadcast. |
+| `BROADCASTED` | 3 | The intermediary co-signed and broadcasted the Bitcoin transaction. |
+| `FRONTED` | 4 | Settlement on the destination smart chain was fronted and funds were received before final settlement. |
+| `BTC_TX_CONFIRMED` | 5 | Bitcoin transaction has the required confirmations, waiting for automatic settlement or manual claim. |
+| `CLAIMED` | 6 | Swap settled on the smart chain and funds were received. |
 
 ## API Reference
 
-- [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) - Starknet/EVM swap class
+- [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) - Swap class for Bitcoin -> Smart chain
 - [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum
+- [SpvFromBTCSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/SpvFromBTCSwapState) - Swap states
