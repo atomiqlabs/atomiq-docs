@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the documentation site for Atomiq, a trustless cross-chain DEX. Built with Docusaurus 3.9.2 and TypeDoc, it serves two main purposes:
 1. **User Documentation** - Technical guides about Bitcoin light clients, submarine swaps, liquidity provider setup, and security
-2. **SDK Reference** - Auto-generated TypeScript API documentation from the atomiq-sdk and atomiq-sdk-lib repositories
+2. **SDK Reference** - Auto-generated TypeScript API documentation from the atomiq-sdk repository (atomiq-sdk-lib has been merged into atomiq-sdk)
 
 ## Common Commands
 
@@ -37,8 +37,8 @@ npm run build
 ```
 
 The TypeDoc plugin automatically generates SDK docs from:
-- `repos/atomiq-sdk/src/` - Main SDK entry points
-- `repos/atomiq-sdk-lib/src/` - Core SDK library
+- `repos/atomiq-sdk/src/` - Main SDK (includes former atomiq-sdk-lib)
+- Chain and storage repos are also included as entry points.
 Note that we are currently adding other repositories to the docs as well.
 
 ## Architecture
@@ -54,9 +54,9 @@ atomiq-docs/
 │   ├── submarine-swaps/           # Submarine swap protocols
 │   ├── lps/                       # LP node setup guides
 │   └── sdk-guide/                 # SDK usage tutorials
-├── repos/                         # Git submodules for SDK source
-│   ├── atomiq-sdk/                # Main SDK (@atomiqlabs/sdk)
-│   └── atomiq-sdk-lib/            # Core library (@atomiqlabs/sdk-lib)
+├── repos/                         # Local symlinks to sibling SDK source repos
+│   ├── atomiq-sdk/                # Main SDK (@atomiqlabs/sdk, includes former sdk-lib)
+│   └── ...                        # Chain, storage, and utility repos
 ├── sdk/                           # Generated TypeDoc output (gitignored)
 ├── src/                           # React components and CSS
 ├── static/                        # Static assets (images, favicon)
@@ -75,7 +75,7 @@ atomiq-docs/
 **Key Configuration Points:**
 
 - **TypeDoc Plugin** (`docusaurus-plugin-typedoc`):
-  - Entry points: `repos/atomiq-sdk/src/index.ts` and `repos/atomiq-sdk-lib/src/index.ts`
+  - Entry points: `repos/atomiq-sdk/src/index.ts` and chain/storage repos
   - Output: `sdk/` directory
   - Flattened navigation structure (categories, no class/function grouping)
   - Hides internal/private members
@@ -85,7 +85,7 @@ atomiq-docs/
   - SDK reference: Dynamic sidebar from TypeDoc in `sdk-sidebars.js` with path transformation
 
 - **Path Resolution**:
-  - `typedoc.tsconfig.json` defines path mappings for `@atomiqlabs/sdk` and `@atomiqlabs/sdk-lib`
+  - `typedoc.tsconfig.json` defines path mappings for `@atomiqlabs/sdk` and other packages
   - `sdk-sidebars.js` fixes TypeDoc-generated paths by removing `../sdk/` prefixes
 
 ### Git Submodules

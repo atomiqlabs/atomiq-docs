@@ -18,7 +18,6 @@ jobs:
           mkdir -p repos
           repos=(
             atomiq-sdk
-            atomiq-sdk-lib
             atomiq-base
             atomiq-chain-solana
             atomiq-chain-starknet
