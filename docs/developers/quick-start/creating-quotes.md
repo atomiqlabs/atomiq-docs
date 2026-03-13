@@ -110,7 +110,7 @@ if (swap.isFinished()) {
 ```
 
 :::info
-If you need the raw swap type specific state value, use [`getState()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstate). If you want something human-readable, use [`getStateInfo()`](http://localhost:3000/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstateinfo), more details about this can be found on the [TODO: Swap states page](/broken-link)
+If you need the raw swap type specific state value, use [`getState()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstate). If you want something human-readable, use [`getStateInfo()`](http://localhost:3000/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstateinfo).
 :::
 
 ## EXACT_IN vs EXACT_OUT
