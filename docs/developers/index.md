@@ -21,11 +21,10 @@ The repo contains [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/
 ### Swap Tutorials
 - [Creating Quotes](quick-start/creating-quotes.md) - How to create and inspect swap quotes
 - [BTC to Smart Chain](./swaps/btc-to-smart-chain) - Bitcoin L1 to Starknet/EVM
-- [Smart Chain to BTC](./swaps/smart-chain-to-btc.mdx) - Starknet/EVM to Bitcoin L1
+- [Smart Chain to BTC](./swaps/smart-chain-to-btc.mdx) - Starknet/EVM to Bitcoin L1 and Lightning
 - [Lightning to Smart Chain](./swaps/lightning-to-smart-chain) - Lightning to Starknet/EVM
-- [Smart Chain to Lightning](./swaps/smart-chain-to-lightning) - Starknet/EVM to Lightning
 - [LNURL Swaps](utilities/lnurl-swaps.md) - Reusable payment addresses
-- **Solana (Legacy)**: [BTC to Solana](./swaps/solana/btc-to-solana) | [Solana to BTC](./swaps/solana/solana-to-btc) | [Lightning to Solana](./swaps/solana/lightning-to-solana) | [Solana to Lightning](./swaps/solana/solana-to-lightning)
+- **Solana (Legacy)**: [BTC to Solana](./swaps/solana/btc-to-solana) | [Lightning to Solana](./swaps/solana/lightning-to-solana)
 
 ### Utilities
 - [Address Parser](./utilities/address-parser) - Parse any address format
@@ -34,7 +33,6 @@ The repo contains [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/
 - [Swap Types](./utilities/swap-types) - Inspect swap protocols
 
 ### Swap Management
-- [Swap States](./swap-management/swap-states) - State machine documentation
 - [Historical Swaps](./swap-management/historical-swaps) - Retrieve past swaps
 - [Refunds](./swap-management/refunds) - Handle failed swaps
 - [Claiming](./swap-management/claiming) - Manual settlement
