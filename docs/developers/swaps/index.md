@@ -10,15 +10,19 @@ This section contains tutorials for all swap directions supported by the Atomiq 
 
 The SDK supports swaps between Bitcoin (both L1 on-chain and L2 Lightning Network) and smart chains (Solana, Starknet, EVM).
 
-| Source | Destination | Protocol | Page |
-|--------|-------------|----------|------|
-| BTC L1 | Starknet/EVM | SPV (SpvFromBTC) | [BTC to Smart Chain](./btc-to-smart-chain) |
-| Starknet/EVM | BTC L1 / Lightning | ToBTC / ToBTCLN | [Smart Chain to BTC](./smart-chain-to-btc.mdx) |
-| BTC Lightning | Starknet/EVM | Auto (FromBTCLNAuto) | [Lightning to Smart Chain](./lightning-to-smart-chain) |
-| LNURL-withdraw | Smart Chain | - | [LNURL Swaps](../utilities/lnurl-swaps.md) |
-| Smart Chain | LNURL-pay | - | [LNURL Swaps](../utilities/lnurl-swaps.md) |
-| BTC L1 | Solana | Legacy (FromBTC) | [BTC to Solana](./solana/btc-to-solana) |
-| BTC Lightning | Solana | Legacy (FromBTCLN) | [Lightning to Solana](./solana/lightning-to-solana) |
+| Source | Destination | `SwapType` | Swap Class | Tutorial |
+|--------|-------------|-----------|------------|----------|
+| BTC L1 | Smart Chain | [`SPV_VAULT_FROM_BTC`](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapType#spv_vault_from_btc) | [`SpvFromBTCSwap`](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) | [BTC to Smart Chain](./btc-to-smart-chain) |
+| Lightning | Smart Chain | [`FROM_BTCLN_AUTO`](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapType#from_btcln_auto) | [`FromBTCLNAutoSwap`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap) | [Lightning to Smart Chain](./lightning-to-smart-chain) |
+| Smart Chain | BTC L1 | [`TO_BTC`](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapType#to_btc) | [`ToBTCSwap`](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap) | [Smart Chain to BTC](./smart-chain-to-btc.mdx) |
+| Smart Chain | Lightning | [`TO_BTCLN`](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapType#to_btcln) | [`ToBTCLNSwap`](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap) | [Smart Chain to BTC](./smart-chain-to-btc.mdx) |
+
+### Legacy (Solana)
+
+| Source | Destination | `SwapType` | Swap Class | Tutorial |
+|--------|-------------|-----------|------------|----------|
+| BTC L1 | Solana | [`FROM_BTC`](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapType#from_btc) | [`FromBTCSwap`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap) | [BTC to Solana](./solana/btc-to-solana) |
+| Lightning | Solana | [`FROM_BTCLN`](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapType#from_btcln) | [`FromBTCLNSwap`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) | [Lightning to Solana](./solana/lightning-to-solana) |
 
 ### Lightning Network
 
