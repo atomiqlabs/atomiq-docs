@@ -1,0 +1,57 @@
+name: Deploy to Azure Static Website
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Clone dependency repos
+        run: |
+          mkdir -p repos
+          repos=(
+            atomiq-sdk
+            atomiq-sdk-lib
+            atomiq-base
+            atomiq-chain-solana
+            atomiq-chain-starknet
+            atomiq-chain-evm
+            atomiq-storage-sqlite
+            atomiq-storage-rn-async
+            atomiq-storage-memory-indexed-kv
+            atomiq-messenger-nostr
+            atomiq-btc-mempool
+          )
+          for repo in "${repos[@]}"; do
+            echo "Cloning $repo..."
+            git clone --depth 1 "https://github.com/atomiqlabs/$repo.git" "repos/$repo"
+          done
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Upload to Azure Blob Storage
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            az storage blob upload-batch \
+              --source ./build \
+              --destination '$web' \
+              --connection-string "${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" \
+              --overwrite true
