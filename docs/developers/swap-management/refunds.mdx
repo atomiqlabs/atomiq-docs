@@ -1,0 +1,127 @@
+---
+sidebar_position: 4
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Refunds
+
+When a swap in the **Smart Chain → Bitcoin** direction fails, you can refund your tokens back to your wallet, this can happen when:
+
+- the LP tried to execute but failed (e.g. Lightning routing failed) and returned a cooperative refund authorization allowing the user to refund immediately.
+- the LP went offline and didn't execute the swap within the timelock period, in this case you have to wait for the timelock to expire this is **12 hours** for Bitcoin on-chain swaps and **4-5 days** for Lightning network swaps (swap then becomes refundable automatically).
+
+:::tip Runnable Example
+See the complete working example: [utils/pastSwaps.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/utils/pastSwaps.ts)
+:::
+
+## Checking Refund Status
+
+Check if a swap is refundable with the [`isRefundable()`](/sdk-reference/api/atomiq-sdk/src/interfaces/IRefundableSwap#isrefundable) function exposed in [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap) and [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap) classes. You can also use the [`getExpiry()`](/sdk-reference/api/atomiq-sdk/src/classes/IToBTCSwap#getexpiry) function to determine when the swap becomes refundable in case of LP going offline.
+
+```typescript
+// Check if swap is refundable
+if (swap.isRefundable()) {
+  // Refund with a signer object
+  await swap.refund(signer);
+} else if (swap.isInProgress()) {
+  // Check when the swap becomes refundable if the LP doesn't execute it
+  const refundableAt: number = swap.getExpiry(); // Returns UNIX timestamp milliseconds
+  console.log(`The swap will become refundable at ${new Date(refundableAt).toString()}`);
+}
+```
+
+## Get All Refundable Swaps
+
+:::tip
+It's good practice to check for refundable swaps when your app starts and also periodically if your app is long-running. You can then either refund the swaps automatically or prompt the user to authorize a refund.
+:::
+
+To retrieve all the swaps that are currently refundable call the [`getRefundableSwaps()`](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getrefundableswaps) function on the swapper, which returns the swaps with [`IToBTCSwap`](/sdk-reference/api/atomiq-sdk/src/classes/IToBTCSwap) abstract class. You can also pass in the chain identifier and signer address to retrieve swaps only for that respective smart chain and/or signer.
+
+<Tabs groupId="swap-getter-type">
+<TabItem value="all" label="All" default>
+
+```typescript
+import {IToBTCSwap} from "@atomiqlabs/sdk";
+
+// Returns all refundable swaps from storage if no argument is passed
+const allRefundableSwaps: IToBTCSwap[] = await swapper.getRefundableSwaps();
+// You can check the respective swap's chain by reading its chainIdentifier property
+for (let swap of allRefundableSwaps) {
+  const chainId = swap.chainIdentifier; // Retrieves smart chain type of the swap, e.g.: SOLANA, STARKNET, CITREA, ...
+  // Retrieve the relevant smart chain signer for the chainId
+  const signer = smartChainSigners[chainId];
+  // We can also additionally check if the swap is indeed created by the signer
+  if (swap.getInputAddress() === signer.getAddress()) {
+    await swap.refund(signer);
+  }
+}
+```
+</TabItem>
+<TabItem value="chain" label="Single chain" default>
+
+```typescript
+import {IToBTCSwap} from "@atomiqlabs/sdk";
+import {StarknetChainType} from "@atomiqlabs/chain-starknet";
+
+// Returns all refundable swaps for a given smart chain (swaps between BTC and the given smart chain)
+const starknetRefundableSwaps: IToBTCSwap<StarknetChainType>[] = await swapper.getRefundableSwaps("STARKNET");
+for (let swap of starknetRefundableSwaps) {
+  // We can also additionally check if the swap is indeed created by the signer
+  if (swap.getInputAddress() === starknetSigner.getAddress()) {
+    await swap.refund(starknetSigner);
+  }
+}
+```
+</TabItem>
+<TabItem value="signer" label="Specific signer" default>
+
+```typescript
+import {IToBTCSwap} from "@atomiqlabs/sdk";
+import {StarknetChainType} from "@atomiqlabs/chain-starknet";
+
+// Returns refundable swaps for a specific signer address
+const signerRefundableSwaps: IToBTCSwap<StarknetChainType>[] = await swapper.getRefundableSwaps("STARKNET", starknetSigner.getAddress());
+for (let swap of signerRefundableSwaps) {
+  await swap.refund(starknetSigner);
+}
+```
+</TabItem>
+</Tabs>
+
+:::info
+Type of the signer object passed to the [`refund()`](/sdk-reference/api/atomiq-sdk/src/classes/IToBTCSwap#refund) function is dependent on the source network:
+- For **Solana** swaps: [SolanaSigner](/sdk-reference/api/atomiq-chain-solana/src/classes/SolanaSigner), or native `@coral-xyz/anchor` [Wallet](https://solana-foundation.github.io/anchor/ts/classes/Wallet.html)
+- For **Starknet** swaps: [StarknetSigner](/sdk-reference/api/atomiq-chain-starknet/src/classes/StarknetSigner), [StarknetBrowserSigner](/sdk-reference/api/atomiq-chain-starknet/src/classes/StarknetBrowserSigner), or native `starknet` [Account](https://starknetjs.com/docs/API/classes/Account)
+- For **EVM** swaps: [EVMSigner](/sdk-reference/api/atomiq-chain-evm/src/classes/EVMSigner), or native `ethers` [Signer](https://docs.ethers.org/v6/api/providers/#Signer)
+:::
+
+## Manually Signing Transactions
+
+You can alternatively use the [`txsRefund()`](/sdk-reference/api/atomiq-sdk/src/classes/IToBTCSwap#txsrefund) function to retrieve the smart chain transactions that you can then sign and send manually:
+
+```typescript
+const txsRefund = await swap.txsRefund();
+... // Sign and send refund transactions here
+// Important to wait till SDK processes the swap refund and updates the swap state
+await swap.waitTillRefunded();
+```
+
+:::info
+The transactions returned by the `txsRefund()` function use the following types:
+- For **Solana**, uses the [SolanaTx](/sdk-reference/api/atomiq-chain-solana/src/type-aliases/SolanaTx) type
+- For **Starknet**, uses the [StarknetTx](/sdk-reference/api/atomiq-chain-starknet/src/type-aliases/StarknetTx) type
+- For **EVM**, uses the `ethers` [TransactionRequest](https://docs.ethers.org/v6/api/providers/#TransactionRequest) type
+
+For more information about how to sign and send these transactions manually refer to the [Manual Transactions](/developers/advanced/manual-transactions) page.
+:::
+
+## API Reference
+
+- [isRefundable](/sdk-reference/api/atomiq-sdk/src/interfaces/IRefundableSwap#isrefundable) - Check refund status
+- [getExpiry](/sdk-reference/api/atomiq-sdk/src/classes/IToBTCSwap#getexpiry) - Get the timelock expiry for unilateral refund
+- [refund](/sdk-reference/api/atomiq-sdk/src/classes/IToBTCSwap#refund) - Execute refund
+- [txsRefund](/sdk-reference/api/atomiq-sdk/src/classes/IToBTCSwap#txsrefund) - Get refund transactions
+- [getRefundableSwaps](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getrefundableswaps) - Get all refundable swaps

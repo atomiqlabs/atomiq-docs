@@ -34,7 +34,7 @@ The repo contains [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/
 
 ### Swap Management
 - [Historical Swaps](./swap-management/historical-swaps) - Retrieve past swaps
-- [Refunds](./swap-management/refunds) - Handle failed swaps
+- [Refunds](./swap-management/refunds.mdx) - Handle failed swaps
 - [Claiming](./swap-management/claiming) - Manual settlement
 
 ### Advanced

@@ -265,7 +265,7 @@ const swapSuccessful = await swap.waitForPayment();
 
 // 3. Refund in case of failure
 if(!swapSuccessful) {
-  const txsRefund = await swap.txsRefund(); // Or use swap.refund(starknetSigner) with existing signer
+  const txsRefund = await swap.txsRefund();
   ... // Sign and send refund transactions here
   // Important to wait till SDK processes the swap refund and updates the swap state
   await swap.waitTillRefunded();

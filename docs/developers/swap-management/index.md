@@ -38,7 +38,7 @@ Most swaps settle automatically via watchtower services. However, manual interve
 | Topic | Description |
 |-------|-------------|
 | [Historical Swaps](./historical-swaps) | Retrieve past swaps by ID |
-| [Refunds](./refunds) | Handle failed swaps and cooperative refunds |
+| [Refunds](./refunds.mdx) | Handle failed swaps and cooperative refunds |
 | [Claiming](./claiming) | Manually claim swaps when auto-settlement fails |
 
 ## Quick Reference

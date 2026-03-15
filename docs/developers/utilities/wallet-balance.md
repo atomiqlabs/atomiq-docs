@@ -2,140 +2,165 @@
 sidebar_position: 3
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Wallet Balance
 
-The SDK provides helper functions to get spendable wallet balances, accounting for transaction fees.
+`swapper.Utils` exposes fee-aware balance helpers for both smart chain wallets and Bitcoin wallets.
 
-## Smart Chain Balances
+These helpers are meant for swap UIs and "Max" buttons. Unlike a raw RPC balance, they estimate how much can actually be used in a swap without leaving too little for network fees. This is especially important for the exact-input flows described in [Creating Quotes](/developers/quick-start/creating-quotes) and [Executing Swaps](/developers/quick-start/executing-swaps).
 
-Get the spendable balance of a smart chain wallet:
+- use [`getSpendableBalance()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#getspendablebalance) for smart chain wallet balances.
+- use [`getBitcoinSpendableBalance()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#getbitcoinspendablebalance) for Bitcoin on-chain wallet balances.
+
+The returned balances use the [`TokenAmount`](/sdk-reference/api/atomiq-sdk/src/type-aliases/TokenAmount) object type which makes it easy to show the balance in human-readable format, get the raw token amount or estimate the USD value of the amount.
+
+<Tabs groupId="spendable-balance-type">
+<TabItem value="smart-chain" label="Smart chain" default>
+
+Use [`SwapperUtils.getSpendableBalance()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#getspendablebalance) to get the spendable balance of a smart chain (i.e. Solana, Starknet, etc.) wallet, as is the case in the [Smart Chain → BTC/Lightning](/developers/swaps/smart-chain-to-btc) flow. For native tokens such as `SOL`, `STRK` or the native token of an EVM chain, the SDK automatically deducts the estimated fee required to initiate the swap. The returned amount is therefore safe to use as a "Max" amount for exact-input swaps.
 
 ```typescript
-// Starknet balance
 const strkBalance = await swapper.Utils.getSpendableBalance(
   starknetSigner,
-  Tokens.STARKNET.STRK
+  Tokens.STARKNET.STRK,
+  {
+    feeMultiplier: 1.1 // Optionally keep an extra 10% fee buffer
+  }
 );
-console.log("Spendable STRK:", strkBalance.toString());
 
-// Solana balance
-const solBalance = await swapper.Utils.getSpendableBalance(
-  solanaSigner,
-  Tokens.SOLANA.SOL
-);
-console.log("Spendable SOL:", solBalance.toString());
-
-// EVM balance
-const ethBalance = await swapper.Utils.getSpendableBalance(
-  evmSigner,
-  Tokens.CITREA.CBTC
-);
-console.log("Spendable CBTC:", ethBalance.toString());
+console.log("Spendable balance:", strkBalance.toString());
 ```
 
-:::info Fee Deduction
-`getSpendableBalance` returns the balance minus estimated transaction fees, so users can swap their full balance without running into insufficient funds errors.
+For non-native tokens such as `WBTC`, transaction fees are paid in the native token of the chain, so the token balance itself is usually fully spendable. You can use the [`hasEnoughForTxFees()`](/sdk-reference/api/atomiq-sdk/src/classes/IToBTCSwap#hasenoughfortxfees) function to check if the source wallet has enough native token balance to cover the transaction fees for initiating the swap.
+
+```typescript
+// Check if a ToBTCSwap or ToBTCLNSwap can be initiated
+const {enoughBalance, balance, required} = await swap.hasEnoughForTxFees();
+if (!enoughBalance) {
+  console.log(`The source wallet has insufficient balance to execute the swap, required: ${required.toString()}, balance: ${balance.toString()}`);
+}
+```
+
+:::warning
+A large non-native token balance does not guarantee that the swap can be initiated. The wallet still needs enough native gas token balance. This matters even more in the legacy Solana flows, where even the destination side requires SOL for deposits or transaction fees. See [Bitcoin → Solana](/developers/swaps/solana/btc-to-solana) and [Lightning → Solana](/developers/swaps/solana/lightning-to-solana).
 :::
 
-## Bitcoin Balance
+</TabItem>
+<TabItem value="bitcoin" label="Bitcoin">
 
-For Bitcoin, you need to specify the destination chain since different swap protocols have different on-chain footprints:
+Use [`SwapperUtils.getBitcoinSpendableBalance()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#getbitcoinspendablebalance) for Bitcoin on-chain source balances. This helper estimates the maximum sendable BTC amount after miner fees and takes the destination smart chain into account.
+
+Swap destination chain matters for spendable balance estimation because [Bitcoin → Smart Chain](/developers/swaps/btc-to-smart-chain) on Starknet/EVM uses the newer UTXO-controlled vault flow, while [Bitcoin → Solana](/developers/swaps/solana/btc-to-solana) uses the legacy Solana flow with a different Bitcoin transaction footprint.
 
 ```typescript
 const {balance, feeRate} = await swapper.Utils.getBitcoinSpendableBalance(
   bitcoinWalletAddress,
-  "SOLANA"  // Destination chain affects fee calculation
+  "STARKNET", // Swap destination chain
+  {
+    gasDrop: true, // When swapping with the "gas drop" feature, the Bitcoin transaction gets slightly larger
+    minFeeRate: 2  // Optionally enforce a minimum sats/vB floor
+  }
 );
 
-console.log("Spendable BTC:", balance.toString(), "sats");
-console.log("Current fee rate:", feeRate, "sats/vB");
+console.log("Spendable balance for BTC → STARKNET swaps:", balance.toString());
+console.log("Using bitcoin fee rate:", feeRate, "sats/vB");
 ```
 
-### Different Chains, Different Fees
+:::info
+The `wallet` argument can be either a plain Bitcoin address string or a wallet object implementing [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) or [MinimalBitcoinWalletInterface](/sdk-reference/api/atomiq-sdk/src/type-aliases/MinimalBitcoinWalletInterface).
+:::
 
+:::tip
+If the user requests a gas drop in the [Bitcoin → Smart Chain](/developers/swaps/btc-to-smart-chain#gas-drop) flow, be sure to pass `gasDrop: true` to `getBitcoinSpendableBalance()`, since requesting gas drop slightly increases the size of the Bicoin transaction.
+:::
+
+</TabItem>
+</Tabs>
+
+## Swaps Using Max Balance
+
+Spendable balance helpers are most useful for estimating maximum amount of a swap source token that can be used for `EXACT_IN`-mode swaps. To create a swap spending the full balance of a wallet you can use the following:
+
+
+<Tabs groupId="spendable-balance-type">
+<TabItem value="smart-chain" label="Smart chain" default>
 ```typescript
-// Fee for SPV swap (Starknet/EVM) - smaller tx
-const starknetSwap = await swapper.Utils.getBitcoinSpendableBalance(
-  address,
-  "STARKNET"
-);
+import {SwapAmountType} from "@atomiqlabs/sdk";
 
-// Fee for legacy swap (Solana) - different tx structure
-const solanaSwap = await swapper.Utils.getBitcoinSpendableBalance(
-  address,
-  "SOLANA"
-);
-
-console.log("For Starknet swap:", starknetSwap.balance, "sats");
-console.log("For Solana swap:", solanaSwap.balance, "sats");
-```
-
-## Token Balances
-
-For non-native tokens, fees are paid in the native currency:
-
-```typescript
-// USDC balance on Solana
-const usdcBalance = await swapper.Utils.getSpendableBalance(
-  solanaSigner,
-  Tokens.SOLANA.USDC
-);
-
-// Full token balance available (fees paid in SOL)
-console.log("USDC balance:", usdcBalance.toString());
-```
-
-## Using with Swaps
-
-### Pre-fill Maximum Amount
-
-```typescript
-// Get max spendable
+// Get the spendable balance of the signer
 const maxSpendable = await swapper.Utils.getSpendableBalance(
-  solanaSigner,
-  Tokens.SOLANA.SOL
+  starknetSigner,
+  Tokens.STARKNET.STRK
 );
 
-// Create swap for full balance
+// Create an EXACT_IN swap spending the full wallet balance
 const swap = await swapper.swap(
-  Tokens.SOLANA.SOL,
+  Tokens.STARKNET.STRK,
   Tokens.BITCOIN.BTC,
-  maxSpendable,                  // Use full spendable balance
+  maxSpendable.amount,
   SwapAmountType.EXACT_IN,
-  solanaSigner.getAddress(),
+  starknetSigner.getAddress(),
   btcAddress
 );
 ```
-
-### Show Available Balance in UI
-
+</TabItem>
+<TabItem value="bitcoin" label="Bitcoin">
 ```typescript
-async function getBalanceForUI(chain: string, token: Token) {
-  const balance = await swapper.Utils.getSpendableBalance(signer, token);
+import {SwapAmountType} from "@atomiqlabs/sdk";
 
-  return {
-    raw: balance,
-    formatted: (Number(balance) / 10 ** token.decimals).toFixed(token.decimals),
-    symbol: token.ticker
-  };
-}
-```
-
-## Error Handling
-
-```typescript
-try {
-  const balance = await swapper.Utils.getSpendableBalance(signer, token);
-} catch (error) {
-  if (error.message.includes("RPC")) {
-    console.error("Network error - check RPC connection");
-  } else {
-    console.error("Failed to get balance:", error.message);
+// Get the spendable balance of the signer
+const {balance, feeRate} = await swapper.Utils.getBitcoinSpendableBalance(
+  bitcoinWalletAddress,
+  "STARKNET", // Use the proper swap destination chain
+  {
+    gasDrop: true // We also want to request a gas drop so set this to true
   }
+);
+
+// Create an EXACT_IN swap spending the full wallet balance
+const swap = await swapper.swap(
+  Tokens.BITCOIN.BTC,
+  Tokens.STARKNET.WBTC,
+  balance.amount,
+  SwapAmountType.EXACT_IN,
+  undefined,
+  starknetSigner.getAddress(),
+  {
+    gasAmount: 1_000_000_000_000_000_000n // Also request a gas drop
+  }
+);
+```
+
+In the case of non-legacy **Bitcoin → Smart chain** swaps (_not_ applicable to legacy **Bitcoin → Solana**) the LPs require a certain minimum fee rate to be used for the bitcoin transaction, this fee rate can be higher than the fee that was initially used to estimate balance, hence you might need to re-fetch the bitcoin balance using this new minimal fee rate:
+
+```typescript
+if (swap.minimumBtcFeeRate > feeRate) {
+  // Re-compute the maximum spendable spendable balance with the fee minimum
+  const {balance, feeRate} = await swapper.Utils.getBitcoinSpendableBalance(
+    bitcoinWalletAddress,
+    "STARKNET", // Use the proper swap destination chain
+    {
+      gasDrop: true, // We also want to request a gas drop so set this to true
+      minFeeRate: swap.minimumBtcFeeRate // Pass in the minimum fee rate from the created swap quote
+    }
+  );
+  
+  ... // Now get the quote using this adjusted amount
 }
 ```
+</TabItem>
+</Tabs>
+
+:::info
+In your UI you can hook the `getBitcoinSpendableBalance()` and `getSpendableBalance` functions to recompute on state changes, i.e. if the source/destination chain types change or gas drop request is toggled.
+:::
 
 ## API Reference
 
-- [SwapperUtils](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils) - Utility class with balance methods
-- [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) - Bitcoin wallet interface with spendable balance
+- [SwapperUtils](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils) - Utility class exposed as `swapper.Utils`
+- [getSpendableBalance](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#getspendablebalance) - Get spendable smart chain balance
+- [getBitcoinSpendableBalance](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#getbitcoinspendablebalance) - Get spendable Bitcoin balance for a route
+- [getNativeToken](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#getnativetoken) - Get the native token object for a chain
+- [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) - Bitcoin wallet interface usable by the balance helper
