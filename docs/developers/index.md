@@ -28,7 +28,7 @@ The repo contains [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/
 
 ### Utilities
 - [Address Parser](./utilities/address-parser) - Parse any address format
-- [Wallet Balance](./utilities/wallet-balance) - Get spendable balances
+- [Wallet Balance](./utilities/wallet-balance.mdx) - Get spendable balances
 - [Supported Tokens](./utilities/supported-tokens) - Discover tokens
 - [Swap Types](./utilities/swap-types) - Inspect swap protocols
 

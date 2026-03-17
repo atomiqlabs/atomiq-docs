@@ -11,7 +11,7 @@ The Atomiq SDK provides utility functions accessible via `swapper.Utils` to help
 | Utility | Description | Page |
 |---------|-------------|------|
 | Address Parser | Parse Bitcoin, Lightning, LNURL, and smart chain addresses | [Address Parser](./address-parser) |
-| Wallet Balance | Get spendable balances accounting for fees | [Wallet Balance](./wallet-balance) |
+| Wallet Balance | Get spendable balances accounting for fees | [Wallet Balance](./wallet-balance.mdx) |
 | Supported Tokens | Discover available tokens and trading pairs | [Supported Tokens](./supported-tokens) |
 | Swap Types | Inspect swap types and their features | [Swap Types](./swap-types) |
 
@@ -40,6 +40,6 @@ const supportedOutputs = swapper.getSupportedTokens(false);
 ## Tutorials
 
 - [Address Parser](./address-parser) - Unified parsing for all address formats
-- [Wallet Balance](./wallet-balance) - Get spendable balances with fee calculations
+- [Wallet Balance](./wallet-balance.mdx) - Get spendable balances with fee calculations
 - [Supported Tokens](./supported-tokens) - Token discovery and trading pair queries
 - [Swap Types](./swap-types) - Inspect swap protocols and features
