@@ -75,6 +75,10 @@ console.log("Success! Output transaction ID:", swap.getOutputTxId());
 
 Pay the invoice or `lightning:` deeplink externally, then wait for the payment to be received by passing `null` or `undefined` to the `execute()` function.
 
+:::warning
+Make sure to call `execute()` on the swap before you display the lightning invoice to the user. This ensures the swap is properly initiated before receiving the lightning network payment.
+:::
+
 ```typescript
 import {SwapAmountType} from "@atomiqlabs/sdk";
 
@@ -185,6 +189,7 @@ const lightningInvoice = swap.getAddress();
 const lightningUri = swap.getHyperlink();
 
 // 2. Wait for the Lightning payment to be received by the LP
+// This is important to make sure the swap is properly initiated before the user attempts a lightning network payment
 const paymentReceived = await swap.waitForPayment();
 if (!paymentReceived) {
   console.log("Lightning payment was not received before the quote expired.");
@@ -218,6 +223,7 @@ const lightningInvoice = swap.getAddress();
 const lightningUri = swap.getHyperlink();
 
 // 2. Wait for the Lightning payment to be received by the LP
+// This is important to make sure the swap is properly initiated before the user attempts a lightning network payment
 const paymentReceived = await swap.waitForPayment();
 if (!paymentReceived) {
   console.log("Lightning payment was not received before the quote expired.");
