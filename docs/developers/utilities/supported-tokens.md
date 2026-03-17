@@ -21,6 +21,28 @@ Call these helpers after `await swapper.init()` so LP discovery has already comp
 See the complete working example: [utils/supportedTokens.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/utils/supportedTokens.ts)
 :::
 
+## Token Object
+
+All token helpers and `Factory.Tokens.*` return the same [`Token`](/sdk-reference/api/atomiq-sdk/src/type-aliases/Token) object, this contains all the information about the token and comes with helpers for checking token equality and serializing the token to its string representation.
+
+| Field             | Type                                                | Description                                                                                                                                  |
+|-------------------|-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| `chainId`         | `"BITCOIN"` \| `"LIGHTNING"` \| `"STARKNET"` \| ... | Canonical chain identifier, i.e. `SOLANA`, `STARKNET`, `CITREA`, etc. for Smart chain tokens and `BITCOIN` or `LIGHTNING` for Bitcoin tokens |
+| `ticker`          | `string`                                            | Token symbol used in quotes and UI.                                                                                                          |
+| `name`            | `string`                                            | Full token name.                                                                                                                             |
+| `decimals`        | `number`                                            | Raw token precision used for amount parsing.                                                                                                 |
+| `displayDecimals` | `number`                                            | Optional preferred display precision for UI formatting.                                                                                      |
+| `address`         | `string`                                            | Smart-chain contract address or mint. For BTC and BTC-LN this is an empty string.                                                            |
+| `equals(other)`   | `boolean`                                           | Checks whether the token equals some other token.                                                                                                |
+| `toString()`      | `string`                                            | Stable token identifier string that can be passed back into `swapper.getToken(...)`. Smart-chain tokens use `<chainId>-<ticker>` format.     |
+
+
+[`SCToken`](/sdk-reference/api/atomiq-sdk/src/type-aliases/SCToken) and [`BtcToken`](/sdk-reference/api/atomiq-sdk/src/type-aliases/BtcToken) are narrowed down types for smart-chain and bitcoin based tokens, respectively. This distinction is used for automatic swap type inference in `swap()` function and also in other places. Use [`isSCToken()`](/sdk-reference/api/atomiq-sdk/src/functions/isSCToken) and [`isBtcToken()`](/sdk-reference/api/atomiq-sdk/src/functions/isBtcToken) typeguards to narrow down the type of `Token` to the respective `BtcToken` and `SCToken` types.
+
+:::tip
+If you need to persist a token in your database, URL, or form state, prefer `token.toString()` over manually constructing an identifier string. The returned value is compatible with `swapper.getToken(...)`.
+:::
+
 ## Listing Supported Tokens
 
 Use [`getSupportedTokens()`](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getsupportedtokens) to get a list of available source and destination tokens. This takes into account the current set of active and discovered LPs and returns tokens for which the LPs advertise support.
@@ -31,15 +53,8 @@ import {SwapSide} from "@atomiqlabs/sdk";
 const sourceTokens = swapper.getSupportedTokens(SwapSide.INPUT); // Usable as the swap input
 const destinationTokens = swapper.getSupportedTokens(SwapSide.OUTPUT); // Usable as the swap output
 
-console.log(
-  "Sources:",
-  sourceTokens.map((token) => token.ticker).join(", ")
-);
-
-console.log(
-  "Destinations:",
-  destinationTokens.map((token) => token.ticker).join(", ")
-);
+console.log("Sources:", sourceTokens.map((token) => token.toString()));
+console.log("Destinations:", destinationTokens.map((token) => token.toString()));
 ```
 
 :::info
@@ -53,179 +68,94 @@ Use [`getSwapCounterTokens()`](/sdk-reference/api/atomiq-sdk/src/classes/Swapper
 If the user already selected the input token, pass `SwapSide.INPUT` to get the valid output tokens:
 
 ```typescript
+import {SwapSide} from "@atomiqlabs/sdk";
+
 const outputsFromStrk = swapper.getSwapCounterTokens(
   Tokens.STARKNET.STRK,
   SwapSide.INPUT
 );
 
-console.log(outputsFromStrk);
+console.log(outputsFromStrk.map((token) => token.toString()));
 // Returns BTC and/or BTC-LN if STRK can currently be swapped out to them
 ```
 
 If the user already selected the output token, pass `SwapSide.OUTPUT` to get the valid input tokens:
 
 ```typescript
+import {SwapSide} from "@atomiqlabs/sdk";
+
 const inputsForBtc = swapper.getSwapCounterTokens(
   Tokens.BITCOIN.BTC,
   SwapSide.OUTPUT
 );
 
-console.log(inputsForBtc);
-// Returns various smart chain (Solana, Starknet, EVM...) tokens that can be swapped to BTC
+console.log(inputsForBtc.map((token) => token.toString()));
+// Returns various smart-chain tokens that can currently be swapped to BTC
 ```
 
 ## Resolving Tokens from Identifiers
 
-Use [`getToken()`](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#gettoken) when your UI stores token identifiers as strings or when a user pastes a token contract address or mint.
+Use [`getToken()`](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#gettoken) to resolve `Token` object from strings returned from `Token.toString()`, raw contract addresses or tickers.
 
 ```typescript
+// Bitcoin tokens
 const btc = swapper.getToken("BTC");
 const btcln = swapper.getToken("BTC-LN");
 
+// Chain-prefixed smart chain tickers
 const strk = swapper.getToken("STARKNET-STRK");
 const solUsdc = swapper.getToken("SOLANA-USDC");
 
+// Parse based on token contract address
 const starknetEth = swapper.getToken(
   "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"
 );
-
-const solanaUsdc = swapper.getToken(
-  "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-);
 ```
 
-Bare tickers are convenient, but they can be ambiguous on a multichain swapper:
+You can round-trip a token through its string representation:
+
+```typescript
+const token = swapper.getToken("STARKNET-STRK");
+const serialized = token.toString(); // "STARKNET-STRK"
+const sameToken = swapper.getToken(serialized);
+
+console.log(serialized); // "STARKNET-STRK"
+console.log(token.equals(sameToken)); // true
+```
+
+:::warning
+Bare tickers are convenient, but they can be ambiguous in a multichain context:
 
 ```typescript
 const token = swapper.getToken("WBTC"); // Can throw if WBTC exists on multiple configured chains
 const starknetWbtc = swapper.getToken("STARKNET-WBTC"); // Unambiguous
 ```
-
-:::tip
-When persisting token identifiers in your application, prefer `CHAIN-TICKER` notation for smart-chain tokens and `BTC` / `BTC-LN` for Bitcoin tokens. It keeps the identifier stable and avoids ticker collisions across chains.
 :::
 
-## Token Object Shape
+:::tip
+For compile-time setup prefer the use of a statically typed `Factory.Tokens`, instead of relying on `swapper.getToken()`. Using the `swapper.getToken()` method is useful for resolving tokens during runtime.
+:::
 
-The returned token type is a union of Bitcoin tokens and smart-chain tokens. Use [`isBtcToken()`](/sdk-reference/api/atomiq-sdk/src/functions/isBtcToken) and [`isSCToken()`](/sdk-reference/api/atomiq-sdk/src/functions/isSCToken) to handle them safely.
+## Usage in a Token Selector UI
+
+You can use the exposed helper functions to build a route-aware token selector form, which automatically detects which tokens are supported and also which routes are available given an input token is chosen.
 
 ```typescript
-import {isBtcToken, isSCToken, Token} from "@atomiqlabs/sdk";
+import {SwapSide} from "@atomiqlabs/sdk";
 
-function describeToken(token: Token): string {
-  if (isBtcToken(token)) {
-    return token.lightning ? "BTC-LN" : "BTC";
-  }
+// Get tokens supported as a swap input
+const supportedSourceTokens = swapper.getSupportedTokens(SwapSide.INPUT);
+// You can also filter the tokens based on the chain
+const starknetSupportedSourceTokens = supportedSourceTokens
+  .filter(token => token.chainId === "STARKNET");
 
-  if (isSCToken(token)) {
-    return `${token.ticker} on ${token.chainId}`;
-  }
-
-  throw new Error("Unknown token type");
+// Check which swap routes are available from a selected source token
+function onSourceTokenChange(sourceTokenId: string) {
+  // Can also pass `sourceToken: Token` directly as a function argument
+  const sourceToken = swapper.getToken(sourceTokenId);
+  const supportedDestinationTokens = swapper.getSwapCounterTokens(sourceToken, SwapSide.INPUT);
+  ...
 }
-```
-
-For Bitcoin tokens:
-
-- `token.chain === "BTC"`
-- `token.lightning` distinguishes on-chain BTC from Lightning BTC
-
-For smart-chain tokens:
-
-- `token.chain === "SC"`
-- the actual network identifier is `token.chainId`
-- `token.address` contains the token contract address or mint
-
-```typescript
-import {isSCToken} from "@atomiqlabs/sdk";
-
-const token = swapper.getToken("STARKNET-STRK");
-
-if (!isSCToken(token)) {
-  throw new Error("Expected a smart-chain token");
-}
-
-console.log(token.chain);   // "SC"
-console.log(token.chainId); // "STARKNET"
-console.log(token.ticker);  // "STRK"
-console.log(token.address); // Token contract address
-```
-
-## Using `Factory.Tokens` with Runtime Discovery
-
-The setup shown in the SDK README is the right starting point when you want type-safe token references in app code:
-
-```typescript
-import {SwapperFactory, TypedTokens} from "@atomiqlabs/sdk";
-
-const Factory = new SwapperFactory(chains);
-const Tokens: TypedTokens<typeof chains> = Factory.Tokens;
-
-Tokens.BITCOIN.BTC;
-Tokens.BITCOIN.BTCLN;
-Tokens.STARKNET.STRK;
-Tokens.SOLANA.USDC;
-```
-
-Use `Factory.Tokens` for stable code references, then use the runtime discovery helpers to drive the UI:
-
-```typescript
-const sourceToken = Tokens.STARKNET.STRK;
-
-const availableOutputs = swapper.getSwapCounterTokens(sourceToken, true);
-const canSwapToBitcoin = availableOutputs.some(
-  (token) => token.chain === "BTC" && token.lightning === false
-);
-```
-
-This split is generally the most useful pattern:
-
-- `Factory.Tokens` for compile-time-safe token references
-- `swapper.getSupportedTokens(...)` for populating selectors
-- `swapper.getSwapCounterTokens(...)` for constraining route choices
-
-## Building a Route-Aware Token Selector
-
-```typescript
-import {isBtcToken, isSCToken, Token} from "@atomiqlabs/sdk";
-
-function getTokenId(token: Token): string {
-  if (isBtcToken(token)) {
-    return token.lightning ? "BTC-LN" : "BTC";
-  }
-
-  if (isSCToken(token)) {
-    return `${token.chainId}-${token.ticker}`;
-  }
-
-  throw new Error("Unknown token type");
-}
-
-const sourceOptions = swapper.getSupportedTokens(true).map((token) => ({
-  value: getTokenId(token),
-  label: isBtcToken(token) ? token.name : `${token.ticker} on ${token.chainId}`
-}));
-
-function onSourceTokenChange(sourceToken: Token) {
-  const destinationTokens = swapper.getSwapCounterTokens(sourceToken, true);
-
-  updateDestinationOptions(
-    destinationTokens.map((token) => ({
-      value: getTokenId(token),
-      label: isBtcToken(token) ? token.name : `${token.ticker} on ${token.chainId}`
-    }))
-  );
-}
-```
-
-If you need to filter by a specific smart chain, filter on `token.chainId`, not on `token.chain`:
-
-```typescript
-import {isSCToken} from "@atomiqlabs/sdk";
-
-const starknetOutputs = swapper
-  .getSupportedTokens(false)
-  .filter((token) => isSCToken(token) && token.chainId === "STARKNET");
 ```
 
 ## API Reference
@@ -234,9 +164,10 @@ const starknetOutputs = swapper
 - [getSupportedTokens](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getsupportedtokens) - Get currently supported inputs or outputs
 - [getSwapCounterTokens](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getswapcountertokens) - Get valid counterpart tokens for one side of a route
 - [getToken](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#gettoken) - Resolve a token by ticker or address
-- [Token](/sdk-reference/api/atomiq-sdk/src/type-aliases/Token) - Union of Bitcoin and smart-chain token types
-- [BtcToken](/sdk-reference/api/atomiq-sdk/src/type-aliases/BtcToken) - Bitcoin token type
-- [SCToken](/sdk-reference/api/atomiq-sdk/src/type-aliases/SCToken) - Smart-chain token type
+- [SwapSide](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapSide) - Input/output side enum for token helper functions
+- [Token](/sdk-reference/api/atomiq-sdk/src/type-aliases/Token) - Shared token object shape returned by all token helpers
+- [BtcToken](/sdk-reference/api/atomiq-sdk/src/type-aliases/BtcToken) - Bitcoin token specialization
+- [SCToken](/sdk-reference/api/atomiq-sdk/src/type-aliases/SCToken) - Smart-chain token specialization
 - [isBtcToken](/sdk-reference/api/atomiq-sdk/src/functions/isBtcToken) - Bitcoin token type-guard
 - [isSCToken](/sdk-reference/api/atomiq-sdk/src/functions/isSCToken) - Smart-chain token type-guard
 - [SwapperFactory](/sdk-reference/api/atomiq-sdk/src/classes/SwapperFactory) - Factory for building typed swappers
@@ -248,7 +179,7 @@ const starknetOutputs = swapper
 
 Once you know the source and destination tokens, the next step is requesting a route quote with `swapper.swap(...)`.
 
-**[Creating Quotes ->](/developers/quick-start/creating-quotes)**
+**[Creating Quotes →](/developers/quick-start/creating-quotes)**
 
 ---
 
@@ -256,7 +187,7 @@ Once you know the source and destination tokens, the next step is requesting a r
 
 Inspect the swap protocol used for a given token pair and what capabilities it supports.
 
-**[Swap Types ->](/developers/utilities/swap-types)**
+**[Swap Types →](/developers/utilities/swap-types)**
 
 ---
 
@@ -264,4 +195,6 @@ Inspect the swap protocol used for a given token pair and what capabilities it s
 
 For source-token selectors and "Max" buttons, pair route discovery with the SDK's fee-aware balance helpers.
 
-**[Wallet Balance ->](/developers/utilities/wallet-balance)**
+**[Wallet Balance →](/developers/utilities/wallet-balance)**
+
+---

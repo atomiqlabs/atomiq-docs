@@ -31,6 +31,7 @@ The repo contains [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/
 - [Wallet Balance](./utilities/wallet-balance.mdx) - Get spendable balances
 - [Supported Tokens](./utilities/supported-tokens) - Discover tokens
 - [Swap Types](./utilities/swap-types) - Inspect swap protocols
+- [Swap Limits](./utilities/swap-limits) - Query route-specific min/max bounds
 
 ### Swap Management
 - [Historical Swaps](./swap-management/historical-swaps) - Retrieve past swaps
@@ -41,7 +42,6 @@ The repo contains [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/
 - [Manual Transactions](./advanced/manual-transactions) - Custom signing flows
 - [Configuration](./advanced/configuration) - Swapper options
 - [Events](./advanced/events) - Real-time updates
-- [Swap Limits](./advanced/swap-limits) - Amount constraints
 
 ### Integrations
 - [Solana Pay](./integrations/solana-pay) - Wallet QR code integration

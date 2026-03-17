@@ -13,7 +13,7 @@ This section covers advanced SDK features for power users and custom integration
 | [Manual Transactions](./manual-transactions) | Sign and send transactions without the SDK signer |
 | [Configuration](./configuration) | Customize swapper instance options |
 | [Events](./events) | Listen to swap and system events |
-| [Swap Limits](./swap-limits) | Understand and query swap size limits |
+| [Swap Limits](../utilities/swap-limits) | Understand and query swap size limits |
 
 ## When to Use Advanced Features
 

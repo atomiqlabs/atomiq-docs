@@ -117,17 +117,6 @@ const sidebars = {
     },
     {
       type: 'category',
-      label: 'Advanced',
-      link: { type: 'doc', id: 'developers/advanced/index' },
-      items: [
-        'developers/advanced/manual-transactions',
-        'developers/advanced/events',
-        'developers/advanced/swap-limits',
-        'developers/advanced/configuration'
-      ],
-    },
-    {
-      type: 'category',
       label: 'Utilities',
       link: { type: 'doc', id: 'developers/utilities/index' },
       items: [
@@ -135,7 +124,18 @@ const sidebars = {
         'developers/utilities/wallet-balance',
         'developers/utilities/supported-tokens',
         'developers/utilities/swap-types',
-        'developers/utilities/lnurl-swaps',
+        'developers/utilities/swap-limits',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Advanced',
+      link: { type: 'doc', id: 'developers/advanced/index' },
+      items: [
+        'developers/advanced/manual-transactions',
+        'developers/advanced/events',
+        'developers/advanced/configuration',
+        'developers/advanced/storage'
       ],
     },
     {
