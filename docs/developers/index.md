@@ -42,6 +42,7 @@ The repo contains [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/
 - [Manual Transactions](./advanced/manual-transactions) - Custom signing flows
 - [Configuration](./advanced/configuration) - Swapper options
 - [Events](./advanced/events) - Real-time updates
+- [Storage](./advanced/storage) - Persistence backends and custom storage adapters
 
 ### Integrations
 - [Solana Pay](./integrations/solana-pay) - Wallet QR code integration

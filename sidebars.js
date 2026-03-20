@@ -137,15 +137,7 @@ const sidebars = {
         'developers/advanced/configuration',
         'developers/advanced/storage'
       ],
-    },
-    {
-      type: 'category',
-      label: 'Integrations',
-      link: { type: 'doc', id: 'developers/integrations/index' },
-      items: [
-        'developers/integrations/solana-pay',
-      ],
-    },
+    }
   ],
 };
 
