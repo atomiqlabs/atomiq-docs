@@ -88,7 +88,7 @@ const sidebars = {
     },
     {
       type: 'category',
-      label: 'Swap Types',
+      label: 'Swap Guides',
       link: { type: 'doc', id: 'developers/swaps/index' },
       items: [
         'developers/swaps/smart-chain-to-btc',

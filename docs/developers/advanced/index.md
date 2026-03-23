@@ -2,78 +2,53 @@
 sidebar_position: 1
 ---
 
-# Advanced Topics
+# Advanced
 
-This section covers lower-level SDK integration points for apps that need more control over transaction execution, runtime configuration, event handling, or persistence. These topics are most useful when you need to go beyond the default browser or signer-driven setup.
+This section is for integrations that go beyond the default SDK flow. It focuses on production concerns around transaction control, runtime behavior, real-time state, and persistence.
+
+:::info
+If you are still setting up the SDK or learning the swap lifecycle, start with [Creating Quotes](/developers/quick-start/creating-quotes) and [Executing Swaps](/developers/quick-start/executing-swaps) first. The advanced pages assume that part is already familiar.
+:::
+
+## Usage
+
+Most integrations use the advanced features once the standard quote and execution flow is already in place and the remaining work is about adapting the SDK to the application's runtime:
+
+- Use [Manual Transactions](./manual-transactions) when your app needs to get smart-chain transactions from the SDK, hand them off to an external signer or wallet flow, and then let the SDK observe the result afterwards, such as with hardware wallets, custody systems, or a separate approval layer.
+- Use [Configuration](./configuration) when you need to customize how the swapper runs, including RPC setup, LP discovery behavior, pricing hooks, runtime flags, and chain-specific options.
+- Use [Events](./events) when your UI or backend needs to react to live swap state updates, LP discovery, or limit changes, for example to show pending swaps, update route availability, or drive notifications.
+- Use [Storage](./storage) when you need to understand what the SDK persists or provide a custom storage backend, especially outside browser environments or when integrating with your own database layer.
 
 ## Topics
 
-| Topic | Description |
-|-------|-------------|
-| [Manual Transactions](./manual-transactions) | Build `txs*()` transaction flows and sign or broadcast them outside the SDK signer |
-| [Configuration](./configuration) | Customize top-level options, chain-specific settings, storage hooks, runtime flags, and debug logging |
-| [Events](./events) | Subscribe to standard `EventEmitter`-style events on `swapper` and `swap.events` |
-| [Storage](./storage) | Use browser, Node.js, or React Native persistence defaults, or implement custom storage backends |
+### Manual Transactions
 
-## When to Use Advanced Features
+Use the `txs*()` methods to sign and broadcast smart-chain transactions outside the SDK, for example with hardware wallets, custom custody, or a separate approval layer.
 
-### Manual Transaction Signing
+**[Manual Transactions ->](./manual-transactions)**
 
-Use manual signing when:
-- integrating with hardware wallets
-- using custom custody or approval flows
-- building wallet integrations that sign and broadcast outside the SDK
+---
 
-### Custom Configuration
+### Configuration
 
-Customize the swapper when:
-- using private LP nodes or custom registries
-- running custom mempool.space or pricing backends
-- changing request timeouts or runtime flags
-- adjusting chain-specific RPC and integration options
+Tune how the swapper is initialized, including RPCs, LP discovery, storage hooks, pricing, runtime flags, and per-chain options.
 
-### Event Listeners
+**[Configuration ->](./configuration)**
 
-Use events for:
-- real-time UI updates
-- pending swap tracking
-- logging and analytics
-- LP monitoring and route-limit refreshes
+---
 
-### Custom Storage
+### Events
 
-Use storage customization when:
-- running in Node.js or React Native
-- integrating with your own database or key-value backend
-- replacing the default browser persistence layer
-- implementing custom `IUnifiedStorage` or `IStorageManager` backends
+Subscribe to swap state, LP discovery, and swap-limit updates so UIs and services can react in real time.
 
-## Quick Reference
+**[Events ->](./events)**
 
-```typescript
-// Manual transaction flow
-const txs = await swap.txsCommit();
-// Sign and broadcast externally...
-await swap.waitTillCommited();
+---
 
-// Custom configuration
-const swapper = Factory.newSwapper({
-  chains: {...},
-  bitcoinNetwork: BitcoinNetwork.MAINNET,
-  pricingFeeDifferencePPM: 20000n,
-  registryUrl: "https://my-registry.example.com",
-  getRequestTimeout: 15000,
-});
+### Storage
 
-// Custom storage
-const swapperWithStorage = Factory.newSwapper({
-  ...,
-  swapStorage: storageName => new SqliteUnifiedStorage(`${storageName}.sqlite3`),
-  chainStorageCtor: storageName => new SqliteStorageManager(`${storageName}.sqlite3`)
-});
+Understand what the SDK persists, how the default browser setup works, and how to provide Node.js, React Native, or custom storage backends.
 
-// Event subscriptions
-swapper.on("swapState", (updatedSwap) => { /* ... */ });
-swap.events.on("swapState", (updatedSwap) => { /* ... */ });
-swapper.on("swapLimitsChanged", () => { /* ... */ });
-```
+**[Storage ->](./storage)**
+
+---

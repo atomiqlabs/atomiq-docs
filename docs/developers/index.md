@@ -4,63 +4,76 @@ sidebar_position: 1
 
 # SDK Guide
 
-The Atomiq SDK is a TypeScript multichain client for trustless cross-chain swaps between smart chains (Solana, Starknet, EVM) and Bitcoin (on-chain L1 and Lightning Network L2).
+The Atomiq SDK is a TypeScript multichain client for building trustless swaps between smart chains and Bitcoin, both on-chain and over Lightning. This page is the entry point for the SDK docs and helps you choose the right path through the documentation, whether you are setting up the SDK for the first time, implementing a specific swap family, building the surrounding quote UI, or hardening the integration for production.
 
-:::tip Getting Started
-See complete working Node.js examples in the [atomiq-sdk-demo](https://github.com/atomiqlabs/atomiq-sdk-demo) repository.
-The repo contains [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/setup.ts) and [wallets.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/wallets.ts), which are good boilerplate to start from and build swaps on top of. For browser environments, see the [Quick Start (Browser)](./quick-start/quick-start-browser) guide.
+:::tip
+These resources complement the guides in this section:
+
+- For runnable end-to-end examples in Node.js, see the [atomiq-sdk-demo](https://github.com/atomiqlabs/atomiq-sdk-demo) repository.
+- For exact SDK classes, methods, enums, interfaces, and type signatures, see the [SDK API Reference](/sdk-reference/).
+- For the low-level protocol background behind these integration guides, see [Protocol Overview](/overview/protocol-overview/) and [Swaps](/overview/swaps/).
 :::
 
-## Documentation Sections
+## Where To Start
 
-### Getting Started
-- [Quick Start (Browser)](./quick-start/quick-start-browser) - Set up in browser environments
-- [Quick Start (Node.js)](./quick-start/quick-start-nodejs) - Set up in Node.js environments
-- [Configuration](advanced/configuration.md) - Swapper options
+### First Working Swap
 
-### Swap Tutorials
-- [Creating Quotes](quick-start/creating-quotes.md) - How to create and inspect swap quotes
-- [BTC to Smart Chain](./swaps/btc-to-smart-chain) - Bitcoin L1 to Starknet/EVM
-- [Smart Chain to BTC](./swaps/smart-chain-to-btc.mdx) - Starknet/EVM to Bitcoin L1 and Lightning
-- [Lightning to Smart Chain](./swaps/lightning-to-smart-chain) - Lightning to Starknet/EVM
-- [LNURL Swaps](utilities/lnurl-swaps.md) - Reusable payment addresses
-- **Solana (Legacy)**: [BTC to Solana](./swaps/solana/btc-to-solana) | [Lightning to Solana](./swaps/solana/lightning-to-solana)
+Start with [Quick Start](/developers/quick-start/) to choose Browser or Node.js, initialize the swapper, and connect wallets or signers. Then continue with [Creating Quotes](/developers/quick-start/creating-quotes) and [Executing Swaps](/developers/quick-start/executing-swaps) to get the default high-level flow running end to end.
+
+### Handling Edge Cases
+
+Use [Swap Management](/developers/swap-management/) once your app needs to recover saved swaps after restart or interruption. In practice, this is a core part of a production integration rather than an optional extra: apps should expose clear recovery paths for swaps that did not finish automatically, including surfacing refund or claim actions when saved swaps still need user attention.
+
+### Building the Swap UI
+
+Once the basic flow works, use [Utilities](/developers/utilities/) to handle the smaller decisions around quoting: parse Bitcoin addresses, BOLT11 invoices, LNURLs, and smart-chain addresses, populate token selectors from the supported routes, inspect the `SwapType`, enforce route-specific limits, and calculate spendable balances for "Max" actions.
+
+### Implementing Specific Swap Families
+
+Use [Swap Guides](/developers/swaps/) when your app needs the details of the exact swap it is executing. These pages cover the direction-specific signer and wallet inputs, LNURL variants, manual execution paths, recovery actions, and the distinction between the standard Starknet and EVM flows and the legacy inbound Solana flows.
+
+### Advanced Runtime Control
+
+Use [Advanced](/developers/advanced/) when the default SDK flow is already working but the app needs more control over how it runs, such as handing smart-chain transactions off to external signers, subscribing to runtime events, customizing storage, or tuning swapper configuration.
+
+## Sections
+
+### Quick Start
+
+Set up the SDK in Browser or Node.js, initialize the swapper, and follow the shared path from setup to quoting and execution.
+
+**[Quick Start ->](/developers/quick-start/)**
+
+---
+
+### Swap Guides
+
+Find the exact swap family your app is implementing, including standard Bitcoin and Lightning routes, LNURL variants, and the legacy Solana inbound flows.
+
+**[Swap Guides ->](/developers/swaps/)**
+
+---
 
 ### Utilities
-- [Address Parser](./utilities/address-parser) - Parse any address format
-- [Wallet Balance](./utilities/wallet-balance.mdx) - Get spendable balances
-- [Supported Tokens](./utilities/supported-tokens) - Discover tokens
-- [Swap Types](./utilities/swap-types) - Inspect swap protocols
-- [Swap Limits](./utilities/swap-limits) - Query route-specific min/max bounds
+
+Build the quote form and route-selection layer around swaps with helpers for address parsing, supported tokens, swap classification, amount limits, and spendable balances.
+
+**[Utilities ->](/developers/utilities/)**
+
+---
 
 ### Swap Management
-- [Historical Swaps](./swap-management/historical-swaps) - Retrieve past swaps
-- [Refunds](./swap-management/refunds.mdx) - Handle failed swaps
-- [Claiming](./swap-management/claiming) - Manual settlement
+
+Recover saved swaps from storage and handle the cases where a refund or claim action is still required after restart or interruption.
+
+**[Swap Management ->](/developers/swap-management/)**
+
+---
 
 ### Advanced
-- [Manual Transactions](./advanced/manual-transactions) - Custom signing flows
-- [Configuration](./advanced/configuration) - Swapper options
-- [Events](./advanced/events) - Real-time updates
-- [Storage](./advanced/storage) - Persistence backends and custom storage adapters
 
-### Integrations
-- [Solana Pay](./integrations/solana-pay) - Wallet QR code integration
+Adapt the SDK to more complex runtimes with manual transaction signing, event subscriptions, storage customization, and advanced swapper configuration.
 
-## API Reference
+**[Advanced ->](/developers/advanced/)**
 
-For detailed TypeScript API documentation, see the [SDK API Reference](/sdk-reference/).
-
-
-## Common Tasks
-
-| Task | Where to Look |
-|------|---|
-| Create a swapper instance | [SwapperFactory](/sdk-reference/api/atomiq-sdk/src/classes/SwapperFactory) |
-| Execute a swap | [ToBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap), [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap), [ToBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap), [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) |
-| Handle swap events | [SwapEvent](/sdk-reference/api/atomiq-sdk/src/classes/SwapEvent), [ChainEvent](/sdk-reference/api/atomiq-sdk/src/classes/ChainEvent) |
-| Configure Solana chain | [SolanaChainInterface](/sdk-reference/api/atomiq-chain-solana/src/classes/SolanaChainInterface) |
-| Manage wallet | [BitcoinWallet](/sdk-reference/api/atomiq-sdk/src/classes/BitcoinWallet), [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) |
-| Store swap state | [IUnifiedStorage](/sdk-reference/api/atomiq-sdk/src/interfaces/IUnifiedStorage) |
-| Parse addresses | [identifyAddressType](/sdk-reference/api/atomiq-sdk/src/functions/identifyAddressType) |
-| Check balances | [IBitcoinWallet](/sdk-reference/api/atomiq-sdk/src/interfaces/IBitcoinWallet) |
+---

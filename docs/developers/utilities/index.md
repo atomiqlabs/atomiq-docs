@@ -4,106 +4,55 @@ sidebar_position: 1
 
 # Utilities
 
-The SDK exposes two kinds of utility helpers:
+The Utilities section is for the helper APIs you use while assembling a swap form or route selection flow. Rather than walking through a single swap end to end, these pages focus on the smaller decisions that happen around it: parsing user input, choosing valid token pairs, understanding the route, checking limits, and estimating spendable balance. In UI terms, this includes parsing Bitcoin addresses, BOLT11 invoices, LNURLs, Lightning addresses, and smart-chain addresses, building route-aware token selectors, and adapting the form based on the selected swap protocol.
 
-- general parsing and balance helpers on `swapper.Utils`
-- route and protocol inspection helpers directly on `swapper`
+## Usage
 
-These utilities are meant to support quote forms, token selectors, destination/source input fields, and route-aware swap UIs.
+A typical integration uses these utilities in roughly this order:
 
-## Utility Overview
+1. Normalize any user-entered destination or source address with [Address Parser](./address-parser). This lets the UI accept Bitcoin addresses, BOLT11 invoices, LNURLs, Lightning addresses, and smart-chain addresses in a single input field, while also automatically updating the selected tokens and swap type based on the provided address.
+2. Use [Supported Tokens](./supported-tokens) to populate the token selectors in the UI and constrain them to routes that are actually available for the current LP and chain setup.
+3. Use [Swap Types](./swap-types) to understand which protocol the chosen pair maps to, whether the route requires a connected source or destination wallet, and whether optional capabilities such as gas drop are supported.
+4. Before the user requests a quote, combine [Wallet Balance](./wallet-balance) and [Swap Limits](./swap-limits) to guide amount entry, enforce min and max bounds for the selected route, and support "Send Max" actions where appropriate.
 
-| Utility | Accessed via | Use                                                                                   |
-|---------|-------------|---------------------------------------------------------------------------------------|
-| [Address Parser](./address-parser) | `swapper.Utils.parseAddress()` | Parse Bitcoin, Lightning, LNURL, and smart-chain inputs from user-entered text        |
-| [Wallet Balance](./wallet-balance.mdx) | `swapper.Utils.getSpendableBalance()` / `getBitcoinSpendableBalance()` | Estimate how much can actually be swapped after fees                                  |
-| [Supported Tokens](./supported-tokens) | `swapper.getSupportedTokens()` / `getSwapCounterTokens()` / `getToken()` | Discover valid route tokens and resolve token identifiers                             |
-| [Swap Types](./swap-types) | `swapper.getSwapType()` / `SwapProtocolInfo` | Inspect which swap protocol and capabilities a a specific route uses                  |
-| [Swap Limits](./swap-limits) | `swapper.getSwapLimits()` | Get route-specific swap limits (minimums and maximums) in both EXACT_IN / EXACT_OUT modes |
-
-## Practical Pattern
-
-For most swap forms, the useful pattern is to combine the utilities:
-
-- Use [Wallet Balance](./wallet-balance.mdx) to populate maximum input amount and "swap all available balance" behavior, if the source wallet is known.
-- Parse user-provided address with [Address Parser](./address-parser), which parses Bitcoin addresses, Lightning invoices, LNURLs, or smart-chain (i.e. Solana, Starknet, EVM) addresses.
-- Use [Supported Tokens](./supported-tokens) to show supported source tokens and destination tokens.
-- Use [Swap Types](./swap-types) to detect which swap protocol the selected token pair will use and whether the route supports things like gas drop or requires a connected wallet on a specific side.
-- Use [Swap Limits](./swap-limits) to populate min/max limits for input fields and validate the currently selected route before creating the quote.
-
-The exact starting point differs by app, but the same idea holds: parse the input, get supported input / output tokens, classify the protocol, estimate spendable balance, validate the route bounds, then create the quote.
-
-```typescript
-import {
-  isBtcToken,
-  isSCToken,
-  SwapProtocolInfo,
-  SwapSide
-} from "@atomiqlabs/sdk";
-
-// 1. Optional: parse a user-entered destination/source string
-const parsed = await swapper.Utils.parseAddress(userInput);
-
-// 2. Select tokens from the currently valid route set
-const sourceTokens = swapper.getSupportedTokens(SwapSide.INPUT);
-const destinationTokens = swapper.getSwapCounterTokens(selectedSourceToken, SwapSide.INPUT);
-
-// 3. Inspect the protocol for the selected pair
-const swapType = swapper.getSwapType(selectedSourceToken, selectedDestinationToken);
-const protocolInfo = SwapProtocolInfo[swapType];
-
-// 4. Get fee-aware spendable balance for the selected source side, when applicable
-if (isSCToken(selectedSourceToken)) {
-  const spendable = await swapper.Utils.getSpendableBalance(signer, selectedSourceToken);
-}
-
-if (
-  isBtcToken(selectedSourceToken) &&
-  !selectedSourceToken.lightning &&
-  isSCToken(selectedDestinationToken)
-) {
-  const {balance} = await swapper.Utils.getBitcoinSpendableBalance(
-    bitcoinWalletAddress,
-    selectedDestinationToken.chainId
-  );
-}
-
-// 5. Get route-specific min/max bounds
-const limits = swapper.getSwapLimits(selectedSourceToken, selectedDestinationToken);
-
-// 6. Create the quote
-const quote = await swapper.swap(
-  selectedSourceToken,
-  selectedDestinationToken,
-  amount,
-  amountType,
-  sourceAddress,
-  destinationAddress
-);
-```
-
-## Next Steps
+## Topics
 
 ### Address Parser
 
-Use the parser when the user can paste a destination or source field in multiple formats.
+Parse destination and source inputs such as Bitcoin addresses, BOLT11 invoices, LNURLs, Lightning addresses, and smart-chain addresses before creating a quote.
 
-**[Address Parser →](./address-parser)**
+**[Address Parser ->](./address-parser)**
 
 ---
 
 ### Supported Tokens
 
-Use route-aware token discovery when building token selectors and swap forms.
+Discover which source and destination tokens are currently swappable and constrain token selectors to valid routes.
 
-**[Supported Tokens →](./supported-tokens)**
+**[Supported Tokens ->](./supported-tokens)**
 
 ---
 
-### Creating Quotes
+### Swap Types
 
-Once your form uses the utility helpers to settle on a route and amount, request the actual quote with `swapper.swap(...)`.
+Inspect which swap protocol a token pair uses and whether that route supports capabilities such as gas drop or requires a wallet on a specific side.
 
-**[Creating Quotes →](/developers/quick-start/creating-quotes)**
+**[Swap Types ->](./swap-types)**
+
+---
+
+### Swap Limits
+
+Read route-specific minimum and maximum bounds so your UI can validate amounts and react to changing LP limits.
+
+**[Swap Limits ->](./swap-limits)**
+
+---
+
+### Wallet Balance
+
+Estimate how much can actually be swapped after fees, both for smart-chain wallets and for Bitcoin on-chain balances.
+
+**[Wallet Balance ->](./wallet-balance)**
 
 ---

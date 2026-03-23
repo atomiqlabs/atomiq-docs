@@ -4,60 +4,44 @@ sidebar_position: 1
 
 # Swap Management
 
-This section covers managing swap lifecycle, including tracking state, recovering past swaps, handling refunds, and manual claiming.
+This section covers what happens after a swap has already been created and persisted. These pages are for retrieving past swaps, recovering them after app restarts, and handling the cases where a swap needs follow-up outside the normal high-level flow.
 
-## Overview
+:::info
+This is still a core responsibility of an app integrating the SDK. The common swap path may complete automatically, but real integrations still need to detect when a saved swap requires explicit user action and guide the user through refund or claim recovery flows.
+:::
 
-Swaps go through various states during execution. The SDK persists swap data locally, allowing you to:
+## Usage
 
-- Track swap progress in real-time
-- Recover swaps after app restarts
-- Refund failed swaps
-- Manually claim swaps that weren't auto-settled
+A typical integration uses this section in roughly this order:
 
-## Key Concepts
+1. Use [Historical Swaps](./historical-swaps) to load previously created swaps from storage, either by ID or as a filtered list for a chain or signer.
+2. Check whether any saved **Smart Chain -> Bitcoin/Lightning** swaps have become refundable, then use [Refunds](./refunds) to return those funds to the source wallet.
+3. Check whether any saved **Bitcoin/Lightning -> Smart Chain** swaps have become claimable, then use [Claiming](./claiming) to settle those funds to the destination wallet.
 
-### Swap Persistence
+Apps usually run this recovery flow on startup and then periodically in long-running sessions, so saved swaps that still need attention are surfaced as clear refund or claim actions for the user.
 
-All swaps are automatically persisted to local storage (IndexedDB in browser, SQLite in Node.js). This means:
+## Topics
 
-- Swaps survive page refreshes and app restarts
-- You can retrieve any past swap by its ID
-- The SDK can check for pending actions on startup
+### Historical Swaps
 
-### Automatic vs Manual Settlement
+Retrieve persisted swaps by ID or query them in bulk so your app can resume previously created swaps after restart.
 
-Most swaps settle automatically via watchtower services. However, manual intervention may be needed when:
+**[Historical Swaps ->](./historical-swaps)**
 
-- Watchtowers are temporarily unavailable
-- Network congestion delays automatic settlement
-- The client was offline during settlement
+---
 
-## Tutorials
+### Refunds
 
-| Topic | Description |
-|-------|-------------|
-| [Historical Swaps](./historical-swaps) | Retrieve past swaps by ID |
-| [Refunds](./refunds.mdx) | Handle failed swaps and cooperative refunds |
-| [Claiming](./claiming) | Manually claim swaps when auto-settlement fails |
+Handle failed **Smart Chain -> Bitcoin/Lightning** swaps that can be refunded back to the source-chain wallet.
 
-## Quick Reference
+**[Refunds ->](./refunds)**
 
-```typescript
-// Get swap by ID
-const swap = await swapper.getSwapById(swapId);
+---
 
-// Check current state
-const state = swap.getState();
+### Claiming
 
-// Listen for state changes
-swap.events.on("swapState", (swap) => {
-  console.log("New state:", swap.getState());
-});
+Handle **Bitcoin/Lightning -> Smart Chain** swaps that need manual destination-side settlement because automatic settlement did not finish.
 
-// Get refundable swaps on startup
-const refundable = await swapper.getRefundableSwaps("SOLANA", address);
+**[Claiming ->](./claiming)**
 
-// Get claimable swaps on startup
-const claimable = await swapper.getClaimableSwaps("SOLANA", address);
-```
+---
