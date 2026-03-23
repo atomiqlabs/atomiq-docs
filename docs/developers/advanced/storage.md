@@ -316,7 +316,7 @@ Important details:
 
 For more runtime options affecting swapper behavior, continue with the configuration guide.
 
-**[Configuration ->](/developers/advanced/configuration)**
+**[Configuration →](/developers/advanced/configuration)**
 
 ---
 
@@ -324,6 +324,6 @@ For more runtime options affecting swapper behavior, continue with the configura
 
 Continue with the main quick start index to pick the setup flow for your environment.
 
-**[Quick Start ->](/developers/quick-start/)**
+**[Quick Start →](/developers/quick-start/)**
 
 ---

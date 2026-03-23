@@ -50,4 +50,4 @@ If no watchtower claims on behalf of the user, the user can always claim by itse
 
 ## Swap sequence diagram
 
-![Bitcoin Lightning -> Smart chain swap process](/img/nostr-frombtcln-diagram.svg)
+![Bitcoin Lightning → Smart chain swap process](/img/nostr-frombtcln-diagram.svg)

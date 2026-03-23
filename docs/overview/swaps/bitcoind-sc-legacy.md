@@ -40,4 +40,4 @@ The **LP** needs to make sure to not use the same Bitcoin address for multiple s
 
 ## Swap sequence diagram
 
-![Legacy Bitcoin on-chain -> Solana swap process](/img/frombtc-diagram.svg)
+![Legacy Bitcoin on-chain → Solana swap process](/img/frombtc-diagram.svg)

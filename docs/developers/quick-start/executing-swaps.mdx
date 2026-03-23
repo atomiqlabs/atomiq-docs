@@ -17,11 +17,11 @@ import {isRefundableSwap, isClaimableSwap} from "@atomiqlabs/sdk";
 const result = await swap.execute(/* source signer or wallet */, /* optional callbacks */, /* optional options */);
 
 if (result === false) {
-  // In case of Smart chain -> BTC/Lightning swaps:
+  // In case of Smart chain → BTC/Lightning swaps:
   // - the swap has failed and the user can refund with swap.refund(...)
   if(isRefundableSwap(swap)) await swap.refund(/* source chain signer or wallet - always a smart chain signer */);
   
-  // In case of BTC/Lightning -> Smart chain swaps:
+  // In case of BTC/Lightning → Smart chain swaps:
   // - the swap wasn't settled automatically, call swap.claim(...) to settle the swap manually with the destination chain signer.
   if(isClaimableSwap(swap)) await swap.claim(/* destination chain signer or wallet - always a smart chain signer */);
 }
@@ -60,9 +60,9 @@ if (!swapSuccess) await swap.refund(srcSigner);
 ```
 
 Type of the signer is dependent on the source network:
-- For Solana -> BTC swaps: [SolanaSigner](/sdk-reference/api/atomiq-chain-solana/src/classes/SolanaSigner), or native `@coral-xyz/anchor` [Wallet](https://solana-foundation.github.io/anchor/ts/classes/Wallet.html)
-- For Starknet -> BTC swaps: [StarknetSigner](/sdk-reference/api/atomiq-chain-starknet/src/classes/StarknetSigner), [StarknetBrowserSigner](/sdk-reference/api/atomiq-chain-starknet/src/classes/StarknetBrowserSigner), or native `starknet` [Account](https://starknetjs.com/docs/API/classes/Account)
-- For EVM -> BTC swaps: [EVMSigner](/sdk-reference/api/atomiq-chain-evm/src/classes/EVMSigner), or native `ethers` [Signer](https://docs.ethers.org/v6/api/providers/#Signer)
+- For Solana → BTC swaps: [SolanaSigner](/sdk-reference/api/atomiq-chain-solana/src/classes/SolanaSigner), or native `@coral-xyz/anchor` [Wallet](https://solana-foundation.github.io/anchor/ts/classes/Wallet.html)
+- For Starknet → BTC swaps: [StarknetSigner](/sdk-reference/api/atomiq-chain-starknet/src/classes/StarknetSigner), [StarknetBrowserSigner](/sdk-reference/api/atomiq-chain-starknet/src/classes/StarknetBrowserSigner), or native `starknet` [Account](https://starknetjs.com/docs/API/classes/Account)
+- For EVM → BTC swaps: [EVMSigner](/sdk-reference/api/atomiq-chain-evm/src/classes/EVMSigner), or native `ethers` [Signer](https://docs.ethers.org/v6/api/providers/#Signer)
 
 <h3>Callbacks</h3>
 
@@ -314,16 +314,16 @@ When `execute()` returns `false` and does not fully finish the swap automaticall
 
 | Swap family | Failure Mode | Manual fallback |
 |-------------|-----------------|----------------|
-| Smart chain -> BTC L1 / Lightning | LP didn't process the swap | `swap.refund(sourceSigner)` |
-| BTC L1 -> Starknet / EVM | Swap wasn't settled automatically | `swap.claim(destinationSigner)` |
-| Lightning -> Starknet / EVM | Swap wasn't settled automatically | `swap.claim(destinationSigner)` |
+| Smart chain → BTC L1 / Lightning | LP didn't process the swap | `swap.refund(sourceSigner)` |
+| BTC L1 → Starknet / EVM | Swap wasn't settled automatically | `swap.claim(destinationSigner)` |
+| Lightning → Starknet / EVM | Swap wasn't settled automatically | `swap.claim(destinationSigner)` |
 
 ### Legacy Swaps
 
 | Swap family | Failure Mode | Manual fallback |
 |-------------|-----------------|----------------|
-| BTC L1 -> Solana (legacy) | Swap wasn't settled automatically | `swap.claim(destinationSigner)` |
-| Lightning -> Solana (legacy) | None | - |
+| BTC L1 → Solana (legacy) | Swap wasn't settled automatically | `swap.claim(destinationSigner)` |
+| Lightning → Solana (legacy) | None | - |
 
 ## Next Steps
 

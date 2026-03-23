@@ -122,7 +122,7 @@ Both parsers return a normalized object with the following fields:
 
 ### Bitcoin and BIP-21
 
-Bitcoin addresses and `bitcoin:` payment URIs are parsed as `type === "BITCOIN"`. This is the format you typically use as the destination in [Smart Chain -> BTC/Lightning](/developers/swaps/smart-chain-to-btc) swaps.
+Bitcoin addresses and `bitcoin:` payment URIs are parsed as `type === "BITCOIN"`. This is the format you typically use as the destination in [Smart Chain → BTC/Lightning](/developers/swaps/smart-chain-to-btc) swaps.
 
 If the user pastes a BIP-21 URI with an amount, that amount is returned as `parsed.amount`, which is useful for pre-filling an `EXACT_OUT` quote.
 
@@ -144,7 +144,7 @@ If you only need to check whether a given string is a bitcoin address use [`isVa
 ### Lightning Invoices
 
 :::warning
-Lightning invoices without an amount are not accepted by `parseAddress()`, as the **Smart Chain -> Lightning** swap requires the use of fixed amount invoices.
+Lightning invoices without an amount are not accepted by `parseAddress()`, as the **Smart Chain → Lightning** swap requires the use of fixed amount invoices.
 :::
 
 BOLT11 invoices (also the ones prefixed with `lightning:` deeplink) are parsed as `type === "LIGHTNING"`. With the invoice amount returned in `parsed.amount`.
@@ -161,7 +161,7 @@ if (parsed?.type === "LIGHTNING") {
 If your UI needs to distinguish between "syntactically valid invoice" and "invoice valid for swap creation", use both helpers:
 
 - [`isLightningInvoice()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#islightninginvoice) checks whether the string is a valid BOLT11 invoice at all.
-- [`isValidLightningInvoice()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#isvalidlightninginvoice) checks whether the invoice also contains an amount and is therefore usable for creating **Smart Chain -> Lightning** swaps.
+- [`isValidLightningInvoice()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#isvalidlightninginvoice) checks whether the invoice also contains an amount and is therefore usable for creating **Smart Chain → Lightning** swaps.
 :::
 
 ### LNURLs and Lightning Addresses
@@ -176,8 +176,8 @@ To fetch the type and amounts of the LNURL you have to use the asynchronous `par
 
 And the LNURL types (withdraw or pay):
 
-- `parsed.lnurl.type === "pay"` for **LNURL-pay** / Lightning address inputs, can be used as a destination for [Smart Chain -> BTC/Lightning](/developers/swaps/smart-chain-to-btc) swaps.
-- `parsed.lnurl.type === "withdraw"` for **LNURL-withdraw** inputs, can be used as source for [Lightning -> Smart Chain](/developers/swaps/lightning-to-smart-chain) or [Lightning -> Solana](/developers/swaps/solana/lightning-to-solana) swaps.
+- `parsed.lnurl.type === "pay"` for **LNURL-pay** / Lightning address inputs, can be used as a destination for [Smart Chain → BTC/Lightning](/developers/swaps/smart-chain-to-btc) swaps.
+- `parsed.lnurl.type === "withdraw"` for **LNURL-withdraw** inputs, can be used as source for [Lightning → Smart Chain](/developers/swaps/lightning-to-smart-chain) or [Lightning → Solana](/developers/swaps/solana/lightning-to-solana) swaps.
 
 
 <Tabs groupId="lnurl-variants">
@@ -238,7 +238,7 @@ If you only need to check whether a string looks like LNURL before fetching meta
 
 ### Smart Chain Addresses
 
-If the input is a supported smart chain address, the parser returns the configured chain identifier as the `type`, for example `SOLANA`, `STARKNET` or `CITREA`. This is the format you typically use as the destination in [Bitcoin -> Smart Chain](/developers/swaps/btc-to-smart-chain) and [Lightning -> Smart Chain](/developers/swaps/lightning-to-smart-chain) swaps.
+If the input is a supported smart chain address, the parser returns the configured chain identifier as the `type`, for example `SOLANA`, `STARKNET` or `CITREA`. This is the format you typically use as the destination in [Bitcoin → Smart Chain](/developers/swaps/btc-to-smart-chain) and [Lightning → Smart Chain](/developers/swaps/lightning-to-smart-chain) swaps.
 
 ```typescript
 const parsed = await swapper.Utils.parseAddress(starknetSigner.getAddress());

@@ -15,7 +15,7 @@ Users do not need to remain online for the full duration of the swap—watchtowe
 
 This ensures users retain full control and never risk permanent loss from non-cooperation.
 
-[//]: # (A simple diagram: RFQ -> Send funds, Send funds -> Settlement, Send funds -> Refund)
+[//]: # (A simple diagram: RFQ → Send funds, Send funds → Settlement, Send funds → Refund)
 
 ## Liquidity Provider (LP)
 

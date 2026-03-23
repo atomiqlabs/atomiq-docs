@@ -53,7 +53,7 @@ The `bitcoinNetwork` setting determines both the Bitcoin network and which smart
 
 Install the browser SDK packages, initialize the swapper, and connect supported browser wallets.
 
-**[Quick Start - Browser ->](./quick-start-browser)**
+**[Quick Start - Browser →](./quick-start-browser)**
 
 ---
 
@@ -61,7 +61,7 @@ Install the browser SDK packages, initialize the swapper, and connect supported 
 
 Install the Node.js SDK packages, configure storage, initialize the swapper, and construct server-side signers.
 
-**[Quick Start - Node.js ->](./quick-start-nodejs)**
+**[Quick Start - Node.js →](./quick-start-nodejs)**
 
 ---
 
@@ -69,7 +69,7 @@ Install the Node.js SDK packages, configure storage, initialize the swapper, and
 
 Request quotes from LPs and inspect the resulting swap object before moving on to execution.
 
-**[Creating Quotes ->](./creating-quotes)**
+**[Creating Quotes →](./creating-quotes)**
 
 ---
 
@@ -77,6 +77,6 @@ Request quotes from LPs and inspect the resulting swap object before moving on t
 
 Execute the swap and understand which signer or wallet type is needed for each route direction.
 
-**[Executing Swaps ->](./executing-swaps)**
+**[Executing Swaps →](./executing-swaps)**
 
 ---

@@ -154,6 +154,6 @@ In most apps, `swapLimitsChanged` is enough for route refreshes. The LP events a
 
 Use `swapLimitsChanged` together with the route-bound helpers when building quote forms.
 
-**[Swap Limits ->](/developers/utilities/swap-limits)**
+**[Swap Limits →](/developers/utilities/swap-limits)**
 
 ---

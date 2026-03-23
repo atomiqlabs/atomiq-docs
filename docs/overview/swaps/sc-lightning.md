@@ -49,4 +49,4 @@ HTLC timeout is determined by the **User** and is a trade-off between likelihood
 
 ## Swap sequence diagram
 
-![Smart chain-> Bitcoin Lightning swap process](/img/tobtcln-diagram.svg)
+![Smart chain→ Bitcoin Lightning swap process](/img/tobtcln-diagram.svg)

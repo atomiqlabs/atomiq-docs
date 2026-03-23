@@ -42,7 +42,7 @@ Use [Advanced](/developers/advanced/) when the default SDK flow is already worki
 
 Set up the SDK in Browser or Node.js, initialize the swapper, and follow the shared path from setup to quoting and execution.
 
-**[Quick Start ->](/developers/quick-start/)**
+**[Quick Start →](/developers/quick-start/)**
 
 ---
 
@@ -50,7 +50,7 @@ Set up the SDK in Browser or Node.js, initialize the swapper, and follow the sha
 
 Find the exact swap family your app is implementing, including standard Bitcoin and Lightning routes, LNURL variants, and the legacy Solana inbound flows.
 
-**[Swap Guides ->](/developers/swaps/)**
+**[Swap Guides →](/developers/swaps/)**
 
 ---
 
@@ -58,7 +58,7 @@ Find the exact swap family your app is implementing, including standard Bitcoin 
 
 Build the quote form and route-selection layer around swaps with helpers for address parsing, supported tokens, swap classification, amount limits, and spendable balances.
 
-**[Utilities ->](/developers/utilities/)**
+**[Utilities →](/developers/utilities/)**
 
 ---
 
@@ -66,7 +66,7 @@ Build the quote form and route-selection layer around swaps with helpers for add
 
 Recover saved swaps from storage and handle the cases where a refund or claim action is still required after restart or interruption.
 
-**[Swap Management ->](/developers/swap-management/)**
+**[Swap Management →](/developers/swap-management/)**
 
 ---
 
@@ -74,6 +74,6 @@ Recover saved swaps from storage and handle the cases where a refund or claim ac
 
 Adapt the SDK to more complex runtimes with manual transaction signing, event subscriptions, storage customization, and advanced swapper configuration.
 
-**[Advanced ->](/developers/advanced/)**
+**[Advanced →](/developers/advanced/)**
 
 ---

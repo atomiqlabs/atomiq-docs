@@ -5,19 +5,19 @@ sidebar_position: 3
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Lightning -> Solana
+# Lightning → Solana
 
-Swap Bitcoin Lightning to Solana tokens. Solana still uses the legacy [HTLC](/overview/core-primitives/htlc/) based Lightning -> smart chain flow. The user pays a Lightning invoice first, then manually initializes and claims the destination-side HTLC on Solana, revealing the secret that lets the LP settle the Lightning payment.
+Swap Bitcoin Lightning to Solana tokens. Solana still uses the legacy [HTLC](/overview/core-primitives/htlc/) based Lightning → smart chain flow. The user pays a Lightning invoice first, then manually initializes and claims the destination-side HTLC on Solana, revealing the secret that lets the LP settle the Lightning payment.
 
-Unlike the newer LP-initiated Lightning -> smart chain protocol used on Starknet and EVM, this legacy Solana flow requires native SOL upfront for the destination transactions and a security deposit. There is no watchtower auto-claim path here: after the Lightning payment is received by the LP, the user must initialize and settle the swap on Solana themselves.
+Unlike the newer LP-initiated Lightning → smart chain protocol used on Starknet and EVM, this legacy Solana flow requires native SOL upfront for the destination transactions and a security deposit. There is no watchtower auto-claim path here: after the Lightning payment is received by the LP, the user must initialize and settle the swap on Solana themselves.
 
 :::info Looking for the newer flow?
-Starknet and EVM use the newer LP-initiated HTLC protocol. See [Lightning -> Smart Chain](../lightning-to-smart-chain).
+Starknet and EVM use the newer LP-initiated HTLC protocol. See [Lightning → Smart Chain](../lightning-to-smart-chain).
 :::
 
 ## Executing the Swap
 
-Here is a full flow for creating and executing the swap in the Lightning -> Solana direction via the `execute()` helper function. The flow is the same for all the cases, with the only difference being how the Lightning payment is sourced.
+Here is a full flow for creating and executing the swap in the Lightning → Solana direction via the `execute()` helper function. The flow is the same for all the cases, with the only difference being how the Lightning payment is sourced.
 
 Uses the [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) swap class.
 
@@ -269,7 +269,7 @@ Getting all swaps that are claimable and claiming them:
 const claimable = await swapper.getClaimableSwaps(
   "SOLANA",                  // Only get claimable swaps on SOLANA
   solanaSigner.getAddress()  // Only get claimable swaps for this destination address
-); // This returns claimable Bitcoin -> Solana and Lightning -> Solana swaps
+); // This returns claimable Bitcoin → Solana and Lightning → Solana swaps
 
 for (const swap of claimable) {
   // All the claimable swap types have the same `claim()` function signature
@@ -280,12 +280,12 @@ for (const swap of claimable) {
 :::info
 It is a good practice to query claimable swaps on your app's startup and either claim them automatically or prompt the user to claim them.
 
-Unlike the newer Lightning -> Smart chain flow, there is no watchtower fallback here. Settlement remains time-limited by the HTLC expiry, so this recovery check should run promptly.
+Unlike the newer Lightning → Smart chain flow, there is no watchtower fallback here. Settlement remains time-limited by the HTLC expiry, so this recovery check should run promptly.
 :::
 
 ## Native SOL Requirements
 
-Legacy Lightning -> Solana swaps require native SOL for both the slashable security deposit and the destination-chain transaction fees.
+Legacy Lightning → Solana swaps require native SOL for both the slashable security deposit and the destination-chain transaction fees.
 
 There is no watchtower claimer bounty in this legacy flow, because settlement is user-driven.
 
@@ -306,12 +306,12 @@ console.log("Commit + claim fee:", (await swap.getCommitAndClaimNetworkFee()).to
 ```
 
 :::warning
-You need enough SOL to cover the legacy deposit requirement and both destination transactions before calling `execute()` or `commitAndClaim()`. This cold-start requirement is specific to the legacy Solana flow and does not exist in the newer Lightning -> Smart chain protocol used on Starknet and EVM.
+You need enough SOL to cover the legacy deposit requirement and both destination transactions before calling `execute()` or `commitAndClaim()`. This cold-start requirement is specific to the legacy Solana flow and does not exist in the newer Lightning → Smart chain protocol used on Starknet and EVM.
 :::
 
 ## LNURL-withdraw
 
-LNURL-withdraw links (`lnurl1...`) can be used as the source of a Lightning -> Smart chain swap, letting the SDK generate a BOLT11 invoice for the quote and submit it to the LNURL-withdraw service automatically when you call [`waitForPayment()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#waitforpayment) or [`execute()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#execute).
+LNURL-withdraw links (`lnurl1...`) can be used as the source of a Lightning → Smart chain swap, letting the SDK generate a BOLT11 invoice for the quote and submit it to the LNURL-withdraw service automatically when you call [`waitForPayment()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#waitforpayment) or [`execute()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#execute).
 
 You can parse LNURLs either with the generic [`SwapperUtils.parseAddress()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#parseaddress) function exposed by the swapper as `swapper.Utils.parseAddress()` or with the specific [`SwapperUtils.getLNURLTypeAndData()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#getlnurltypeanddata) function, which return the [LNURLPay](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLPay) or [LNURLWithdraw](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLWithdraw) object allowing you to read the LNURL's details.
 
@@ -387,6 +387,6 @@ swap.events.on("swapState", () => {
 
 ## API Reference
 
-- [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) - Swap class for Lightning -> Solana
+- [FromBTCLNSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap) - Swap class for Lightning → Solana
 - [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum
 - [FromBTCLNSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/FromBTCLNSwapState) - Swap states

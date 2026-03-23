@@ -43,4 +43,4 @@ HTLC timeout is determined by the **LP** based on lightning invoice's *min\_cltv
 
 ## Swap sequence diagram
 
-![Legacy Bitcoin Lightning -> Smart chain swap process](/img/frombtcln-diagram.svg)
+![Legacy Bitcoin Lightning → Smart chain swap process](/img/frombtcln-diagram.svg)

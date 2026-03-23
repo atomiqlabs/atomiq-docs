@@ -23,7 +23,7 @@ Solana uses a different (legacy) swap protocol. See [BTC to Solana](./solana/btc
 
 ## Executing the Swap
 
-Here is a full flow for creating and executing the swap in the Bitcoin -> Smart chain direction via the `execute()` helper function, uses the [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) swap class:
+Here is a full flow for creating and executing the swap in the Bitcoin → Smart chain direction via the `execute()` helper function, uses the [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) swap class:
 
 ```typescript
 import {SwapAmountType} from "@atomiqlabs/sdk";
@@ -250,7 +250,7 @@ Getting all swaps that are claimable and claiming them:
 const claimable = await swapper.getClaimableSwaps(
   "STARKNET",                   // Only get claimable swaps on STARKNET
   starknetSigner.getAddress()   // Only get claimable swaps for this destination address
-); // This returns all claimable swaps, which could be either Bitcoin -> Smart chain or Lightning -> Smart chain
+); // This returns all claimable swaps, which could be either Bitcoin → Smart chain or Lightning → Smart chain
 
 for (const swap of claimable) {
   // All the claimable swap types have the same `claim()` function signature
@@ -330,6 +330,6 @@ swap.events.on("swapState", () => {
 
 ## API Reference
 
-- [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) - Swap class for Bitcoin -> Smart chain
+- [SpvFromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap) - Swap class for Bitcoin → Smart chain
 - [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum
 - [SpvFromBTCSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/SpvFromBTCSwapState) - Swap states

@@ -175,7 +175,7 @@ Use `skipChecks=true` only when you are executing the quote right away. Do not r
 
 Use the route-specific swap guides to see where each manual transaction step fits into the full swap flow.
 
-**[Swap Tutorials ->](/developers/swaps/)**
+**[Swap Tutorials →](/developers/swaps/)**
 
 ---
 
@@ -183,6 +183,6 @@ Use the route-specific swap guides to see where each manual transaction step fit
 
 Manual transaction signing is commonly paired with recovery flows for past swaps.
 
-**[Swap Management ->](/developers/swap-management/)**
+**[Swap Management →](/developers/swap-management/)**
 
 ---

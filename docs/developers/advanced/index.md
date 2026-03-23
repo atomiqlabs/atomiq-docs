@@ -25,7 +25,7 @@ Most integrations use the advanced features once the standard quote and executio
 
 Use the `txs*()` methods to sign and broadcast smart-chain transactions outside the SDK, for example with hardware wallets, custom custody, or a separate approval layer.
 
-**[Manual Transactions ->](./manual-transactions)**
+**[Manual Transactions →](./manual-transactions)**
 
 ---
 
@@ -33,7 +33,7 @@ Use the `txs*()` methods to sign and broadcast smart-chain transactions outside 
 
 Tune how the swapper is initialized, including RPCs, LP discovery, storage hooks, pricing, runtime flags, and per-chain options.
 
-**[Configuration ->](./configuration)**
+**[Configuration →](./configuration)**
 
 ---
 
@@ -41,7 +41,7 @@ Tune how the swapper is initialized, including RPCs, LP discovery, storage hooks
 
 Subscribe to swap state, LP discovery, and swap-limit updates so UIs and services can react in real time.
 
-**[Events ->](./events)**
+**[Events →](./events)**
 
 ---
 
@@ -49,6 +49,6 @@ Subscribe to swap state, LP discovery, and swap-limit updates so UIs and service
 
 Understand what the SDK persists, how the default browser setup works, and how to provide Node.js, React Native, or custom storage backends.
 
-**[Storage ->](./storage)**
+**[Storage →](./storage)**
 
 ---

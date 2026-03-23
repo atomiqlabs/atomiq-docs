@@ -22,7 +22,7 @@ Solana uses a different (legacy) swap protocol. See [Lightning to Solana](./sola
 
 ## Executing the Swap
 
-Here is a full flow for creating and executing the swap in the Lightning -> Smart chain direction via the `execute()` helper function. The flow is the same for all the cases, with the only difference being how the Lightning payment is sourced.
+Here is a full flow for creating and executing the swap in the Lightning → Smart chain direction via the `execute()` helper function. The flow is the same for all the cases, with the only difference being how the Lightning payment is sourced.
 
 Uses the [FromBTCLNAutoSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap) swap class.
 
@@ -240,7 +240,7 @@ Getting all swaps that are claimable and claiming them:
 const claimable = await swapper.getClaimableSwaps(
   "STARKNET",                   // Only get claimable swaps on STARKNET
   starknetSigner.getAddress()   // Only get claimable swaps for this destination address
-); // This returns all claimable swaps, which could be either Bitcoin -> Smart chain or Lightning -> Smart chain
+); // This returns all claimable swaps, which could be either Bitcoin → Smart chain or Lightning → Smart chain
 
 for (const swap of claimable) {
   // All the claimable swap types have the same `claim()` function signature
@@ -277,7 +277,7 @@ console.log("Gas drop:", swap.getGasDropOutput().toString());
 
 ## LNURL-withdraw
 
-LNURL-withdraw links (`lnurl1...`) can be used as the source of a Lightning -> Smart chain swap, letting the SDK generate a BOLT11 invoice for the quote and submit it to the LNURL-withdraw service automatically when you call [`waitForPayment()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#waitforpayment) or [`execute()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#execute).
+LNURL-withdraw links (`lnurl1...`) can be used as the source of a Lightning → Smart chain swap, letting the SDK generate a BOLT11 invoice for the quote and submit it to the LNURL-withdraw service automatically when you call [`waitForPayment()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#waitforpayment) or [`execute()`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#execute).
 
 You can parse LNURLs either with the generic [`SwapperUtils.parseAddress()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#parseaddress) function exposed by the swapper as `swapper.Utils.parseAddress()` or with the specific [`SwapperUtils.getLNURLTypeAndData()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#getlnurltypeanddata) function, which return the [LNURLPay](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLPay) or [LNURLWithdraw](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLWithdraw) object allowing you to read the LNURL's details.
 
@@ -370,6 +370,6 @@ swap.events.on("swapState", () => {
 
 ## API Reference
 
-- [FromBTCLNAutoSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap) - Swap class for Lightning -> Smart chain
+- [FromBTCLNAutoSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap) - Swap class for Lightning → Smart chain
 - [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum
 - [FromBTCLNAutoSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/FromBTCLNAutoSwapState) - Swap states

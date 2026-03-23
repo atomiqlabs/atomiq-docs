@@ -5,19 +5,19 @@ sidebar_position: 1
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Bitcoin -> Solana
+# Bitcoin → Solana
 
-Swap Bitcoin L1 (on-chain) to Solana tokens. Solana still uses the legacy [PrTLC](/overview/core-primitives/prtlc/) based Bitcoin -> smart chain flow, verified through the on-chain [Bitcoin light client](/overview/core-primitives/bitcoin-light-client/). Unlike the newer [UTXO-controlled vault](/overview/core-primitives/utxo-controlled-vault/) protocol used on Starknet and EVM, the user must first initialize a destination-side swap escrow on Solana and lock a SOL deposit before sending BTC.
+Swap Bitcoin L1 (on-chain) to Solana tokens. Solana still uses the legacy [PrTLC](/overview/core-primitives/prtlc/) based Bitcoin → smart chain flow, verified through the on-chain [Bitcoin light client](/overview/core-primitives/bitcoin-light-client/). Unlike the newer [UTXO-controlled vault](/overview/core-primitives/utxo-controlled-vault/) protocol used on Starknet and EVM, the user must first initialize a destination-side swap escrow on Solana and lock a SOL deposit before sending BTC.
 
 The user first pre-locks LP funds in the Solana-side PrTLC, sends the exact BTC amount to a dedicated swap address, and then a watchtower or the user proves the confirmed Bitcoin payment on Solana to claim the output. Because the user must post a security deposit and watchtower bounty in SOL on swap initation, this legacy flow has a cold-start requirement that the newer protocol avoids.
 
 :::info Looking for the newer flow?
-Starknet and EVM use the newer UTXO-controlled vault protocol. See [Bitcoin -> Smart Chain](../btc-to-smart-chain).
+Starknet and EVM use the newer UTXO-controlled vault protocol. See [Bitcoin → Smart Chain](../btc-to-smart-chain).
 :::
 
 ## Executing the Swap
 
-Here is a full flow for creating and executing the swap in the Bitcoin -> Solana direction via the `execute()` helper function, using the [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap) swap class:
+Here is a full flow for creating and executing the swap in the Bitcoin → Solana direction via the `execute()` helper function, using the [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap) swap class:
 
 ```typescript
 import {SwapAmountType} from "@atomiqlabs/sdk";
@@ -246,7 +246,7 @@ Getting all swaps that are claimable and claiming them:
 const claimable = await swapper.getClaimableSwaps(
   "SOLANA",                  // Only get claimable swaps on SOLANA
   solanaSigner.getAddress()  // Only get claimable swaps for this destination address
-); // This returns claimable Bitcoin -> Solana and Lightning -> Solana swaps
+); // This returns claimable Bitcoin → Solana and Lightning → Solana swaps
 
 for (const swap of claimable) {
   // All the claimable swap types have the same `claim()` function signature
@@ -257,12 +257,12 @@ for (const swap of claimable) {
 :::info
 It is a good practice to query claimable swaps on your app's startup and either claim them automatically or prompt the user to claim them.
 
-This legacy flow is more time-sensitive than the newer Bitcoin -> Smart chain protocol, because the LP can refund the PrTLC after expiry if no successful claim happens in time.
+This legacy flow is more time-sensitive than the newer Bitcoin → Smart chain protocol, because the LP can refund the PrTLC after expiry if no successful claim happens in time.
 :::
 
 ## Native SOL Requirements
 
-Legacy Bitcoin -> Solana swaps require native SOL for both the pre-funded destination-side security deposit, claimer bounty and the Solana transaction fees needed to open the PrTLC.
+Legacy Bitcoin → Solana swaps require native SOL for both the pre-funded destination-side security deposit, claimer bounty and the Solana transaction fees needed to open the PrTLC.
 
 - `getSecurityDeposit()`: the slashable SOL deposit that the LP can keep if the user never sends the Bitcoin payment after initiating the swap on Solana.
 - `getClaimerBounty()`: the SOL reward reserved for watchtowers that claim the swap automatically after Bitcoin confirmation.
@@ -283,7 +283,7 @@ console.log("Total locked deposit:", swap.getTotalDeposit().toString());
 ```
 
 :::warning
-You need enough SOL to cover the legacy deposit requirement and the destination-chain initialization fee before calling `commit()` or `execute()`. This cold-start requirement is specific to the legacy Solana flow and does not exist in the newer Bitcoin -> Smart chain protocol used on Starknet and EVM.
+You need enough SOL to cover the legacy deposit requirement and the destination-chain initialization fee before calling `commit()` or `execute()`. This cold-start requirement is specific to the legacy Solana flow and does not exist in the newer Bitcoin → Smart chain protocol used on Starknet and EVM.
 :::
 
 ## Swap States
@@ -324,6 +324,6 @@ swap.events.on("swapState", () => {
 
 ## API Reference
 
-- [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap) - Swap class for Bitcoin -> Solana
+- [FromBTCSwap](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap) - Swap class for Bitcoin → Solana
 - [SwapAmountType](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapAmountType) - Amount type enum
 - [FromBTCSwapState](/sdk-reference/api/atomiq-sdk/src/enumerations/FromBTCSwapState) - Swap states

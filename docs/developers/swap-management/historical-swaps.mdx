@@ -106,27 +106,27 @@ import {
 const swap = await swapper.getSwapById(swapId);
 
 if (isSwapType(swap, SwapType.TO_BTC)) {
-  const toBtcSwap: ToBTCSwap = swap; // Smart chain -> Bitcoin swap
+  const toBtcSwap: ToBTCSwap = swap; // Smart chain → Bitcoin swap
 }
 
 if (isSwapType(swap, SwapType.TO_BTCLN)) {
-  const toBtcLnSwap: ToBTCLNSwap = swap; // Smart chain -> Lightning swap
+  const toBtcLnSwap: ToBTCLNSwap = swap; // Smart chain → Lightning swap
 }
 
 if (isSwapType(swap, SwapType.SPV_FROM_BTC)) {
-  const spvFromBtcSwap: SpvFromBTCSwap = swap; // Bitcoin -> Smart chain swap
+  const spvFromBtcSwap: SpvFromBTCSwap = swap; // Bitcoin → Smart chain swap
 }
 
 if (isSwapType(swap, SwapType.FROM_BTCLN_AUTO)) {
-  const fromBtcLnAutoSwap: FromBTCLNAutoSwap = swap; // Lightning -> Smart chain swap
+  const fromBtcLnAutoSwap: FromBTCLNAutoSwap = swap; // Lightning → Smart chain swap
 }
 
 if (isSwapType(swap, SwapType.FROM_BTC)) {
-  const fromBtcSwap: FromBTCSwap = swap; // Legacy Bitcoin -> Solana swap
+  const fromBtcSwap: FromBTCSwap = swap; // Legacy Bitcoin → Solana swap
 }
 
 if (isSwapType(swap, SwapType.FROM_BTCLN)) {
-  const fromBtcLnSwap: FromBTCLNSwap = swap; // Legacy Lightning -> Solana swap
+  const fromBtcLnSwap: FromBTCLNSwap = swap; // Legacy Lightning → Solana swap
 }
 ```
 

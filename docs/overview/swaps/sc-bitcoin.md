@@ -46,4 +46,4 @@ The PrTLC escrow asserts that the Bitcoin transaction uses the pre-agreed to non
 
 ## Swap sequence diagram
 
-![Smart chain -> Bitcoin on-chain swap process](/img/tobtc-diagram.svg)
+![Smart chain → Bitcoin on-chain swap process](/img/tobtc-diagram.svg)

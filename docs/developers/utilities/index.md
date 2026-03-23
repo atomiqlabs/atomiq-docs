@@ -21,7 +21,7 @@ A typical integration uses these utilities in roughly this order:
 
 Parse destination and source inputs such as Bitcoin addresses, BOLT11 invoices, LNURLs, Lightning addresses, and smart-chain addresses before creating a quote.
 
-**[Address Parser ->](./address-parser)**
+**[Address Parser →](./address-parser)**
 
 ---
 
@@ -29,7 +29,7 @@ Parse destination and source inputs such as Bitcoin addresses, BOLT11 invoices, 
 
 Discover which source and destination tokens are currently swappable and constrain token selectors to valid routes.
 
-**[Supported Tokens ->](./supported-tokens)**
+**[Supported Tokens →](./supported-tokens)**
 
 ---
 
@@ -37,7 +37,7 @@ Discover which source and destination tokens are currently swappable and constra
 
 Inspect which swap protocol a token pair uses and whether that route supports capabilities such as gas drop or requires a wallet on a specific side.
 
-**[Swap Types ->](./swap-types)**
+**[Swap Types →](./swap-types)**
 
 ---
 
@@ -45,7 +45,7 @@ Inspect which swap protocol a token pair uses and whether that route supports ca
 
 Read route-specific minimum and maximum bounds so your UI can validate amounts and react to changing LP limits.
 
-**[Swap Limits ->](./swap-limits)**
+**[Swap Limits →](./swap-limits)**
 
 ---
 
@@ -53,6 +53,6 @@ Read route-specific minimum and maximum bounds so your UI can validate amounts a
 
 Estimate how much can actually be swapped after fees, both for smart-chain wallets and for Bitcoin on-chain balances.
 
-**[Wallet Balance ->](./wallet-balance)**
+**[Wallet Balance →](./wallet-balance)**
 
 ---

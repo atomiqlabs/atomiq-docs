@@ -14,7 +14,7 @@ Both parties sign with `SIGHASH_ALL`, committing to the full transaction — so 
 
 Once the transaction gets enough confirmations, anyone (a [watchtower](/overview/actors#watchtower), the LP, or the user themselves) can submit the transaction data to the smart chain, where the vault verifies it through the light client and pays out the tokens to the user. Watchtowers earn a small reward for this service, but they are purely a UX convenience — the user can always claim independently.
 
-![Diagram showcasing a UTXO-controlled vault based Bitcoin -> Smart chain swap](/img/utxo-swap-diagram.svg)
+![Diagram showcasing a UTXO-controlled vault based Bitcoin → Smart chain swap](/img/utxo-swap-diagram.svg)
 
 ## Liquidity fronting
 
@@ -66,4 +66,4 @@ Liquidity fronting is not yet available on mainnet nor testnet
 
 ## Swap sequence diagram
 
-![UTXO-controlled vault based Bitcoin -> Smart chain flow diagram](/img/frombtc-new-swap-flow-diagram.svg)
+![UTXO-controlled vault based Bitcoin → Smart chain flow diagram](/img/frombtc-new-swap-flow-diagram.svg)
