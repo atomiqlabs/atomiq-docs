@@ -159,7 +159,7 @@ const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
       rpcUrl: citreaRpc, // Can also pass JsonRpcProvider object
     }
   },
-  bitcoinNetwork: BitcoinNetwork.TESTNET3
+  bitcoinNetwork: BitcoinNetwork.TESTNET4
 });
 
 await swapper.init();
@@ -194,6 +194,7 @@ npm install --save \
 Wrap your app with the wallet adapter providers:
 
 ```tsx
+import { useMemo } from "react";
 import { ConnectionProvider, WalletProvider, useAnchorWallet } from "@solana/wallet-adapter-react";
 import { WalletModalProvider, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import "@solana/wallet-adapter-react-ui/styles.css";
@@ -246,7 +247,7 @@ npm install --save \
 Connect the wallet and create a signer:
 
 ```tsx
-import { connect, disconnect } from "@starknet-io/get-starknet"
+import { connect, getStarknet } from "@starknet-io/get-starknet";
 import { WalletAccount } from "starknet";
 import { StarknetBrowserSigner } from "@atomiqlabs/chain-starknet";
 
@@ -282,15 +283,16 @@ npm install --save @rainbow-me/rainbowkit \
 Set up Wagmi with your EVM chain and wrap your app:
 
 ```tsx
+import { useEffect, useState } from "react";
 import { getDefaultConfig, RainbowKitProvider, ConnectButton } from '@rainbow-me/rainbowkit';
 import { WagmiProvider, useAccount } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserProvider } from "ethers";
 import { EVMBrowserSigner } from "@atomiqlabs/chain-evm";
 
-// Define your chain (example: Citrea)
+// Define your chain (example: Citrea Mainnet)
 const citreaChain = {
-  id: 5115,
+  id: 4114,
   name: "Citrea",
   nativeCurrency: { name: "cBTC", symbol: "cBTC", decimals: 18 },
   rpcUrls: { default: { http: ["https://rpc.mainnet.citrea.xyz"] } },
@@ -316,12 +318,12 @@ function YourApp() {
       setWallet(undefined);
       return;
     }
-    const browserProvider = new BrowserProvider(provider);
-    browserProvider.getSigner().then(signer => {
+    connector.getProvider().then(provider => {
+      return new BrowserProvider(provider).getSigner();
+    }).then(signer => {
       setWallet(new EVMBrowserSigner(signer, signer.address));
-    })
-  });
-  const wallet = useMemo(() => new EVMBrowserSigner(anchorWallet), [anchorWallet]);
+    });
+  }, [connector, isConnected]);
 
   return (
     <div>

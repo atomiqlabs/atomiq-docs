@@ -24,7 +24,7 @@ The **User** needs to make sure that the **LP** cannot use an already existing b
 The PrTLC escrow asserts that the Bitcoin transaction uses the pre-agreed to nonce by parsing the *nSequence* and *locktime* fields.
 :::
 
-### c) Successful swap
+### a) Successful swap
 
 4. **LP** observes the creation of PrTLC on the Smart chain and proceeds to send a Bitcoin transaction, paying out BTC funds to the **User**
 
