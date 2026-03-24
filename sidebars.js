@@ -10,6 +10,7 @@ const sidebars = {
     {
       type: 'category',
       label: 'Core Primitives',
+      link: { type: 'doc', id: 'overview/core-primitives/index' },
       items: [
         'overview/core-primitives/htlc',
         'overview/core-primitives/bitcoin-light-client',
