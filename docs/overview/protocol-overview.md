@@ -22,7 +22,7 @@ These primitives eliminate liveness dependencies for users—anyone, including s
 
 ## Lightning Network Integration
 
-For swaps involving the Bitcoin Lightning Network, Atomiq incorporates established [HTLC (hash-time locked contracts)](/overview/core-primitives/htlc/) based mechanisms, similar to submarine swaps to ensure atomicity in a similar trust-minimized manner.
+For swaps involving the Bitcoin Lightning Network, Atomiq incorporates established [Hash-time locked contracts (HTLC)](/overview/core-primitives/htlc/) based mechanisms, similar to submarine swaps to ensure atomicity in a similar trust-minimized manner.
 
 While HTLC swaps are not an ideal construction for cross-chain swaps, using it with the lightning network at least partially mitigates their drawbacks as the user livneness requirement is significantly reduced thanks to Lightning’s fast settlement times—payments are typically confirmed in seconds.
 

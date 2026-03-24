@@ -34,3 +34,5 @@ Integrate trustless Bitcoin swaps into your application using the Atomiq SDK. Bu
 Become a Liquidity Provider by running an LP node. Earn fees by providing quotes and settling swaps, while maintaining full control of your funds through non-custodial smart contracts.
 
 **[How to become an LP →](guides/lps/)**
+
+---

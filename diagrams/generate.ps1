@@ -5,3 +5,6 @@
 & 'C:\Program Files\draw.io/draw.io.exe' -x -b 20 -f svg -o "../static/img/tobtcln-diagram.svg" tobtcln-diagram.drawio
 & 'C:\Program Files\draw.io/draw.io.exe' -x -b 20 -f svg -o "../static/img/frombtc-new-swap-flow-diagram.svg" frombtc-new-swap-flow-diagram.drawio
 & 'C:\Program Files\draw.io/draw.io.exe' -x -b 20 -f svg -o "../static/img/nostr-frombtcln-diagram.svg" nostr-frombtcln-diagram.drawio
+
+& 'C:\Program Files\draw.io/draw.io.exe' -x -b 20 -f svg -o "../static/img/rfq.svg" rfq.drawio
+& 'C:\Program Files\draw.io/draw.io.exe' -x -b 20 -f svg -o "../static/img/atomiq-overview-diagrams.svg" atomiq-overview-diagrams.drawio
