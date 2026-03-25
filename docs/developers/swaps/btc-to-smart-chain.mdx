@@ -37,7 +37,8 @@ const swap = await swapper.swap(
   undefined,                    // Source address is not used for BTC source swaps
   starknetSigner.getAddress(),  // Destination smart-chain address
   {
-    gasAmount: 0n               // Optional: request native destination token as gas drop
+    gasAmount: "0"              // Optional: request native destination token as gas drop
+    // For additional options checks the `Swap Options` section
   }
 ); // Type gets inferred as SpvFromBTCSwap
 
@@ -106,7 +107,7 @@ const swap = await swapper.swap(
   undefined,
   starknetSigner.getAddress(),
   {
-    gasAmount: 0n
+    gasAmount: "0"
   }
 );
 
@@ -144,7 +145,7 @@ const swap = await swapper.swap(
   undefined,
   starknetSigner.getAddress(),
   {
-    gasAmount: 0n
+    gasAmount: "0"
   }
 );
 
@@ -191,7 +192,7 @@ const swap = await swapper.swap(
   undefined,
   starknetSigner.getAddress(),
   {
-    gasAmount: 0n
+    gasAmount: "0"
   }
 );
 
@@ -277,7 +278,7 @@ const swap = await swapper.swap(
   undefined,
   starknetSigner.getAddress(),
   {
-    gasAmount: 1_000_000_000_000_000_000n // Request 1 STRK as gas drop
+    gasAmount: "1" // Request 1 STRK as gas drop
   }
 );
 
@@ -287,6 +288,17 @@ console.log("Gas drop:", swap.getGasDropOutput().toString());
 :::warning
 When already swapping to the native token of the respective destination chain (i.e. STRK on Starknet, cBTC on Citrea, etc.) don't specify the `gasAmount`, as LPs usually don't hold the necessary gas drop liquidity for those tokens! This will lead to errors during quoting and make it unable for you to request the quote.
 :::
+
+## Swap Options
+
+The overview of possible options you can pass to the swap via the `options` argument of `swapper.swap(...)`. For Bitcoin → Smart Chain swaps these are useful when you want to request a gas drop, cap the accepted Bitcoin fee rate, or tune automatic-settlement incentives.
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gasAmount` | `bigint \| string` | Optional extra native-token gas drop to receive on the destination chain. `bigint` is in base units, `string` is a human-readable decimal amount. Do not use it when swapping to the native token itself.<br />Default: no gas drop. |
+| `maxAllowedBitcoinFeeRate` | `number` | Upper bound, in sats/vB, on the LP-required minimum Bitcoin fee rate for the funding transaction.<br />Default: computed dynamically as `10 + currentBitcoinFeeRate * 1.5`. |
+| `unsafeZeroWatchtowerFee` | `boolean` | Attaches zero watchtower fee to the swap. This can make automatic settlement unattractive, so you may need to settle manually with `swap.claim(...)`.<br />Default: `false`. |
+| `feeSafetyFactor` | `number` | Multiplier used when estimating the watchtower fee. Higher values make automatic settlement more attractive.<br />Default: `1.25`. |
 
 ## Swap States
 

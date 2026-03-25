@@ -42,7 +42,8 @@ const swap = await swapper.swap(
   undefined,                    // Source address is not used for standard Lightning source swaps
   starknetSigner.getAddress(),  // Destination smart-chain address
   {
-    gasAmount: 0n               // Optional: request native destination token as gas drop
+    gasAmount: "0"               // Optional: request native destination token as gas drop
+    // For additional options checks the `Swap Options` section
   }
 ); // Type gets inferred as FromBTCLNAutoSwap
 
@@ -94,7 +95,8 @@ const swap = await swapper.swap(
   undefined,
   starknetSigner.getAddress(),
   {
-    gasAmount: 0n               // Optional: request native destination token as gas drop
+    gasAmount: "0"               // Optional: request native destination token as gas drop
+    // For additional options checks the `Swap Options` section
   }
 );
 
@@ -140,7 +142,8 @@ const swap = await swapper.swap(
   undefined,
   starknetSigner.getAddress(),
   {
-    gasAmount: 0n               // Optional: request native destination token as gas drop
+    gasAmount: "0"               // Optional: request native destination token as gas drop
+    // For additional options checks the `Swap Options` section
   }
 );
 
@@ -267,7 +270,7 @@ const swap = await swapper.swap(
   undefined,
   starknetSigner.getAddress(),
   {
-    gasAmount: 1_000_000_000_000_000_000n // Request 1 STRK as gas drop
+    gasAmount: "1" // Request 1 STRK as gas drop
   }
 );
 
@@ -331,6 +334,20 @@ if (!automaticallySettled) {
 :::tip
 If you created a normal Lightning quote first and later want to fund it from an LNURL-withdraw source instead, call [`settleWithLNURLWithdraw(lnurl)`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap#settlewithlnurlwithdraw) before or during `waitForPayment()`/`execute()`. This is useful when you want to display a standard invoice QR code and also allow LNURL-withdraw or NFC-card settlement.
 :::
+
+## Swap Options
+
+The overview of possible options you can pass to the swap via the `options` argument of `swapper.swap(...)`. For Lightning → Smart Chain swaps these are useful when you want to request a gas drop, attach Lightning invoice metadata, or adjust automatic-settlement and safety-check behavior.
+
+| Name | Type | Description |
+|------|------|-------------|
+| `paymentHash` | `Buffer \| string` | Lets you supply your own payment hash instead of letting the SDK generate it. When set, the swap will not settle automatically until you later provide the preimage/secret manually during claim or waiting.<br />Default: generated automatically by the SDK. |
+| `description` | `string` | Optional Lightning invoice description. Keep it below 500 UTF-8 bytes.<br />Default: none. |
+| `descriptionHash` | `Buffer \| string` | Optional Lightning invoice description hash, useful when the invoice is exposed through LNURL-pay.<br />Default: none. |
+| `gasAmount` | `bigint \| string` | Optional extra native-token gas drop to receive on the destination chain. `bigint` is in base units, `string` is a human-readable decimal amount. Do not use it when swapping to the native token itself.<br />Default: no gas drop. |
+| `unsafeSkipLnNodeCheck` | `boolean` | Skips checking whether the LP's Lightning node has enough channel liquidity for the swap.<br />Default: `false`. |
+| `unsafeZeroWatchtowerFee` | `boolean` | Attaches zero watchtower fee to the swap. This can prevent automatic settlement and leave you with a manual `swap.claim(...)` flow.<br />Default: `false`. |
+| `feeSafetyFactor` | `number` | Multiplier used when estimating the watchtower fee. Higher values make automatic settlement more attractive.<br />Default: `1.25`. |
 
 ## Swap States
 

@@ -87,7 +87,10 @@ const swap: ToBTCLNSwap = await swapper.swap(
   undefined,                      // Amount is determined by the passed BOLT11 lightning invoice
   SwapAmountType.EXACT_OUT,       // When swapping to BOLT11 lightning invoice, only EXACT_OUT mode is supported
   starknetSigner.getAddress(),    // Source signer address
-  "lnbc10u1p..."                  // BOLT11 lightning invoice, needs to have a fixed amount of sats!
+  "lnbc10u1p...",                 // BOLT11 lightning invoice, needs to have a fixed amount of sats!
+  {
+    // For additional swap options checks the `Swap Options` section
+  }
 ); // Type gets infered as ToBTCLNSwap (for Lightning)
 
 // Execute the swap
@@ -150,6 +153,7 @@ const swap: ToBTCLNSwap = await swapper.swap(
   "lnurl1...",                      // LNURL-pay link or Lightning address ("user@example.com")
   {
     comment: "Payment for coffee"   // Optional comment
+    // For additional swap options checks the `Swap Options` section
   }
 ); // Type gets infered as ToBTCLNSwap (for Lightning)
 
@@ -352,6 +356,28 @@ const swap = await swapper.swap(
 
 ... // Handle swap execution
 ```
+
+## Swap Options
+
+The overview of possible options you can pass to the swap via the `options` argument of `swapper.swap(...)`. For Bitcoin on-chain swaps there are currently no quote creation options, while Lightning swaps let you fine-tune Lightning routing and LNURL-pay behavior.
+
+<Tabs groupId="swap-options-direction">
+<TabItem value="smart-chain-to-btc" label="Smart chain → BTC">
+
+> No swap creation options are currently exposed for this swap type.
+
+</TabItem>
+<TabItem value="smart-chain-to-lightning" label="Smart chain → Lightning" default>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `expirySeconds` | `number` | HTLC expiration timeout, in seconds, offered to the LP. Larger values allow more Lightning routes, but also keep funds locked for longer if the LP does not cooperate.<br />Default: 5 days. |
+| `maxRoutingFeePercentage` | `number` | Caps the percentage component of the maximum Lightning routing fee.<br />Default: `0.2` (0.2% of the swap value). |
+| `maxRoutingBaseFee` | `bigint` | Caps the base component of the maximum Lightning routing fee, in sats.<br />Default: `10` sats. |
+| `comment` | `string` | Optional LNURL-pay comment. Only applies when the destination is an LNURL-pay endpoint and must fit the service's `commentAllowed` limit.<br />Default: none. |
+
+</TabItem>
+</Tabs>
 
 ## Swap States
 
