@@ -114,7 +114,7 @@ If you already have a simple key-value store and do not want to implement both i
 `Factory.newSwapper()` expects two storage hooks:
 
 - `swapStorage(storageName)` for the indexed swap database, returning an [`IUnifiedStorage`](/sdk-reference/api/atomiq-sdk/src/interfaces/IUnifiedStorage) implementation.
-- `chainStorageCtor(storageName)` for the chain-specific key-value storage, returning an [`IStorageManager<T>`](/sdk-reference/api/atomiq-base/src/interfaces/IStorageManager) implementation.
+- `chainStorageCtor(storageName)` for the chain-specific key-value storage, returning an [`IStorageManager<T>`](/sdk-reference/api/atomiq-sdk/src/interfaces/IStorageManager) implementation.
 
 The `storageName` argument is the SDK namespace for that storage instance, which depends on the current environment (i.e. mainnet, testnet or regtest). Depending on your backend, you can use it as a table name, collection name, partition key prefix, tenant key, or any other logical namespace.
 
@@ -257,7 +257,7 @@ As with the save methods, the `All` variants should have the same semantics as r
 
 ### `IStorageManager<T>`
 
-`chainStorageCtor` must return an [`IStorageManager<T>`](/sdk-reference/api/atomiq-base/src/interfaces/IStorageManager) implementation for general key-value storage used by the chain integrations. This is not the swap history database. It is a typed key-value store for auxiliary chain data.
+`chainStorageCtor` must return an [`IStorageManager<T>`](/sdk-reference/api/atomiq-sdk/src/interfaces/IStorageManager) implementation for general key-value storage used by the chain integrations. This is not the swap history database. It is a typed key-value store for auxiliary chain data.
 
 The key behavioral requirement here is that `loadData()` must load every stored record for that namespace, recreate typed objects, and populate the in-memory `data` map. Chain integrations may call `loadData()` once during init and then read directly from `storage.data` afterwards.
 

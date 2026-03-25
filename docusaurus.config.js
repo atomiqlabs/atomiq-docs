@@ -23,6 +23,7 @@ const sharedTypedocOptions = {
   hideGroupHeadings: true,
   hideBreadcrumbs: true,
   useCodeBlocks: true,
+  useCustomAnchors: true,
   parametersFormat: 'table',
   typeDeclarationFormat: 'table',
   propertyMembersFormat: 'list',
