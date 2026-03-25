@@ -35,7 +35,10 @@ const swap = await swapper.swap(
   10_000n,                    // Amount in sats
   SwapAmountType.EXACT_IN,
   undefined,                  // Source address is not used for standard Lightning source swaps
-  solanaSigner.getAddress()   // Destination Solana address
+  solanaSigner.getAddress(),  // Destination Solana address
+  {
+    // For additional swap options checks the `Swap Options` section
+  }
 ); // Type gets inferred as FromBTCLNSwap
 
 // Inspect the Lightning invoice and native-SOL requirements
@@ -89,7 +92,10 @@ const swap = await swapper.swap(
   10_000n,
   SwapAmountType.EXACT_IN,
   undefined,
-  solanaSigner.getAddress()
+  solanaSigner.getAddress(),
+  {
+    // For additional swap options checks the `Swap Options` section
+  }
 );
 
 // Show the Lightning invoice or `lightning:` deeplink to the user
@@ -132,7 +138,10 @@ const swap = await swapper.swap(
   10_000n,
   SwapAmountType.EXACT_IN,
   undefined,
-  solanaSigner.getAddress()
+  solanaSigner.getAddress(),
+  {
+    // For additional swap options checks the `Swap Options` section
+  }
 );
 
 await swap.execute(
@@ -348,6 +357,17 @@ await swap.execute(
 :::tip
 If you created a normal Lightning quote first and later want to fund it from an LNURL-withdraw source instead, call [`settleWithLNURLWithdraw(lnurl)`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNSwap#settlewithlnurlwithdraw) before or during `waitForPayment()`/`execute()`. This is useful when you want to display a standard invoice QR code and also allow LNURL-withdraw or NFC-card settlement.
 :::
+
+## Swap Options
+
+The overview of possible options you can pass to the swap via the `options` argument of `swapper.swap(...)`. These let you control Lightning invoice metadata and the LP node liquidity check during quote creation.
+
+| Name | Type | Description |
+|------|------|-------------|
+| `paymentHash` | `Buffer \| string` | Lets you supply your own payment hash instead of letting the SDK generate it. If you do this, you must later reveal the preimage manually during claim.<br />Default: generated automatically by the SDK. |
+| `description` | `string` | Optional Lightning invoice description. Keep it below 500 UTF-8 bytes.<br />Default: none. |
+| `descriptionHash` | `Buffer \| string` | Optional Lightning invoice description hash, useful when the invoice is exposed through LNURL-pay.<br />Default: none. |
+| `unsafeSkipLnNodeCheck` | `boolean` | Skips checking whether the LP's Lightning node has enough channel liquidity for the swap.<br />Default: `false`. |
 
 ## Swap States
 

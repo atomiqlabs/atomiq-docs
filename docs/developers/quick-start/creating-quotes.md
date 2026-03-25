@@ -2,6 +2,9 @@
 sidebar_position: 2
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Creating Quotes
 
 Every swap starts with a quote. Call `swapper.swap()` to create one — this contacts LPs, finds the best rate, and returns a swap object you can inspect before executing the swap.
@@ -16,7 +19,7 @@ const swap = await swapper.swap(
   amountType,         // SwapAmountType.EXACT_IN (specifying exact input amount) or SwapAmountType.EXACT_OUT (specifying exact output amount)
   sourceAddress,      // Source wallet address [not required for BTC/Lightning source]
   destinationAddress, // Destination wallet address, Lightning invoice, or LNURL
-  options?            // Optional: { gasAmount }
+  options?            // Optional additional options, e.g. { gasAmount }
 );
 ```
 
@@ -136,6 +139,10 @@ const swap = await swapper.swap(
 
 ## Gas Drop
 
+:::info
+This is so far not supported on **Solana**, which still uses legacy swap protocol.
+:::
+
 When swapping from Bitcoin on-chain or lightning to smart chains (i.e. Starknet, EVM chains) and swapping to non-native token (e.g. WBTC on Starknet), you can additionally request to receive some amount of native token along with your swap - this ensures that you can have some native token ready to cover gas fees when doing your first transactions on the destination chain.
 
 ```typescript
@@ -146,7 +153,7 @@ const swap = await swapper.swap(
   undefined,                                // Not required when using Bitcoin or Lightning as source
   starknetSigner.getAddress(),              // Destination Starknet signer address
   {
-    gasAmount: 1_000_000_000_000_000_000n   // Request 1 STRK in addition as gas drop
+    gasAmount: "1"   // Request 1 STRK in addition as gas drop
   }
 );
 
@@ -155,13 +162,75 @@ swap.getGasDropOutput()                     // Amount of native token gas drop
 
 When using `SwapAmountType.EXACT_IN`, the value of the gas drop gets deducted from the output token amount by the LP, while with `SwapAmountType.EXACT_OUT` the gas token value gets added to the input token amount.
 
-:::warning
-When already swapping to the native token of the respective destination chain (i.e. STRK on Starknet, cBTC on Citrea, etc.) don't specify the `gasAmount`, as LPs usually don't hold the necessary gas drop liquidity for those tokens! This will lead to errors during quoting and make it unable for you to request the quote.
-:::
+## Swap Options
+
+The `options` argument of `swapper.swap(...)` lets you fine-tune how a quote is created. In most cases you can omit it entirely, but it is useful when you want to request a gas drop, customize Lightning routing limits, attach invoice metadata, or relax certain safety checks for advanced flows.
+
+The exact option set depends on the swap type, so the overview below groups the available non-deprecated options by swap direction.
 
 :::info
-This is so far not supported on **Solana**, which still uses legacy swap protocol.
+Swaps from Bitcoin on-chain (L1) and Lightning (L2) to **Solana** still use legacy protocols and are grouped together in the `Legacy (Solana)` tab.
 :::
+
+<Tabs groupId="quote-options">
+  <TabItem value="smart-chain-to-btc" label="Smart chain → BTC">
+
+> No swap creation options are currently exposed for this swap type.
+
+  </TabItem>
+  <TabItem value="smart-chain-to-lightning" label="Smart chain → Lightning" default>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `expirySeconds` | `number` | HTLC expiration timeout, in seconds, offered to the LP. Larger values allow more Lightning routes, but also keep funds locked for longer if the LP does not cooperate.<br />Default: 5 days. |
+| `maxRoutingFeePercentage` | `number` | Caps the percentage component of the maximum Lightning routing fee.<br />Default: `0.2` (0.2% of the swap value). |
+| `maxRoutingBaseFee` | `bigint` | Caps the base component of the maximum Lightning routing fee, in sats.<br />Default: `10` sats. |
+| `comment` | `string` | Optional LNURL-pay comment. Only applies when the destination is an LNURL-pay endpoint and must fit the service's `commentAllowed` limit.<br />Default: none. |
+
+  </TabItem>
+  <TabItem value="btc-to-smart-chain" label="BTC → Smart chain">
+
+| Name | Type | Description |
+|------|------|-------------|
+| `gasAmount` | `bigint \| string` | Optional extra native-token gas drop to receive on the destination chain. `bigint` is in base units, `string` is a human-readable decimal amount. Do not use it when swapping to the native token itself.<br />Default: no gas drop. |
+| `maxAllowedBitcoinFeeRate` | `number` | Upper bound, in sats/vB, on the LP-required minimum Bitcoin fee rate for the funding transaction.<br />Default: computed dynamically as `10 + currentBitcoinFeeRate * 1.5`. |
+| `unsafeZeroWatchtowerFee` | `boolean` | Attaches zero watchtower fee to the swap. This can make automatic settlement unattractive, so you may need to settle manually with `swap.claim(...)`.<br />Default: `false`. |
+| `feeSafetyFactor` | `number` | Multiplier used when estimating the watchtower fee. Higher values make automatic settlement more attractive.<br />Default: `1.25`. |
+
+  </TabItem>
+  <TabItem value="lightning-to-smart-chain" label="Lightning → Smart chain">
+
+| Name | Type | Description |
+|------|------|-------------|
+| `paymentHash` | `Buffer \| string` | Lets you supply your own payment hash instead of letting the SDK generate it. When set, the swap will not settle automatically until you later provide the preimage/secret manually during claim or waiting.<br />Default: generated automatically by the SDK. |
+| `description` | `string` | Optional Lightning invoice description. Keep it below 500 UTF-8 bytes.<br />Default: none. |
+| `descriptionHash` | `Buffer \| string` | Optional Lightning invoice description hash, useful when the invoice is exposed through LNURL-pay.<br />Default: none. |
+| `gasAmount` | `bigint \| string` | Optional extra native-token gas drop to receive on the destination chain. `bigint` is in base units, `string` is a human-readable decimal amount. Do not use it when swapping to the native token itself.<br />Default: no gas drop. |
+| `unsafeSkipLnNodeCheck` | `boolean` | Skips checking whether the LP's Lightning node has enough channel liquidity for the swap.<br />Default: `false`. |
+| `unsafeZeroWatchtowerFee` | `boolean` | Attaches zero watchtower fee to the swap. This can prevent automatic settlement and leave you with a manual `swap.claim(...)` flow.<br />Default: `false`. |
+| `feeSafetyFactor` | `number` | Multiplier used when estimating the watchtower fee. Higher values make automatic settlement more attractive.<br />Default: `1.25`. |
+
+  </TabItem>
+  <TabItem value="legacy-solana" label="Legacy (Solana)">
+
+<h3>BTC → Solana</h3>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `unsafeZeroWatchtowerFee` | `boolean` | Attaches zero watchtower fee to the swap. This can make automatic settlement unattractive, so you may need to settle manually with `swap.claim(...)`.<br />Default: `false`. |
+| `feeSafetyFactor` | `number \| bigint` | Multiplier used when estimating the watchtower fee. Higher values make automatic settlement more attractive. Also accepts `bigint` for legacy compatibility.<br />Default: `1.5`. |
+
+<h3>Lightning → Solana</h3>
+
+| Name | Type | Description |
+|------|------|-------------|
+| `paymentHash` | `Buffer \| string` | Lets you supply your own payment hash instead of letting the SDK generate it. If you do this, you must later reveal the preimage manually during claim.<br />Default: generated automatically by the SDK. |
+| `description` | `string` | Optional Lightning invoice description. Keep it below 500 UTF-8 bytes.<br />Default: none. |
+| `descriptionHash` | `Buffer \| string` | Optional Lightning invoice description hash, useful when the invoice is exposed through LNURL-pay.<br />Default: none. |
+| `unsafeSkipLnNodeCheck` | `boolean` | Skips checking whether the LP's Lightning node has enough channel liquidity for the swap.<br />Default: `false`. |
+
+  </TabItem>
+</Tabs>
 
 ## Next Steps
 

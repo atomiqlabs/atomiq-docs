@@ -29,7 +29,10 @@ const swap = await swapper.swap(
   "0.0001",                   // Amount (10,000 sats to send)
   SwapAmountType.EXACT_IN,
   undefined,                  // Source address is not used for BTC source swaps
-  solanaSigner.getAddress()   // Destination Solana address
+  solanaSigner.getAddress(),  // Destination Solana address
+  {
+    // For additional swap options checks the `Swap Options` section
+  }
 ); // Type gets inferred as FromBTCSwap
 
 // Inspect the native-SOL amounts locked during initialization
@@ -285,6 +288,15 @@ console.log("Total locked deposit:", swap.getTotalDeposit().toString());
 :::warning
 You need enough SOL to cover the legacy deposit requirement and the destination-chain initialization fee before calling `commit()` or `execute()`. This cold-start requirement is specific to the legacy Solana flow and does not exist in the newer Bitcoin → Smart chain protocol used on Starknet and EVM.
 :::
+
+## Swap Options
+
+The overview of possible options you can pass to the swap via the `options` argument of `swapper.swap(...)`. These let you adjust watchtower incentives.
+
+| Name | Type | Description |
+|------|------|-------------|
+| `unsafeZeroWatchtowerFee` | `boolean` | Attaches zero watchtower fee to the swap. This can make automatic settlement unattractive, so you may need to settle manually with `swap.claim(...)`.<br />Default: `false`. |
+| `feeSafetyFactor` | `number \| bigint` | Multiplier used when estimating the watchtower fee. Higher values make automatic settlement more attractive. Also accepts `bigint` for legacy compatibility.<br />Default: `1.5`. |
 
 ## Swap States
 
