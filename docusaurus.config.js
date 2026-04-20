@@ -49,6 +49,10 @@ const config = {
 
   onBrokenLinks: 'warn',
 
+  markdown: {
+    format: 'detect',
+  },
+
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -65,6 +69,41 @@ const config = {
         path: 'sdk-reference',
         routeBasePath: 'sdk-reference',
         sidebarPath: './sidebars-sdk-reference.js',
+      },
+    ],
+
+    // ============================================
+    // API Reference docs instance (OpenAPI)
+    // ============================================
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'api-reference',
+        path: 'api-reference',
+        routeBasePath: 'api-reference',
+        sidebarPath: './sidebars-api-reference.js',
+        docItemComponent: '@theme/ApiItem',
+      },
+    ],
+
+    // ============================================
+    // OpenAPI docs generator
+    // ============================================
+    [
+      'docusaurus-plugin-openapi-docs',
+      {
+        id: 'openapi',
+        docsPluginId: 'api-reference',
+        config: {
+          swapperApi: {
+            specPath: 'repos/atomiq-sdk/openapi.json',
+            outputDir: 'api-reference',
+            sidebarOptions: {
+              groupPathsBy: 'tag',
+              categoryLinkSource: 'tag',
+            },
+          },
+        },
       },
     ],
 
@@ -97,6 +136,7 @@ const config = {
   ],
 
   themes: [
+    'docusaurus-theme-openapi-docs',
     [
       '@easyops-cn/docusaurus-search-local',
       {
@@ -168,6 +208,11 @@ const config = {
           {
             to: '/sdk-reference/',
             label: 'SDK Reference',
+            position: 'left',
+          },
+          {
+            to: '/api-reference/atomiq-sdk-swapper-api',
+            label: 'API Reference',
             position: 'left',
           },
           {
