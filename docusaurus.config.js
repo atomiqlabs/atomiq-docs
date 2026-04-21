@@ -200,20 +200,29 @@ const config = {
             label: 'Guides',
           },
           {
-            type: 'docSidebar',
-            sidebarId: 'developersSidebar',
-            position: 'left',
+            type: 'dropdown',
             label: 'Developers',
-          },
-          {
-            to: '/sdk-reference/',
-            label: 'SDK Reference',
             position: 'left',
-          },
-          {
-            to: '/api-reference/atomiq-sdk-swapper-api',
-            label: 'API Reference',
-            position: 'left',
+            items: [
+              {
+                type: 'docSidebar',
+                sidebarId: 'developersSidebar',
+                label: 'SDK Guide',
+              },
+              {
+                to: '/sdk-reference/',
+                label: 'SDK Reference',
+              },
+              {
+                type: 'docSidebar',
+                sidebarId: 'restApiSidebar',
+                label: 'REST API Guide',
+              },
+              {
+                to: '/api-reference/atomiq-sdk-swapper-api',
+                label: 'REST API Reference',
+              },
+            ],
           },
           {
             href: 'https://atomiq.exchange',

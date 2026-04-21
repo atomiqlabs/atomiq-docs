@@ -140,6 +140,14 @@ const sidebars = {
       ],
     }
   ],
+
+  // REST API Guide (atomiq-api-docker)
+  restApiSidebar: [
+    'rest-api/index',
+    'rest-api/quick-start',
+    'rest-api/configuration',
+    'rest-api/swap-flow',
+  ],
 };
 
 export default sidebars;

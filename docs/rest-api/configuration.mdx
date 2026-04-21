@@ -1,0 +1,175 @@
+---
+sidebar_position: 3
+---
+
+# Configuration
+
+The service reads its entire runtime config from a single YAML file. Path resolution:
+
+1. `CONFIG_PATH` environment variable (used by Docker Compose to inject from `.env`).
+2. `./config.yaml` in the working directory.
+
+## Top-level keys
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `port` | number | **required** | TCP port the server binds to. |
+| `logLevel` | `error` \| `warn` \| `info` \| `debug` | `info` | `info` = morgan HTTP logs; `debug` = verbose per-request log line incl. IP, XFF, UA. |
+| `bitcoinNetwork` | `MAINNET` \| `TESTNET` \| `TESTNET3` \| `TESTNET4` | **required** | Which Bitcoin network the SDK connects to. `TESTNET` is an alias for `TESTNET3`. |
+| `starknetRpc` / `solanaRpc` / `botanixRpc` / `citreaRpc` / `alpenRpc` / `goatRpc` | string or null | null (disabled) | RPC URL per smart chain. Omit / set to null to disable that chain. |
+| `swapsSyncIntervalSeconds` | number | 300 | Interval between background `SwapperApi.sync()` calls (purges expired swaps, refreshes state). |
+| `reloadLpIntervalSeconds` | number | 300 | Interval between background LP reloads (re-discovers dropped LPs). |
+| `cors` | object or null | null (disabled) | Passed through to the [`cors`](https://github.com/expressjs/cors) middleware. |
+| `rateLimit` | `{ windowMs, maxRequests }` | **required** | Global fallback rate limit (applied when an auth path does not override). |
+| `auth` | array | **required**, non-empty | Ordered list of auth paths — see [Authentication](#authentication). |
+| `https` | `{ keyPath, certPath }` or null | null (HTTP) | TLS config. Paths are resolved relative to the config file. |
+| `trustProxy` | boolean | `false` | When running the API behind a reverse proxy, set to `true` to properly parse the client's IP address. |
+
+## Authentication
+
+`auth` is an **ordered array** — the first entry that matches a request wins. Each entry can optionally set its own `rateLimit` (or `null` to disable rate limiting entirely on that path).
+
+Three entry types:
+
+```yaml
+auth:
+  # 1. Shared-secret API key
+  - type: apiKey
+    name: "Privileged clients"
+    apiKey: "replace-with-long-random-secret"
+    header: x-api-key          # optional, default x-api-key
+    rateLimit: null             # null = no rate limit on this path
+
+  # 2. JWT signed by an external auth service
+  - type: jwt
+    name: "Premium Users"
+    publicKey: "-----BEGIN PUBLIC KEY-----\n...\n-----END PUBLIC KEY-----"
+    algorithms: [RS256]         # or [ES256], etc.
+    claims:                     # optional — all claims must match
+      user_tier: "swapper"
+    rateLimit:
+      windowMs: 60000
+      maxRequests: 200
+
+  # 3. Open fallback (uses global rateLimit)
+  - type: none
+    name: "Public"
+```
+
+### API-key auth
+
+Any client that can present the configured shared secret in a header (default `x-api-key`) is authorized on this path.
+
+```http
+GET /listSwaps?signer=0x... HTTP/1.1
+x-api-key: replace-with-long-random-secret
+```
+
+Treat the API key as a shared secret. Whether you ship it to a trusted backend, embed it in a first-party frontend, or hand it to an operator depends on your threat model — just never expose it to clients you do not control.
+
+### JWT auth
+
+Requests are authorized by a signed JWT in the `Authorization: Bearer <jwt>` header. The service:
+
+1. Verifies the JWT signature against the public key configured in `config.yaml` using the algorithms listed in `algorithms`.
+2. Enforces the standard `exp` claim.
+3. Checks any additional required claims listed under `claims` on the auth entry.
+
+How the JWT is minted and delivered to the caller is out of scope for this service — issue it from any auth system that can sign with a key pair whose public half you paste into `config.yaml`.
+
+`claims` supports two forms:
+
+- Exact match: `{ user_tier: "swapper" }` — the JWT payload must contain a matching scalar value.
+- Array-includes: `{ permissions: { includes: "swap_permission" } }` — the JWT payload must contain an array that includes the given value.
+
+#### Generating a test key pair + JWT
+
+A helper script is bundled for local testing:
+
+```bash
+npx ts-node --project tsconfig.scripts.json \
+  scripts/generate-jwt.ts \
+  '{"payload":{"sub":"demo","user_tier":"swapper"},"options":{"expiresIn":"1h"}}'
+```
+
+It prints:
+
+- A freshly generated ES256 (P-256) private key (PEM).
+- The matching public key in both multi-line and single-line PEM form — paste the single-line form into `auth[].publicKey` in `config.yaml`.
+- A signed JWT you can use immediately with `Authorization: Bearer ...`.
+
+Pass an existing private key as the second argument to sign with your own key instead.
+
+### Public / no-auth
+
+`type: none` matches any request. Put it last if you want to offer anonymous access; omit it if all traffic must be authenticated.
+
+## Rate limiting
+
+Uses in-memory bucketing per client IP, with a fixed window.
+
+- Each auth entry can set its own `rateLimit: { windowMs, maxRequests }` or explicitly `null` (no limit — typical for `apiKey` traffic).
+- If an auth entry has **no** `rateLimit` key, the **global** `rateLimit` from the top level applies.
+- Exceeding the limit returns `429 { error: "Rate limit exceeded", retryAfter }`.
+
+## HTTPS and certificate reload
+
+Set `https` in the config to run TLS directly:
+
+```yaml
+https:
+  keyPath: "./tls/server.key"
+  certPath: "./tls/server.crt"
+```
+
+Both paths are resolved relative to the `config.yaml` file.
+
+The server watches both files with a 1 s poll interval. On any change it schedules a 60 s-delayed reload (debounced) via `server.setSecureContext(...)` — Node keeps serving existing connections during the swap. This is designed to work cleanly with Let's Encrypt / certbot renewal hooks: the renewal hook writes both files, the server picks them up within a minute without a restart.
+
+## Running behind a reverse proxy
+
+Set `trustProxy` if you run the API behind a reverse proxy and want to correctly resolve client IP addresses (important for rate limiting):
+
+```yaml
+trustProxy: true
+```
+
+You can also let the reverse proxy handle TLS and omit the `https` section from the API config.
+
+## Persistence
+
+The container writes SQLite files in the working directory (`/src`):
+
+- `CHAIN_atomiqsdk-1-<CHAINID>.sqlite3` — one per active smart chain; swap state for that chain.
+- `STORE_<name>.sqlite3` — additional SDK state (e.g. `solAccounts`).
+
+The bundled `docker-compose.yml` mounts `./config.yaml` read-only and persists `/src` as a named `atomiq-data` volume so swap state survives restarts and upgrades. If you run the container directly with `docker run`, pass `-v "$PWD/atomiq-data:/src"` — without a volume the instance cannot resume in-flight swaps after an upgrade.
+
+## Background maintenance timers
+
+`atomiq-api-docker` runs two timers (configurable):
+
+| Timer | Interval key | Default | Purpose |
+|---|---|---|---|
+| Swap sync | `swapsSyncIntervalSeconds` | 300 s | Calls `SwapperApi.sync()`. Refreshes state for active swaps and purges expired swaps from the local DB. |
+| LP reload | `reloadLpIntervalSeconds` | 300 s | Re-discovers Atomiq LPs, so a dropped LP can rejoin the quote pool without restarting the container. |
+
+Errors in either timer are logged and the timer continues.
+
+## Error handling
+
+All endpoints return JSON. Errors come in two shapes:
+
+| Status | Body | Meaning |
+|---|---|---|
+| 400 | `{ "error": "<message>" }` | Validation error or SDK rejected the request. |
+| 401 | `{ "error": "Unauthorized" }` | No auth entry matched. |
+| 429 | `{ "error": "Rate limit exceeded", "retryAfter": <seconds> }` | Per-IP, per-auth-path or global bucket exhausted. |
+
+Rate-limit state is per IP. If you use a reverse proxy in front set `trustProxy: true` in the config.
+
+## Security notes
+
+- **JWT `exp`** — the JWT auth path enforces `exp`, so you can tune expiration of the JWT.
+- **Public key rotation** — changing `auth[].publicKey` requires a restart. Plan a rollover window by temporarily listing both the old and new key as two JWT auth entries.
+- **CORS** — `origin: "*"` is fine for public endpoints, but in production you should restrict it to your wallet front-end origin(s).
