@@ -1,0 +1,112 @@
+---
+sidebar_position: 7
+---
+
+# Utilities
+
+Two general-purpose helpers that don't belong to any single swap — they cover the polish bits of a wallet UI.
+
+| Endpoint | Use for |
+|---|---|
+| [`GET /parseAddress`](/rest-api-reference/parse-address) | Normalize whatever the user pasted into the recipient field. |
+| [`GET /getSpendableBalance`](/rest-api-reference/get-spendable-balance) | Wire up a "Max" button that accounts for chain fees. |
+
+## Parse an address
+
+`parseAddress` accepts anything the user might reasonably paste into an address / invoice field — on-chain addresses, BOLT11 invoices, LNURL-pay / LNURL-withdraw links, Bitcoin URIs (`bitcoin:…`), and smart-chain addresses — and returns the parsed `type` plus structured data.
+
+```bash
+curl "http://localhost:3000/parseAddress?address=lnurl1dp68gurn8ghj7…"
+```
+
+```jsonc
+{
+  "address": "https://example.com/.well-known/lnurlp/user",
+  "type":    "LNURL",
+  "lnurl":   {
+    "type": "pay",
+    "min":  { /* ApiAmount */ },
+    "max":  { /* ApiAmount */ },
+    /* ... */
+  }
+}
+```
+
+`type` is one of `BITCOIN`, `LIGHTNING`, `LNURL`, `SOLANA`, `STARKNET`, `CITREA`, … (chain-specific as needed).
+
+When `type` is `LNURL`, the response includes an `lnurl` object that's either an LNURL-pay or LNURL-withdraw variant — see [Bitcoin & Lightning → LNURL](/rest-api-guide/bitcoin-and-lightning#lnurl-handling) for how to use the resolved payload.
+
+For BOLT11 invoices and Bitcoin URIs with `amount` parameters, the response may include an `amount` (and `min` / `max` for LNURL). Use these to pre-populate the amount field if the user pasted a request that already carries one.
+
+### Pattern: recipient field on change
+
+```ts
+async function onRecipientChange(input: string) {
+  try {
+    const parsed = await get("/parseAddress", { address: input });
+    showChipForType(parsed.type);                  // "Bitcoin address" / "Lightning invoice" / …
+    if (parsed.amount)  lockAmount(parsed.amount); // BOLT11 with explicit amount
+    if (parsed.min)     setAmountBounds(parsed.min, parsed.max);
+  } catch {
+    showError("Unrecognized address or invoice");
+  }
+}
+```
+
+## Estimate spendable balance
+
+`getSpendableBalance` returns the balance a wallet can *actually spend* on a swap after accounting for chain fees — the number you want behind a "Max" button, not the raw on-chain balance.
+
+```bash
+curl "http://localhost:3000/getSpendableBalance?wallet=0x0123…&token=STARKNET-STRK"
+```
+
+| Query param | Required | Notes |
+|---|---|---|
+| `wallet` | ✓ | Address to inspect. |
+| `token` | ✓ | Token identifier (e.g. `BITCOIN-BTC`, `STARKNET-STRK`). |
+| `targetChain` | optional | Destination chain id. For BTC balances, changes the estimate because different targets have different commit costs. |
+| `gasDrop` | optional, boolean | For Bitcoin-source swaps: include gas-drop transaction overhead in the estimate. |
+| `feeRate` | optional | Manual fee-rate override. Format is chain-specific — see [Fee-rate format](#fee-rate-format). |
+| `minBitcoinFeeRate` | optional, number | Floor for the fetched Bitcoin fee rate (sats/vB). |
+| `feeMultiplier` | optional, number | Multiplier applied to the auto-fetched fee rate. Mutually exclusive with `feeRate`. |
+
+Response:
+
+```jsonc
+{
+  "balance": { "amount": "0.00243", "rawAmount": "243000", "decimals": 8, "symbol": "BTC", "chain": "BITCOIN" },
+  "feeRate": 3.5     // only when estimating BTC on Bitcoin
+}
+```
+
+:::warning
+**Lightning balances are not supported** by this endpoint. For `LIGHTNING-BTC`, the API will throw. Lightning "balance" is not a well-defined concept — use the user's channel capacity as a cap instead.
+:::
+
+### Fee-rate format
+
+`feeRate` is chain-specific. Refer to the [`getSpendableBalance`](/rest-api-reference/get-spendable-balance) entry in the REST API Reference for the authoritative parameter schema, but in brief:
+
+| Chain | Format | Example |
+|---|---|---|
+| **Bitcoin** | Positive number, sats/vB | `3.5` |
+| **Solana** | `<microLamports/CU>[;<base fee in lamports>]` | `"10000;500"` |
+| **Starknet** | `<l1GasCost>,<l2GasCost>,<l1DataGasCost>;v3` (in Fri per gas) | `"1000000000,1000000000,0;v3"` |
+| **EVM** (Botanix, Citrea, Alpen, Goat) | `<baseFeePerGas>,<priorityFeePerGas>` (in Wei per gas) | `"30000000000,2000000000"` |
+
+### Pattern: "Max" button
+
+```ts
+async function onMaxClick() {
+  const { balance } = await get("/getSpendableBalance", {
+    wallet:      srcAddress,
+    token:       srcToken.id,
+    targetChain: dstToken.chainId,     // matters for BTC source
+    gasDrop:     userWantsGasDrop,
+  });
+  setAmountField(balance.rawAmount);    // base units string
+}
+```
+
+Re-run this call whenever the target chain or `gasDrop` toggle changes — both affect the estimate. You don't need to re-run it every keystroke in the amount field.

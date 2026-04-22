@@ -1,0 +1,140 @@
+---
+sidebar_position: 5
+---
+
+# Bitcoin & Lightning Specifics
+
+Most of the API looks the same across all supported chains. Bitcoin on-chain and Lightning are the exceptions — PSBTs, BOLT11 invoices, LNURL, and Lightning preimages are Bitcoin-world concepts the smart-chain side doesn't share. This page groups everything direction-specific in one place.
+
+If you're new to the flow, read [Creating & Executing a Swap](/rest-api-guide/creating-and-executing) first — this page extends the patterns there.
+
+## Bitcoin on-chain
+
+### PSBT signing
+
+When a swap needs a Bitcoin payment from the user's wallet (e.g. `BITCOIN-BTC → STARKNET-STRK`), `getSwapStatus` returns a `SignPSBT` action. The `txs` array always contains PSBTs of a single variant — either already-funded (`FUNDED_PSBT`) or raw (`RAW_PSBT`):
+
+```jsonc
+{
+  "type": "SignPSBT",
+  "name": "Deposit on Bitcoin",
+  "chain": "BITCOIN",
+  "description": "Sign the funding transaction to commit the deposit.",
+  "txs": [
+    {
+      "type": "FUNDED_PSBT",
+      "psbtHex": "70736274ff01…",
+      "psbtBase64": "cHNidP8B…",
+      "signInputs": [0, 2],       // which input indices to sign
+      "feeRate": 3.5              // sats / vB, matches what's encoded in the PSBT
+    }
+  ]
+}
+```
+
+- **`FUNDED_PSBT`** — inputs are already selected and populated by the API. The client just signs the indices listed in `signInputs` and submits back.
+- **`RAW_PSBT`** — the client needs to add its own inputs (e.g. using its wallet's coin-selection) before signing. Carries an additional `in1sequence` field whose value must be preserved on the corresponding input; every other input can use default sequence.
+
+Submit the signed PSBT as hex or base64 via `POST /submitTransaction`:
+
+```jsonc
+{ "swapId": "…", "signedTxs": ["70736274ff01…signed…"] }
+```
+
+### `bitcoinAddress` + `bitcoinPublicKey` on every poll
+
+For Bitcoin-source directions, pass both `bitcoinAddress` and `bitcoinPublicKey` (hex-encoded) as query parameters on **every** `getSwapStatus` call. The API needs them to build the funded PSBT.
+
+```bash
+curl "http://localhost:3000/getSwapStatus?swapId=<id>\
+&bitcoinAddress=bc1q…\
+&bitcoinPublicKey=02…"
+```
+
+If you only pass them on the first call, the PSBT won't be generated and `currentAction` will stay `null` until you send them again.
+
+### Fee rates
+
+Bitcoin fee rates are in **sats/vB** everywhere in the API.
+
+On `getSwapStatus`, pass an optional `bitcoinFeeRate` to override the API's default (the currently-fetched economical rate). You can also set this on `createSwap` for directions that lock the rate up-front.
+
+On `getSpendableBalance` for BTC balances, the `feeRate` query parameter is a positive number in sats/vB. See [Utilities → Spendable balance](/rest-api-guide/utilities#estimate-spendable-balance).
+
+## Lightning Network
+
+### BOLT11 invoices
+
+For `LIGHTNING-BTC → *` swaps, pass either a BOLT11 invoice **or** an LNURL-withdraw link as the source address — the API auto-detects which. For `* → LIGHTNING-BTC` swaps, pass a destination BOLT11 invoice or LNURL-pay link as `dstAddress` in `createSwap`.
+
+Optional Lightning-only fields on `createSwap`:
+
+| Field | Direction | Purpose |
+|---|---|---|
+| `paymentHash` | `LIGHTNING-BTC → smart-chain` | Client-supplied payment hash so you retain the preimage. Hex string. Triggers [Preimage reveal](#preimage-reveal). |
+| `lightningInvoiceDescription` | `LIGHTNING-BTC → smart-chain` | Description to include in the generated BOLT11 invoice. |
+| `lightningInvoiceDescriptionHash` | `LIGHTNING-BTC → smart-chain` | Description-hash override, hex-encoded. |
+| `lightningPaymentHTLCTimeout` | `smart-chain → LIGHTNING-BTC` | HTLC timeout in seconds. Longer = more routing hops available; shorter = faster lockup release if the LP misbehaves. |
+
+### LNURL handling
+
+LNURL-pay / LNURL-withdraw links can be either resolved **client-side** before you call the API, or passed **through** and resolved by the API.
+
+#### Recommended — resolve client-side
+
+Resolve the LNURL in the wallet UI (using the `parseAddress` endpoint — see [Utilities → Parse address](/rest-api-guide/utilities#parse-an-address)), present the decoded payee info to the user, then pass the resulting BOLT11 invoice or amount to `createSwap`. This minimizes the trust the client places on the middleware — the API never touches a link that could be substituted to redirect funds.
+
+#### Supported — pass through
+
+You can also pass an LNURL directly:
+
+- LNURL-withdraw as `srcAddress` when `srcToken = LIGHTNING-BTC`.
+- LNURL-pay as `dstAddress` when `dstToken = LIGHTNING-BTC`.
+
+The SDK resolves them internally. This is convenient but implicitly trusts the API server to resolve them honestly.
+
+### Preimage reveal
+
+For `LIGHTNING-BTC → smart-chain` swaps where the client supplied `paymentHash` on `createSwap`, the preimage stays entirely on the client. When the destination-chain HTLC is ready to be claimed, `getSwapStatus` returns:
+
+```jsonc
+{
+  /* ... */
+  "requiresSecretReveal": true,
+  "currentAction": null
+}
+```
+
+Reveal the preimage by calling `getSwapStatus` with it in the query string:
+
+```bash
+curl "http://localhost:3000/getSwapStatus?swapId=<id>&secret=<preimage-hex>"
+```
+
+The API then broadcasts the secret over Nostr for automatic settlement, or returns signing actions for manual settlement.
+
+### `settleWithLnurl` — LNURL-withdraw settlement
+
+For Lightning-to-smart-chain swaps where the `currentAction` is `SendToAddress` (stage `PR_CREATED`) and the swap should settle via LNURL-withdraw rather than the user paying a BOLT11 invoice directly, call:
+
+```bash
+curl -X POST "http://localhost:3000/settleWithLnurl" \
+  -H "Content-Type: application/json" \
+  -d '{ "swapId": "…", "lnurlWithdraw": "lnurl1…" }'
+```
+
+If the swap was **already created with an LNURL-withdraw** (i.e. `createSwap` received the LNURL as `srcAddress`), omit `lnurlWithdraw`. Passing it in that case is a validation error.
+
+Response:
+
+```jsonc
+{ "paymentHash": "<hex>" }
+```
+
+## Gas-drop
+
+For Bitcoin / Lightning → smart-chain swaps you can optionally request a small amount of the destination chain's native gas token delivered alongside the main swap. This saves the user from needing pre-existing gas to claim.
+
+Set `gasAmount` on `createSwap` (base-unit string, same convention as `amount`). The quote's `fees` will reflect the extra cost — usually charged in the source token.
+
+Gas-drop also affects spendable-balance math; see [Utilities → Spendable balance](/rest-api-guide/utilities#estimate-spendable-balance).

@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import {themes as prismThemes} from 'prism-react-renderer';
 
-const apiReferenceDir = new URL('./api-reference', import.meta.url);
+const apiReferenceDir = new URL('./rest-api-reference', import.meta.url);
 
 if (!fs.existsSync(apiReferenceDir)) {
   fs.mkdirSync(apiReferenceDir, {recursive: true});
@@ -80,15 +80,15 @@ const config = {
     ],
 
     // ============================================
-    // API Reference docs instance (OpenAPI)
+    // REST API Reference docs instance (OpenAPI)
     // ============================================
     [
       '@docusaurus/plugin-content-docs',
       {
-        id: 'api-reference',
-        path: 'api-reference',
-        routeBasePath: 'api-reference',
-        sidebarPath: './sidebars-api-reference.js',
+        id: 'rest-api-reference',
+        path: 'rest-api-reference',
+        routeBasePath: 'rest-api-reference',
+        sidebarPath: './sidebars-rest-api-reference.js',
         docItemComponent: '@theme/ApiItem',
       },
     ],
@@ -100,11 +100,11 @@ const config = {
       'docusaurus-plugin-openapi-docs',
       {
         id: 'openapi',
-        docsPluginId: 'api-reference',
+        docsPluginId: 'rest-api-reference',
         config: {
           swapperApi: {
             specPath: 'repos/atomiq-sdk/openapi.json',
-            outputDir: 'api-reference',
+            outputDir: 'rest-api-reference',
             sidebarOptions: {
               groupPathsBy: 'tag',
               categoryLinkSource: 'tag',
@@ -140,6 +140,29 @@ const config = {
         mergeModulesMergeMode: 'module',
       },
     ],
+
+    // ============================================
+    // Backward-compatibility redirects for renamed paths
+    // ============================================
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        // Generates a legacy-path alias for every real page.
+        // Every /sdk-guide/* page also serves at the old /developers/* URL, etc.
+        createRedirects(existingPath) {
+          if (existingPath.startsWith('/sdk-guide')) {
+            return [existingPath.replace(/^\/sdk-guide/, '/developers')];
+          }
+          if (existingPath.startsWith('/rest-api-guide')) {
+            return [existingPath.replace(/^\/rest-api-guide/, '/rest-api')];
+          }
+          if (existingPath.startsWith('/rest-api-reference')) {
+            return [existingPath.replace(/^\/rest-api-reference/, '/api-reference')];
+          }
+          return undefined;
+        },
+      },
+    ],
   ],
 
   themes: [
@@ -152,7 +175,7 @@ const config = {
         indexPages: false,
         docsRouteBasePath: ['/', 'sdk-reference', 'docs'],
         docsDir: ['sdk-reference', 'docs'],
-        searchContextByPaths: ['sdk-reference', 'developers'],
+        searchContextByPaths: ['sdk-reference', 'sdk-guide'],
         hashed: true,
         highlightSearchTermsOnTargetPage: true,
         explicitSearchResultPath: true,
@@ -213,7 +236,7 @@ const config = {
             items: [
               {
                 type: 'docSidebar',
-                sidebarId: 'developersSidebar',
+                sidebarId: 'sdkGuideSidebar',
                 label: 'SDK Guide',
               },
               {
@@ -222,11 +245,11 @@ const config = {
               },
               {
                 type: 'docSidebar',
-                sidebarId: 'restApiSidebar',
+                sidebarId: 'restApiGuideSidebar',
                 label: 'REST API Guide',
               },
               {
-                to: '/api-reference/atomiq-sdk-swapper-api',
+                to: '/rest-api-reference/overview',
                 label: 'REST API Reference',
               },
             ],

@@ -1,0 +1,103 @@
+---
+sidebar_position: 2
+---
+
+# Concepts
+
+The rest of this guide assumes you're familiar with the shared vocabulary described here. If you've used the SDK before, most of this will be review — the REST API preserves the SDK's types field-for-field, just serialized to JSON.
+
+## Token identifiers
+
+Tokens are identified by a single string in the form `<network>-<ticker>`. Typical values:
+
+| Token ID | Meaning |
+|---|---|
+| `BITCOIN-BTC` | On-chain Bitcoin |
+| `LIGHTNING-BTC` | Bitcoin over the Lightning Network |
+| `STARKNET-STRK`, `STARKNET-ETH`, `STARKNET-<erc20-address>` | Starknet native and ERC-20 tokens |
+| `SOLANA-SOL`, `SOLANA-<spl-mint>` | Solana native and SPL tokens |
+| `CITREA-CBTC`, `BOTANIX-BTC`, `ALPEN-BTC`, `GOAT-BTC` | Supported EVM-style chains |
+
+You don't need to hard-code this list. Use `GET /getSupportedTokens` and `GET /getSwapCounterTokens` to enumerate what the current LP set supports — see [Quoting Swaps](/rest-api-guide/quoting).
+
+## Amounts and BigInt-as-string
+
+TypeScript `bigint` values appear in this API as **decimal strings** (e.g. `"150000"`, `"1500000000000000000"`), because JSON cannot safely encode arbitrary-precision integers as native numbers.
+
+Every monetary amount returned by the API uses the `ApiAmount` shape:
+
+```jsonc
+{
+  "amount":    "0.00003",                   // decimal-formatted for display
+  "rawAmount": "3000",                      // base units as a decimal string
+  "decimals":  8,                           // token decimals
+  "symbol":    "BTC",                       // ticker
+  "chain":     "BITCOIN"                    // chain identifier
+}
+```
+
+When sending amounts to the API (for example in `createSwap.amount`), always pass the **raw base-unit string** — not a decimal, not a number. `"150000"` for 0.0015 BTC, not `0.0015`.
+
+## The quote → execute model
+
+Every Atomiq swap follows the same two-phase shape:
+
+1. **Quote** — the client describes what it wants (source token, destination token, amount, which side is exact), and `POST /createSwap` returns a swap record with a priced `quote` and an `expiry` timestamp. The quote is binding until it expires (typically a few minutes).
+2. **Execute** — the client polls `GET /getSwapStatus`, follows each `currentAction` the server returns (sign a PSBT, sign a smart-chain transaction, pay an address, wait), and submits signed transactions back via `POST /submitTransaction` until the swap reports `isFinished: true`.
+
+This is a *request-for-quote* (RFQ) trading model: quotes come from Atomiq liquidity providers, not a continuous order book. The client does not need to understand LP routing — it just uses the quote it was given.
+
+## Polling
+
+There are no webhooks or streaming connections in the current API. Clients drive swap progress by repeatedly calling `getSwapStatus` on their own schedule. Each action returned by the server carries a `pollTimeSeconds` hint (defaults to ~5 seconds); respect that or the server will rate-limit aggressive pollers.
+
+A minimal loop looks like:
+
+```ts
+for (;;) {
+  const s = await get("/getSwapStatus", { swapId, bitcoinAddress, bitcoinPublicKey });
+  if (s.isFinished) break;
+
+  // ... handle s.currentAction, possibly POST /submitTransaction ...
+
+  await sleep((s.currentAction?.pollTimeSeconds ?? 5) * 1000);
+}
+```
+
+The full version is covered in [Creating & Executing a Swap](/rest-api-guide/creating-and-executing).
+
+## Terminal states
+
+A swap is **finished** when `isFinished === true`. The terminal state is described by three additional flags:
+
+| Flag | Meaning |
+|---|---|
+| `isSuccess` | The swap completed successfully and the user received the destination token. |
+| `isFailed` | The swap failed after funds were committed — typically results in a refund flow. |
+| `isExpired` | The quote expired before the user paid. No on-chain state was created. |
+
+Once `isFinished` is true, stop polling. These flags are mutually exclusive.
+
+## Error shape
+
+All errors are JSON. Two common shapes:
+
+| Status | Body | Meaning |
+|---|---|---|
+| `400` | `{ "error": "<message>" }` | Validation error or the SDK rejected the request. |
+| `401` | `{ "error": "Unauthorized" }` | No auth entry matched (see [Authentication](#authentication)). |
+| `429` | `{ "error": "Rate limit exceeded", "retryAfter": <seconds> }` | Per-IP / per-auth-path or global rate limit exhausted. |
+
+Transient `5xx` errors should be retried with backoff.
+
+## Authentication
+
+The API supports three auth modes, configured server-side. As a client you'll see:
+
+- **Public / no-auth** — send no credentials.
+- **API key** — send `x-api-key: <shared-secret>` (header name is configurable).
+- **JWT** — send `Authorization: Bearer <jwt>`. The server validates the signature against a configured public key and enforces the standard `exp` claim.
+
+Ask whoever operates the API you're hitting which mode is enabled on which path. For the hosted public API, credential requirements will be listed alongside the base URL you're issued.
+
+When hosting yourself, the full auth configuration is documented in [Configuration → Authentication](/rest-api-guide/run-locally/configuration#authentication).

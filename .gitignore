@@ -23,7 +23,7 @@ yarn-error.log*
 
 # Generated SDK docs (TypeDoc output - api/ is auto-generated, index.mdx is manually maintained)
 sdk-reference/api/
-api-reference/
+rest-api-reference/
 
 
 .claude/settings.local.json

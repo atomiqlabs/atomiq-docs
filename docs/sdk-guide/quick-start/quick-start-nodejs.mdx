@@ -1,0 +1,300 @@
+---
+sidebar_position: 2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Quick Start – Node.js
+
+This guide covers installing the Atomiq SDK in Node.js and its chain-specific connectors and walks you through setting up and initializing the Atomiq SDK.
+
+## Core SDK
+
+Install the main SDK package, and for Node.js applications, install the SQLite storage adapter:
+
+```bash
+npm install @atomiqlabs/sdk@latest
+npm install @atomiqlabs/storage-sqlite@latest
+```
+### Chain Connectors
+
+The SDK supports multiple chains. Install only the chain connectors your project needs, and mix and match them as required:
+
+```bash
+npm install @atomiqlabs/chain-solana@latest
+npm install @atomiqlabs/chain-starknet@latest
+npm install @atomiqlabs/chain-evm@latest
+```
+
+## Setup
+
+:::tip
+See [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/setup.ts) in the demo repo for a ready-to-use version of the setup below.
+:::
+
+<Tabs groupId="network">
+  <TabItem value="mainnet" label="Mainnet" default>
+
+Set your RPC URLs:
+
+```typescript
+const solanaRpc = "https://api.mainnet-beta.solana.com";
+const starknetRpc = "https://rpc.starknet.lava.build/"; //Alternatively: https://starknet.api.onfinality.io/public or https://api.zan.top/public/starknet-mainnet
+const citreaRpc = "https://rpc.mainnet.citrea.xyz";
+```
+
+Create a swapper factory with your desired chain support. Use `as const` so TypeScript can properly infer the types:
+
+```typescript
+import {SolanaInitializer} from "@atomiqlabs/chain-solana";
+import {StarknetInitializer} from "@atomiqlabs/chain-starknet";
+import {CitreaInitializer} from "@atomiqlabs/chain-evm";
+
+import {BitcoinNetwork, TypedSwapper, SwapperFactory, TypedTokens} from "@atomiqlabs/sdk";
+import {SqliteStorageManager, SqliteUnifiedStorage} from "@atomiqlabs/storage-sqlite";
+
+// Define chains you want to support
+const chains = [SolanaInitializer, StarknetInitializer, CitreaInitializer] as const;
+type SupportedChains = typeof chains;
+
+// Create the swapper factory
+const Factory = new SwapperFactory<SupportedChains>(chains);
+
+// Get the tokens for the supported chains
+const Tokens: TypedTokens<SupportedChains> = Factory.Tokens;
+
+// Create one swapper instance for your entire app, and use that instance for all your swaps.
+const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
+  chains: {
+    SOLANA: {
+      rpcUrl: solanaRpc // Can also pass Connection object
+    },
+    STARKNET: {
+      rpcUrl: starknetRpc // Can also pass Provider object
+    },
+    CITREA: {
+      rpcUrl: citreaRpc, // Can also pass JsonRpcProvider object
+    }
+  },
+  bitcoinNetwork: BitcoinNetwork.MAINNET,
+  swapStorage: chainId => new SqliteUnifiedStorage("CHAIN_MAINNET_"+chainId+".sqlite3"),
+  chainStorageCtor: name => new SqliteStorageManager("STORE_MAINNET_"+name+".sqlite3"),
+});
+
+await swapper.init();
+```
+
+  </TabItem>
+  <TabItem value="testnet3" label="Testnet3">
+
+:::info
+On testnets, only native tokens are generally supported (e.g. SOL, STRK, cBTC).
+:::
+
+Set your testnet RPC URLs:
+
+```typescript
+const solanaRpc = "https://api.devnet.solana.com";
+const starknetRpc = "https://rpc.starknet-testnet.lava.build/";
+```
+
+Create a swapper factory with your desired chain support:
+
+```typescript
+import {SolanaInitializer} from "@atomiqlabs/chain-solana";
+import {StarknetInitializer} from "@atomiqlabs/chain-starknet";
+
+import {BitcoinNetwork, TypedSwapper, SwapperFactory, TypedTokens} from "@atomiqlabs/sdk";
+import {SqliteStorageManager, SqliteUnifiedStorage} from "@atomiqlabs/storage-sqlite";
+
+const chains = [SolanaInitializer, StarknetInitializer] as const;
+type SupportedChains = typeof chains;
+
+const Factory = new SwapperFactory<SupportedChains>(chains);
+const Tokens: TypedTokens<SupportedChains> = Factory.Tokens;
+
+const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
+  chains: {
+    SOLANA: {
+      rpcUrl: solanaRpc // Can also pass Connection object
+    },
+    STARKNET: {
+      rpcUrl: starknetRpc // Can also pass Provider object
+    }
+  },
+  bitcoinNetwork: BitcoinNetwork.TESTNET3,
+  swapStorage: chainId => new SqliteUnifiedStorage("CHAIN_TESTNET3_"+chainId+".sqlite3"),
+  chainStorageCtor: name => new SqliteStorageManager("STORE_TESTNET3_"+name+".sqlite3"),
+});
+
+await swapper.init();
+```
+
+  </TabItem>
+  <TabItem value="testnet4" label="Testnet4">
+
+:::info
+On testnets, only native tokens are generally supported (e.g. SOL, STRK, cBTC).
+:::
+
+Set your testnet RPC URLs:
+
+```typescript
+const starknetRpc = "https://rpc.starknet-testnet.lava.build/";
+const citreaRpc = "https://rpc.testnet.citrea.xyz";
+```
+
+Create a swapper factory with your desired chain support:
+
+```typescript
+import {StarknetInitializer} from "@atomiqlabs/chain-starknet";
+import {CitreaInitializer} from "@atomiqlabs/chain-evm";
+
+import {BitcoinNetwork, TypedSwapper, SwapperFactory, TypedTokens} from "@atomiqlabs/sdk";
+import {SqliteStorageManager, SqliteUnifiedStorage} from "@atomiqlabs/storage-sqlite";
+
+const chains = [StarknetInitializer, CitreaInitializer] as const;
+type SupportedChains = typeof chains;
+
+const Factory = new SwapperFactory<SupportedChains>(chains);
+const Tokens: TypedTokens<SupportedChains> = Factory.Tokens;
+
+const swapper: TypedSwapper<SupportedChains> = Factory.newSwapper({
+  chains: {
+    STARKNET: {
+      rpcUrl: starknetRpc // Can also pass Provider object
+    },
+    CITREA: {
+      rpcUrl: citreaRpc, // Can also pass JsonRpcProvider object
+    }
+  },
+  bitcoinNetwork: BitcoinNetwork.TESTNET4,
+  swapStorage: chainId => new SqliteUnifiedStorage("CHAIN_TESTNET4_"+chainId+".sqlite3"),
+  chainStorageCtor: name => new SqliteStorageManager("STORE_TESTNET4_"+name+".sqlite3"),
+});
+
+await swapper.init();
+```
+
+  </TabItem>
+</Tabs>
+
+:::info
+Initialize the swapper with `await swapper.init();` once when your app starts. You should create only one swapper instance for your entire app, and use that instance for all your swaps. This checks existing in-progress swaps and does initial LP discovery.
+:::
+
+## Setting Up Signers
+
+Atomiq's [`AbstractSigner`](/sdk-reference/api/atomiq-sdk/src/type-aliases/AbstractSigner) object wraps around the wallet object of the respective chain and makes it easy to approve transactions via it by passing it to the swap methods. You can alternatively skip this step, obtain the transactions required to be signed and [sign & send them manually](/sdk-guide/advanced/manual-transactions).
+
+:::tip
+See [wallets.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/wallets.ts) in the demo repo for a ready-to-use version of the signers below.
+:::
+
+### Solana
+
+```typescript
+import {Keypair} from "@solana/web3.js";
+import {SolanaKeypairWallet, SolanaSigner} from "@atomiqlabs/chain-solana";
+
+// Generate random private key
+const solanaKey: Uint8Array = Keypair.generate().secretKey;
+
+// From private key
+const solanaSigner = new SolanaSigner(
+  new SolanaKeypairWallet(Keypair.fromSecretKey(solanaKey)),
+  Keypair.fromSecretKey(solanaKey)
+);
+```
+
+### Starknet
+
+```typescript
+import {StarknetSigner, StarknetKeypairWallet} from "@atomiqlabs/chain-starknet";
+import {RpcProvider} from "starknet";
+
+// Generate random private key
+const starknetKey: string = StarknetKeypairWallet.generateRandomPrivateKey();
+
+// From private key, this uses a simple openzeppelin account class with a single public key.
+const starknetProvider = new RpcProvider({nodeUrl: starknetRpc});
+const starknetSigner = new StarknetSigner(
+  new StarknetKeypairWallet(starknetProvider, starknetKey)
+);
+```
+
+### EVM (Citrea, etc.)
+
+```typescript
+import {BaseWallet, SigningKey, JsonRpcProvider, Wallet} from "ethers";
+import {EVMSigner} from "@atomiqlabs/chain-evm";
+
+// Generate random private key
+const evmKey: string = Wallet.createRandom().privateKey;
+
+// From private key
+const evmProvider = new JsonRpcProvider(citreaRpc);
+const wallet = new BaseWallet(new SigningKey(evmKey), evmProvider);
+const evmWallet = new EVMSigner(wallet, wallet.address);
+```
+
+## Your First Swap
+
+Here's a complete example of a Smart Chain to Bitcoin on-chain swap:
+
+```typescript
+import {SwapAmountType} from "@atomiqlabs/sdk";
+
+// Create a swap: SOL to Bitcoin on-chain
+const swap = await swapper.swap(
+  Tokens.SOLANA.SOL,              // From token
+  Tokens.BITCOIN.BTC,             // To Bitcoin on-chain
+  "0.0001",                       // Amount of BTC to receive
+  SwapAmountType.EXACT_OUT,       // Specify amount in output token
+  solanaSigner.getAddress(),      // Source address
+  "bc1q..."                       // Bitcoin destination address
+);
+
+// Check quote details
+console.log("Input:", swap.getInput().toString());
+console.log("Output:", swap.getOutput().toString());
+console.log("Expires:", new Date(swap.getQuoteExpiry()));
+
+// Execute the swap
+const success = await swap.execute(solanaSigner, {
+  onSourceTransactionSent: (txId) => console.log("Tx sent:", txId),
+  onSwapSettled: (btcTxId) => console.log("Bitcoin transaction sent: ", btcTxId)
+});
+
+// Handle failure
+if (!success) {
+  await swap.refund(solanaSigner);
+}
+```
+
+## Next Steps
+
+### Creating Quotes
+
+Guides you through creating swap quotes.
+
+**[Creating Quotes →](/sdk-guide/quick-start/creating-quotes)**
+
+---
+
+### Configuration
+
+Explains swapper configuration parameters passed in the `Factory.newSwapper()` function and debug logging config.
+
+**[Swapper Configuration →](/sdk-guide/advanced/configuration)**
+
+---
+
+### Utilities
+
+SDK-exposed utilities allow you to parse addresses (including LNURL links), fetch token balances, list supported tokens and swap types.
+
+**[Utilities →](/sdk-guide/utilities/)**
+
+---

@@ -1,0 +1,304 @@
+---
+sidebar_position: 2
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Address Parser
+
+`swapper.Utils.parseAddress()` & `swapper.Utils.parseAddressSync()` are the SDK's unified parsers for user-entered destination and source fields. It is useful anywhere you accept free-form input before calling [`swapper.swap(...)`](/sdk-guide/quick-start/creating-quotes), because the same field may contain a Bitcoin address, a BOLT11 invoice, an LNURL, a Lightning address, or a smart chain address.
+
+The parsers recognize:
+
+- Bitcoin on-chain addresses and [`bitcoin:` BIP-21](https://en.bitcoin.it/wiki/BIP_0021) URIs
+- BOLT11 Lightning invoices with an embedded amount, including `lightning:`-prefixed invoice strings
+- LNURL-pay links ([LUD-6](https://github.com/lnurl/luds/blob/luds/06.md)), in both: bech32 `lnurl1...` form & raw `lnurlp://...` form ([LUD-17](https://github.com/lnurl/luds/blob/luds/17.md))
+- Lightning addresses ([LUD-16](https://github.com/lnurl/luds/blob/luds/16.md))
+- LNURL-withdraw link ([LUD-3](https://github.com/lnurl/luds/blob/luds/03.md)), in both: bech32 `lnurl1...` form & raw `lnurlw://...` form ([LUD-17](https://github.com/lnurl/luds/blob/luds/17.md))
+- Smart chain addresses for the chains configured in your swapper instance
+
+## Parsing User Input
+
+The SDK exposes two parser variants:
+
+- an async [`parseAddress()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#parseaddress) which parses the address and in case of LNURLs also fetches the LNURL metadata so it can resolve LNURL-pay vs LNURL-withdraw and return amount limits.
+- a synchronous [`parseAddressSync()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#parseaddresssync) which parses the address data, but it does not fetch LNURL metadata and therefore cannot fully resolve LNURL inputs on its own.
+
+:::tip
+You can use synchronous `parseAddressSync()` in case you don't want support for LNURL links to prevent any hassle for handling an async address parser.
+
+In case you want to support LNURL links the common pattern is to use the sync parser while the user is typing then run the async `parseAddress()` parser on blur, paste or submit before you create a quote.
+:::
+
+<Tabs groupId="address-parser-variant">
+<TabItem value="async" label="parseAddress()" default>
+
+Use the async [`parseAddress()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#parseaddress) helper when you need the final normalized result for quoting or execution. This is the variant you should use when the input may be an LNURL or Lightning address, because it fetches LNURL metadata and resolves whether the destination is LNURL-pay or LNURL-withdraw.
+
+```typescript
+const parsed = await swapper.Utils.parseAddress(userInput);
+
+if (parsed == null) {
+  throw new Error("Unsupported address format");
+}
+
+switch (parsed.type) {
+  case "BITCOIN":
+    console.log("Bitcoin destination:", parsed.address);
+    console.log("Optional amount from BIP-21:", parsed.amount?.toString());
+    break;
+  case "LIGHTNING":
+    console.log("Lightning invoice amount:", parsed.amount?.toString());
+    break;
+  case "LNURL":
+    if (parsed.lnurl.type === "pay") {
+      console.log("LNURL-pay / Lightning address");
+      console.log("Min:", parsed.min?.toString());
+      console.log("Max:", parsed.max?.toString());
+      console.log("Fixed amount:", parsed.amount?.toString());
+    }
+    if (parsed.lnurl.type === "withdraw") {
+      console.log("LNURL-withdraw");
+      console.log("Min:", parsed.min?.toString());
+      console.log("Max:", parsed.max?.toString());
+      console.log("Fixed amount:", parsed.amount?.toString());
+    }
+    break;
+  default:
+    console.log("Smart chain address on:", parsed.type); // e.g. SOLANA, STARKNET, CITREA
+}
+```
+
+</TabItem>
+<TabItem value="sync" label="parseAddressSync()">
+
+Use [`parseAddressSync()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#parseaddresssync) for fast local validation while the user is typing. This version does not fetch LNURL metadata, so it can detect that an input looks like LNURL, but it cannot tell you whether it is LNURL-pay or LNURL-withdraw.
+
+```typescript
+const parsed = swapper.Utils.parseAddressSync(userInput);
+
+if (parsed == null) {
+  console.log("Unsupported address format");
+} else {
+  switch (parsed.type) {
+    case "BITCOIN":
+      console.log("Looks like a Bitcoin destination");
+      break;
+    case "LIGHTNING":
+      console.log("Looks like a Lightning invoice with amount");
+      break;
+    case "LNURL":
+      console.log("Looks like LNURL, resolve it asynchronously before quoting");
+      break;
+    default:
+      console.log("Looks like a smart chain address on:", parsed.type);
+  }
+}
+```
+
+:::info
+When `parseAddressSync()` returns `type === "LNURL"`, call the async [`parseAddress()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#parseaddress) before you rely on LNURL limits, comment support or pay/withdraw routing.
+:::
+
+</TabItem>
+</Tabs>
+
+## Parsed Result
+
+Both parsers return a normalized object with the following fields:
+
+| Parameter | Type | Description |
+|------|------|------|
+| `address` | `string` | Normalized address or identifier recognized by the parser. For `bitcoin:` or `lightning:` inputs this is returned without the scheme prefix. |
+| `type` | `"BITCOIN" \| "LIGHTNING" \| "LNURL" \| "SOLANA" \| "STARKNET" ...` | The detected address family, or the smart-chain identifier for supported smart-chain addresses. |
+| `swapType` | [`SwapType`](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapType) or `null` | The swap direction inferred from the input format when possible, for example Bitcoin on-chain for `TO_BTC`, Lightning payout for `TO_BTCLN`, or LNURL-withdraw source for `FROM_BTCLN`. |
+| `amount?` | [`TokenAmount`](/sdk-reference/api/atomiq-sdk/src/type-aliases/TokenAmount) | Fixed amount encoded in a BIP-21 URI, BOLT11 invoice or fixed-amount LNURL. |
+| `min?` | [`TokenAmount`](/sdk-reference/api/atomiq-sdk/src/type-aliases/TokenAmount) | Minimum amount allowed by a variable-amount LNURL. *This is only populated by the async parser when the input is LNURL-based.* |
+| `max?` | [`TokenAmount`](/sdk-reference/api/atomiq-sdk/src/type-aliases/TokenAmount) | Maximum amount allowed by a variable-amount LNURL. *This is only populated by the async parser when the input is LNURL-based.* |
+| `lnurl?` | [`LNURLPay`](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLPay) or [`LNURLWithdraw`](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLWithdraw) | Resolved LNURL metadata. *This is only populated by the async parser when the input is LNURL-based.* |
+
+## Address Types
+
+### Bitcoin and BIP-21
+
+Bitcoin addresses and `bitcoin:` payment URIs are parsed as `type === "BITCOIN"`. This is the format you typically use as the destination in [Smart Chain → BTC/Lightning](/sdk-guide/swaps/smart-chain-to-btc) swaps.
+
+If the user pastes a BIP-21 URI with an amount, that amount is returned as `parsed.amount`, which is useful for pre-filling an `EXACT_OUT` quote.
+
+```typescript
+const parsed = await swapper.Utils.parseAddress(
+  "bitcoin:bc1q...?amount=0.0001"
+);
+
+if (parsed?.type === "BITCOIN") {
+  console.log("Destination address:", parsed.address);
+  console.log("Requested BTC amount:", parsed.amount?.toString());
+}
+```
+
+:::info
+If you only need to check whether a given string is a bitcoin address use [`isValidBitcoinAddress()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#isvalidbitcoinaddress) instead of the general parser.
+:::
+
+### Lightning Invoices
+
+:::warning
+Lightning invoices without an amount are not accepted by `parseAddress()`, as the **Smart Chain → Lightning** swap requires the use of fixed amount invoices.
+:::
+
+BOLT11 invoices (also the ones prefixed with `lightning:` deeplink) are parsed as `type === "LIGHTNING"`. With the invoice amount returned in `parsed.amount`.
+
+```typescript
+const parsed = await swapper.Utils.parseAddress("lnbc1000n1...");
+
+if (parsed?.type === "LIGHTNING") {
+  console.log("Invoice amount:", parsed.amount.toString());
+}
+```
+
+:::tip
+If your UI needs to distinguish between "syntactically valid invoice" and "invoice valid for swap creation", use both helpers:
+
+- [`isLightningInvoice()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#islightninginvoice) checks whether the string is a valid BOLT11 invoice at all.
+- [`isValidLightningInvoice()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#isvalidlightninginvoice) checks whether the invoice also contains an amount and is therefore usable for creating **Smart Chain → Lightning** swaps.
+:::
+
+### LNURLs and Lightning Addresses
+
+
+LNURL links and Lightning addresses (also with `lightning:` deeplink prefix) are parsed as `type === "LNURL"`. The parser accepts both, the bech32 & raw url encoding format for LNURLs.
+
+To fetch the type and amounts of the LNURL you have to use the asynchronous `parseAddress()` parser, as it has to fetch the LNURL metadata from the LNURL-service. The amounts are returned as:
+
+- `parsed.amount` when the LNURL has a fixed amount
+- `parsed.min` and `parsed.max` when the amount is user-selectable
+
+And the LNURL types (withdraw or pay):
+
+- `parsed.lnurl.type === "pay"` for **LNURL-pay** / Lightning address inputs, can be used as a destination for [Smart Chain → BTC/Lightning](/sdk-guide/swaps/smart-chain-to-btc) swaps.
+- `parsed.lnurl.type === "withdraw"` for **LNURL-withdraw** inputs, can be used as source for [Lightning → Smart Chain](/sdk-guide/swaps/lightning-to-smart-chain) or [Lightning → Solana](/sdk-guide/swaps/solana/lightning-to-solana) swaps.
+
+
+<Tabs groupId="lnurl-variants">
+<TabItem value="lnurl-pay" label="LNURL-pay" default>
+```typescript
+// Also supports lightning addresses "user@example.com" and raw "lnurlp://" links.
+const parsed = await swapper.Utils.parseAddress("lnurl1...");
+
+if (parsed?.type === "LNURL" && parsed.lnurl.type === "pay") {
+  console.log("Min payable:", parsed.min?.toString());
+  console.log("Max payable:", parsed.max?.toString());
+  console.log("Fixed amount:", parsed.amount?.toString());
+  console.log("Comment limit:", parsed.lnurl.commentMaxLength);
+  console.log("Short description:", parsed.lnurl.shortDescription);
+
+  // Create a quote that swaps to the LNURL-pay destination
+  const swap = await swapper.swap(
+    Tokens.STARKNET.STRK,
+    Tokens.BITCOIN.BTCLN,           // Swapping to Lightning
+    parsed.min?.amount,             // Swap the minimum LNURL-pay amount
+    SwapAmountType.EXACT_OUT,       // Use EXACT_OUT mode (though EXACT_IN is also supported for LNURL-pay links!!!)
+    starknetSigner.getAddress(),    // Source signer address
+    parsed.lnurl                    // Use parsed LNURL-pay object as destination
+  );
+}
+```
+</TabItem>
+<TabItem value="lnurl-withdraw" label="LNURL-withdraw" default>
+```typescript
+// Also supports raw "lnurlw://" links.
+const parsed = await swapper.Utils.parseAddress("lnurl1...");
+
+if (parsed?.type === "LNURL" && parsed.lnurl.type === "withdraw") {
+  console.log("Min withdrawable:", parsed.min?.toString());
+  console.log("Max withdrawable:", parsed.max?.toString());
+  console.log("Fixed amount:", parsed.amount?.toString());
+  console.log("Description:", parsed.lnurl.params.defaultDescription);
+
+  // Create a quote that swaps to the LNURL-pay destination
+  const swap = await swapper.swap(
+    Tokens.BITCOIN.BTCLN,           // Swapping from Lightning
+    Tokens.STARKNET.STRK,
+    parsed.max?.amount,             // Swap the maximum LNURL-withdraw amount
+    SwapAmountType.EXACT_OUT,       // Use EXACT_IN mode, since the LNURL maximum is defined in sats
+    parsed.lnurl,                   // Use parsed LNURL-withdraw object as source
+    starknetSigner.getAddress()     // Starknet signer's address as destination
+  );
+
+  ... // Swap gets automatically paid by the LNURL-withdraw link when `waitForPayment()` or `execute()` is called
+}
+```
+</TabItem>
+</Tabs>
+
+:::info
+If you only need to check whether a string looks like LNURL before fetching metadata, use [`isValidLNURL()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#isvalidlnurl). To fetch the metadata after that, call [`getLNURLTypeAndData()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#getlnurltypeanddata).
+:::
+
+### Smart Chain Addresses
+
+If the input is a supported smart chain address, the parser returns the configured chain identifier as the `type`, for example `SOLANA`, `STARKNET` or `CITREA`. This is the format you typically use as the destination in [Bitcoin → Smart Chain](/sdk-guide/swaps/btc-to-smart-chain) and [Lightning → Smart Chain](/sdk-guide/swaps/lightning-to-smart-chain) swaps.
+
+```typescript
+const parsed = await swapper.Utils.parseAddress(starknetSigner.getAddress());
+
+if (parsed?.type === "STARKNET") {
+  console.log("Destination is a Starknet address:", parsed.address);
+}
+```
+
+:::info
+If you only want to know whether a given string is a an address of a specific smart chain (Solana, Starknet, EVM, tc.) you can use the [`isValidSmartChainAddress()`](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#isvalidsmartchainaddress) function.
+:::
+
+## Usage in Quote Forms
+
+Parsed address data is most useful to automatically adjust your form before you create a quote:
+
+- use `parsed.type` to automatically pick source or destination tokens / chains
+- use `parsed.amount` from BIP-21, BOLT11 or LNURLs to pre-fill the quote amount
+- use `parsed.min` and `parsed.max` from LNURLs to clamp user-entered amounts
+- use `parsed.lnurl.type === "pay"` to show comment input for LNURL-pay if `commentMaxLength > 0`
+
+```typescript
+const parsed = await swapper.Utils.parseAddress(destinationInput);
+if (parsed == null) throw new Error("Unsupported destination");
+
+// The address requests a fixed amount
+if (parsed.amount != null) {
+  console.log("Pre-fill quoted amount:", parsed.amount.toString());
+}
+
+// Can add comment to the quote for LNURL-pay -links
+if (parsed.type === "LNURL" && parsed.lnurl.type === "pay") {
+  console.log("User may add a comment up to", parsed.lnurl.commentMaxLength, "chars");
+}
+
+const quote = await swapper.swap(
+  fromToken,
+  toToken,
+  parsed.amount?.amount ?? userSelectedAmount,
+  amountType,
+  sourceAddress,
+  parsed.address,
+  {
+    comment: ... // In case the type is LNURL-pay and `commentMaxLength` is larger than 0
+  }
+);
+```
+
+## API Reference
+
+- [SwapperUtils](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils) - Utility class exposed as `swapper.Utils`
+- [parseAddress](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#parseaddress) - Parse any supported address format with LNURL metadata fetching
+- [parseAddressSync](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#parseaddresssync) - Parse locally without LNURL network requests
+- [getLNURLTypeAndData](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#getlnurltypeanddata) - Fetch LNURL-pay or LNURL-withdraw details directly
+- [isValidBitcoinAddress](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#isvalidbitcoinaddress) - Validate Bitcoin addresses
+- [isLightningInvoice](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#islightninginvoice) - Validate generic BOLT11 invoices
+- [isValidLightningInvoice](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#isvalidlightninginvoice) - Validate BOLT11 invoices with amount
+- [isValidLNURL](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#isvalidlnurl) - Validate LNURL format
+- [isValidSmartChainAddress](/sdk-reference/api/atomiq-sdk/src/classes/SwapperUtils#isvalidsmartchainaddress) - Validate smart chain addresses, optionally for a specific chain
+- [TokenAmount](/sdk-reference/api/atomiq-sdk/src/type-aliases/TokenAmount) - Amount object returned by the parser
+- [LNURLPay](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLPay) - Parsed LNURL-pay data
+- [LNURLWithdraw](/sdk-reference/api/atomiq-sdk/src/type-aliases/LNURLWithdraw) - Parsed LNURL-withdraw data

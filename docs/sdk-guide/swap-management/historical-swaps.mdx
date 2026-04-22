@@ -1,0 +1,209 @@
+---
+sidebar_position: 3
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Historical Swaps
+
+The SDK persists all swaps locally, allowing you to retrieve them later by ID.
+
+:::tip Runnable Example
+See the complete working example: [utils/pastSwaps.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/utils/pastSwaps.ts)
+:::
+
+## Retrieving Swap by ID
+
+Every swap has a unique ID accessible with the [`swap.getId()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getid) getter that can be used for later retrieval:
+
+```typescript
+const swap = await swapper.swap(/* ... */);
+
+// Get the swap ID
+const swapId = swap.getId();
+console.log("Swap ID:", swapId);
+
+// Store this ID for later (e.g., in your database, returned data, URL, etc.)
+```
+
+:::info
+Swaps are by default only persisted after they are initiated (i.e. `commit()`, `execute()` or `waitForPayment()` being called), if you want to serve uninitialized quotes from e.g. a REST API endpoint, you need to set the `saveUninitializedSwaps` flag in the [Swapper Configuration](/sdk-guide/advanced/configuration#runtime-flags), to make sure you can later retrieve these uninitialized quotes.
+
+Unexecuted expired quotes are automatically purged from the persistent storage.
+:::
+
+You can then retrieve the swap from storage based on this ID:
+- use the [`getTypedSwapById()`](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#gettypedswapbyid) function to get the properly-typed swap (e.g. [`ToBTCSwap`](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCSwap), [`ToBTCLNSwap`](/sdk-reference/api/atomiq-sdk/src/classes/ToBTCLNSwap), [`FromBTCLNAutoSwap`](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap), etc.) if you know the type upfront.
+- use the [`getSwapById()`](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getswapbyid) function to get the abstract [`ISwap`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap) swap type, which you can then narrow with the [`isSwapType()`](/sdk-reference/api/atomiq-sdk/src/functions/isSwapType) type-guard.
+
+
+<Tabs groupId="swap-type">
+<TabItem value="known" label="getTypedSwapById()" default>
+
+If you know the expected swap type:
+
+```typescript
+import {SwapType} from "@atomiqlabs/sdk";
+
+// Retrieve with specific type - returns correctly typed swap or undefined if the type doesn't match
+const typedSwap = await swapper.getTypedSwapById(
+  swapId,
+  "SOLANA",              // Chain ID
+  SwapType.TO_BTC        // Expected swap type
+);
+
+if (typedSwap) {
+  // typedSwap is properly typed as ToBTCSwap<SolanaChainType>
+  console.log("Output address:", typedSwap.getOutputAddress());
+}
+```
+</TabItem>
+<TabItem value="unknown" label="getSwapById()" default>
+
+If you don't know the swap type:
+
+```typescript
+import {isSwapType, SwapType} from "@atomiqlabs/sdk";
+
+// Get base swap
+const swap = await swapper.getSwapById(swapId);
+
+if (swap) {
+  // Use type guards to narrow the type
+  if (isSwapType(swap, SwapType.TO_BTC)) {
+    // Now typed as ToBTCSwap
+    console.log("This is a TO_BTC swap");
+  } else if (isSwapType(swap, SwapType.FROM_BTCLN_AUTO)) {
+    // Now typed as FromBTCLNAutoSwap
+    console.log("This is a Lightning to smart chain swap");
+  }
+}
+```
+</TabItem>
+</Tabs>
+
+:::info
+Both variations for getting the swap return `undefined` in case the swap wasn't found in the persistent storage.
+:::
+
+## Swap Type Guards
+
+To help narrowing types of the abstract `ISwap` class, the SDK provides [`SwapType`](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapType)-based type-guards which help you properly narrow down the exact type of the swap. For the overview of swap types and their respective swap classes see the [Swap Types](/sdk-guide/swaps/) page.
+
+```typescript
+import {
+  isSwapType,
+  SwapType,
+  ToBTCSwap,
+  ToBTCLNSwap,
+  FromBTCSwap,
+  SpvFromBTCSwap,
+  FromBTCLNSwap,
+  FromBTCLNAutoSwap
+} from "@atomiqlabs/sdk";
+
+const swap = await swapper.getSwapById(swapId);
+
+if (isSwapType(swap, SwapType.TO_BTC)) {
+  const toBtcSwap: ToBTCSwap = swap; // Smart chain → Bitcoin swap
+}
+
+if (isSwapType(swap, SwapType.TO_BTCLN)) {
+  const toBtcLnSwap: ToBTCLNSwap = swap; // Smart chain → Lightning swap
+}
+
+if (isSwapType(swap, SwapType.SPV_FROM_BTC)) {
+  const spvFromBtcSwap: SpvFromBTCSwap = swap; // Bitcoin → Smart chain swap
+}
+
+if (isSwapType(swap, SwapType.FROM_BTCLN_AUTO)) {
+  const fromBtcLnAutoSwap: FromBTCLNAutoSwap = swap; // Lightning → Smart chain swap
+}
+
+if (isSwapType(swap, SwapType.FROM_BTC)) {
+  const fromBtcSwap: FromBTCSwap = swap; // Legacy Bitcoin → Solana swap
+}
+
+if (isSwapType(swap, SwapType.FROM_BTCLN)) {
+  const fromBtcLnSwap: FromBTCLNSwap = swap; // Legacy Lightning → Solana swap
+}
+```
+
+## Retrieving All Swaps
+
+The [`getAllSwaps()`](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getallswaps) function allows you to retrieve all existing swaps from the storage, swaps only for a specific chain or swaps created by a specific smart chain signer.
+
+<Tabs groupId="swap-getter-type">
+<TabItem value="all" label="All" default>
+```typescript
+import {ISwap, isSwapType, SwapType, ToBTCSwap} from "@atomiqlabs/sdk";
+
+// Returns all existing swaps from storage if no argument is passed
+const allSwaps: ISwap[] = await swapper.getAllSwaps();
+// You can further narrow down the type of the swap with the type-guards and check the respective swap's chain
+for (let swap of allSwaps) {
+  if (isSwapType(swap, SwapType.TO_BTC)) {
+    const typedSwap: ToBTCSwap = swap; // Properly narrowed down type
+    const chainId = swap.chainIdentifier; // Retrieves smart chain type of the swap, e.g.: SOLANA, STARKNET, CITREA, ...
+  }
+}
+```
+</TabItem>
+<TabItem value="chain" label="Single chain">
+```typescript
+import {ISwap, isSwapType, SwapType, ToBTCSwap} from "@atomiqlabs/sdk";
+import {StarknetChainType} from "@atomiqlabs/chain-starknet";
+
+// Returns all swaps for a given smart chain (returns all swaps between BTC and the given smart chain)
+const starknetSwaps: ISwap<StarknetChainType>[] = await swapper.getAllSwaps("STARKNET");
+// You can further narrow down the type of the swap with the type-guards and check the respective swap's chain
+for (let swap of starknetSwaps) {
+  if (isSwapType(swap, SwapType.TO_BTC)) {
+    const typedSwap: ToBTCSwap = swap; // Properly narrowed down type
+  }
+}
+```
+</TabItem>
+<TabItem value="signer" label="Specific signer" default>
+```typescript
+import {ISwap, isSwapType, SwapType, ToBTCSwap} from "@atomiqlabs/sdk";
+import {StarknetChainType} from "@atomiqlabs/chain-starknet";
+
+// Returns all swaps created with a specific signer address
+const signerSwaps: ISwap<StarknetChainType>[] = await swapper.getAllSwaps("STARKNET", starknetSigner.getAddress());
+// You can further narrow down the type of the swap with the type-guards and check the respective swap's chain
+for (let swap of signerSwaps) {
+  if (isSwapType(swap, SwapType.TO_BTC)) {
+    const typedSwap: ToBTCSwap = swap; // Properly narrowed down type
+  }
+}
+```
+</TabItem>
+</Tabs>
+
+## API Reference
+
+- [getId](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getid) - Get the persistent ID of a swap
+- [getSwapById](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getswapbyid) - Get swap by ID (base type)
+- [getTypedSwapById](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#gettypedswapbyid) - Get swap by ID with type
+- [getAllSwaps](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getallswaps) - Get all swaps from storage
+- [isSwapType](/sdk-reference/api/atomiq-sdk/src/functions/isSwapType) - Type guard for swap types
+
+## Next Steps
+
+### Refunding Swaps
+
+Retrieving & processing swaps that were not executed by the LPs and can be refunded, returning funds to the user.
+
+**[Refunds  →](/sdk-guide/swap-management/refunds)**
+
+---
+
+### Claiming Swaps
+
+Retrieving & processing swaps that didn't get automatically settled and need to be claimed manually.
+
+**[Claiming →](/sdk-guide/swap-management/claiming)**
+
+---

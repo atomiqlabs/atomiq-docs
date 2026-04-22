@@ -1,0 +1,105 @@
+---
+sidebar_position: 3
+---
+
+# Quoting Swaps
+
+Before you can create a swap you usually need to populate a swap form — a source-token picker, a destination-token picker, and an amount field with sensible min/max hints. Three endpoints cover this:
+
+| Endpoint | Use for |
+|---|---|
+| [`GET /getSupportedTokens`](/rest-api-reference/get-supported-tokens) | Populate the initial token picker (all tokens supported as input or output). |
+| [`GET /getSwapCounterTokens`](/rest-api-reference/get-swap-counter-tokens) | After the user picks one side, show only tokens that actually route with it. |
+| [`GET /getSwapLimits`](/rest-api-reference/get-swap-limits) | Show a min (and optional max) on the amount field for the chosen pair. |
+
+The three endpoints together let you build a swap form that never lets the user assemble an impossible quote.
+
+## 1. List supported tokens
+
+Call `getSupportedTokens` with `side=INPUT` (source picker) or `side=OUTPUT` (destination picker):
+
+```bash
+curl "http://localhost:3000/getSupportedTokens?side=INPUT"
+```
+
+Each token in the response is an `ApiToken`:
+
+```jsonc
+{
+  "id":       "STARKNET-STRK",          // use this exact string elsewhere in the API
+  "chainId":  "STARKNET",
+  "ticker":   "STRK",
+  "name":     "Starknet Token",
+  "decimals": 18,
+  "address":  "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
+}
+```
+
+The `id` field is the canonical identifier — always pass this string back to the API, never construct token IDs by hand.
+
+## 2. Find compatible counter-tokens
+
+Once the user has picked one side (say `BITCOIN-BTC` as input), call `getSwapCounterTokens` to discover which tokens actually have liquidity as the other side:
+
+```bash
+curl "http://localhost:3000/getSwapCounterTokens?token=BITCOIN-BTC&side=INPUT"
+```
+
+`side` describes how the caller's `token` is being used. `side=INPUT` means "the user is spending BTC, show me what they can receive." `side=OUTPUT` means "the user wants to receive X, show me what they can pay with."
+
+The response is the same `ApiToken[]` shape as `getSupportedTokens`. Using this list for the *destination* picker avoids showing combinations the LP network can't actually quote.
+
+:::tip
+Call `getSupportedTokens` **once** at startup to populate the source picker, then call `getSwapCounterTokens` **on change** of the source token to filter the destination picker. You don't need to re-fetch when the user changes the amount.
+:::
+
+## 3. Get swap limits
+
+Once both tokens are chosen, fetch the current min/max for the pair:
+
+```bash
+curl "http://localhost:3000/getSwapLimits?srcToken=BITCOIN-BTC&dstToken=STARKNET-STRK"
+```
+
+Response:
+
+```jsonc
+{
+  "input":  { "min": { /* ApiAmount */ }, "max": { /* ApiAmount */ } },
+  "output": { "min": { /* ApiAmount */ }, "max": { /* ApiAmount */ } }
+}
+```
+
+Both `input` and `output` limits are returned so you can enforce the constraint on whichever side the user is editing — relevant when `amountType` is `EXACT_IN` vs `EXACT_OUT`.
+
+`max` is optional and may be absent when the LP network does not enforce a hard ceiling.
+
+:::info
+Limits can drift as LPs come and go. Re-fetch before calling `createSwap` if a stale limit might otherwise let through an amount the LP will refuse.
+:::
+
+## Putting it together
+
+A minimal quote form flow:
+
+```ts
+// on mount
+const inputTokens = await get("/getSupportedTokens", { side: "INPUT" });
+populateSourcePicker(inputTokens);
+
+// on source-token change
+const outputTokens = await get("/getSwapCounterTokens", {
+  token: srcToken.id,
+  side: "INPUT",
+});
+populateDestinationPicker(outputTokens);
+
+// on both selected (or on amount focus)
+const limits = await get("/getSwapLimits", {
+  srcToken: srcToken.id,
+  dstToken: dstToken.id,
+});
+setAmountBounds(limits.input.min.rawAmount, limits.input.max?.rawAmount);
+```
+
+Once the form passes validation, the user continues to [Creating & Executing a Swap](/rest-api-guide/creating-and-executing).

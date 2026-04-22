@@ -1,0 +1,96 @@
+---
+sidebar_position: 6
+---
+
+# Managing Swaps
+
+The API keeps a persistent record of every swap a signer has ever opened against it. Two endpoints expose that history — together they cover the "Recent swaps" screen, the "You have 2 swaps that need action" badge, and the post-restart recovery flow.
+
+| Endpoint | Use for |
+|---|---|
+| [`GET /listSwaps`](/rest-api-reference/list-swaps) | Full swap history for a signer — e.g. a "Transactions" tab. |
+| [`GET /listPendingSwaps`](/rest-api-reference/list-pending-swaps) | Only swaps that currently need user attention — "needs your attention" badges, notification center. |
+
+Both endpoints take the same query parameters and return the same `ListSwapOutput[]` shape (a swap record plus the four terminal flags).
+
+## 1. List all swaps
+
+```bash
+curl "http://localhost:3000/listSwaps?signer=0x0123…&chainId=STARKNET"
+```
+
+| Query param | Required | Notes |
+|---|---|---|
+| `signer` | ✓ | Smart-chain signer address whose swaps to return. |
+| `chainId` | optional | Filter to a single chain (`SOLANA`, `STARKNET`, `CITREA`, …). Omit to include every chain. |
+
+The response is an array where each entry extends the swap record with the same four flags returned by `getSwapStatus`:
+
+```jsonc
+[
+  {
+    "swapId":     "…",
+    "swapType":   "FROM_BTC",
+    "state":      { "number": 4, "name": "CLAIM_CLAIMED", "description": "…" },
+    "quote":      { /* ... */ },
+    "createdAt":  1713359700000,
+    "steps":      [ /* ... */ ],
+    "isFinished": true,
+    "isSuccess":  true,
+    "isFailed":   false,
+    "isExpired":  false
+  },
+  /* ... */
+]
+```
+
+Sort by `createdAt` descending to render a newest-first transactions list.
+
+## 2. List only pending swaps
+
+```bash
+curl "http://localhost:3000/listPendingSwaps?signer=0x0123…"
+```
+
+Same query parameters, same response shape — filtered down to swaps that still need user action (so every entry has `isFinished: false` and typically a non-null `currentAction` once you drill in).
+
+Poll this list at app startup or on foreground to drive a badge count like **"2 swaps need your attention"**. The count is `response.length` — no extra call required.
+
+## Resuming a swap after restart
+
+The server is the source of truth, so recovering mid-flight swaps is a three-line job:
+
+```ts
+// on app start
+const pending = await get("/listPendingSwaps", { signer });
+for (const swap of pending) {
+  // resume each one with the same loop you use for fresh swaps
+  await pollUntilFinished(swap.swapId);
+}
+```
+
+Because every swap record includes the full `quote`, `state`, `steps`, and (via `getSwapStatus`) `currentAction`, the client does not need its own persistence layer — just remember the `signer` address and whatever pairing you have with the user account.
+
+:::tip
+If your wallet supports multiple accounts, call `listPendingSwaps` **per account** and aggregate the results. There is no endpoint that merges across signers.
+:::
+
+## Refunds and expired quotes
+
+The API exposes refunds through the same `currentAction` machinery as the happy path — you don't need a separate endpoint. When a swap enters a refundable state, `getSwapStatus` returns either:
+
+- **`SignSmartChainTransaction`** with `name: "Refund"` — sign the refund transaction and submit it back via `submitTransaction`.
+- **`Wait`** — if the refund is automatic (LP-settled), no client action is needed.
+
+Inspect `steps` to distinguish: a `Refund` step with `status: "awaiting"` means the user must sign; `status: "refunded"` means it's complete.
+
+For **expired quotes** — swaps where the quote elapsed before the user paid — `isExpired` becomes `true`, `isFinished` becomes `true`, and no on-chain state was ever created. Safe to drop from the pending list and silently discard from local UI state.
+
+## UI patterns
+
+A few small conventions that come up in real integrations:
+
+- **Badge count** — `(await get("/listPendingSwaps", { signer })).length`.
+- **Transactions list** — `listSwaps`, sorted by `createdAt desc`, grouped by `state.name` or by the first / last `step.title`.
+- **Per-swap detail screen** — once the user taps an entry, switch to the per-swap polling loop ([Creating & Executing](/rest-api-guide/creating-and-executing)) using the `swapId` from the list.
+- **Multi-chain aggregation** — call without `chainId`; the returned records already include `quote.inputAmount.chain` / `quote.outputAmount.chain` to label which chain each one belongs to.
