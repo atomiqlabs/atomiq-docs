@@ -1,5 +1,12 @@
 // @ts-check
+import fs from 'node:fs';
 import {themes as prismThemes} from 'prism-react-renderer';
+
+const apiReferenceDir = new URL('./api-reference', import.meta.url);
+
+if (!fs.existsSync(apiReferenceDir)) {
+  fs.mkdirSync(apiReferenceDir, {recursive: true});
+}
 
 // Shared TypeDoc options for consistent formatting
 const sharedTypedocOptions = {
