@@ -23,10 +23,10 @@ The final image is Alpine-based, ~280 MB.
 
 ## 2. Create a `config.yaml`
 
-Start from the bundled example:
+Start from the bundled example (lives in `config/`):
 
 ```bash
-cp config.yaml.example config.yaml
+cp config/config.yaml.example config/config.yaml
 ```
 
 Minimum viable config (testnet, public access, no TLS):
@@ -35,8 +35,12 @@ Minimum viable config (testnet, public access, no TLS):
 port: 3000
 logLevel: info
 
-starknetRpc: "https://starknet-sepolia.g.alchemy.com/..."
+starknetRpc: "https://rpc.starknet.lava.build/"
 solanaRpc:   "https://api.devnet.solana.com"
+botanixRpc: null
+citreaRpc: null
+alpenRpc: null
+goatRpc: null
 bitcoinNetwork: TESTNET
 
 cors:
@@ -44,7 +48,7 @@ cors:
 
 rateLimit:
   windowMs: 60000
-  maxRequests: 10
+  maxRequests: 200
 
 auth:
   - type: none
@@ -53,15 +57,37 @@ auth:
 
 See [Configuration](/rest-api-guide/run-locally/configuration) for the full schema.
 
+### Setting up RPC endpoints
+
+Before the service can talk to a smart chain, you need to give it an RPC URL for that chain. Three common options:
+
+1. **Public / community RPCs** — free endpoints like `https://api.mainnet-beta.solana.com` or `https://rpc.starknet.lava.build/`. Easiest to start with, but typically rate-limited and not reliable enough for production.
+2. **Hosted providers** — services like Alchemy, Infura, QuickNode, Helius (Solana), Lava, etc. give you a private URL with a generous free tier and paid plans once traffic grows.
+3. **Self-hosted node** — run your own full node and point the API at it. Most control, most operational overhead.
+
+Whichever you pick, paste the URL into the matching key in `config.yaml`. Leave a key out, or set it to `null`, to disable that chain entirely.
+
+A few things to double-check:
+
+- Make sure the **network of each RPC matches the rest of your config** — e.g. don't combine a mainnet Solana RPC with `bitcoinNetwork: TESTNET`. See the SDK [quick-start guide](/sdk-guide/quick-start/) for the supported network combinations.
+- **Mainnet Bitcoin** is configured by network name only (`bitcoinNetwork: MAINNET`) and does not need an RPC.
+
 ## 3. Run
 
 Use the bundled `docker-compose.yml`:
 
 ```bash
 docker compose up -d
+# if this doesn't work, try: docker-compose up -d
 ```
 
-This starts the service on port `3000`, mounts `./config.yaml` read-only, and persists the SQLite swap databases in a named `atomiq-data` volume so they survive container restarts.
+This starts the service on port `3000`, mounts `./config` read-only into `/src/config`, and persists the SQLite swap databases in the host `./storage` directory so they survive container restarts. The bundled compose file also sets `CONFIG_PATH=/src/config/config.yaml` and `STORAGE_DIR=/src/storage`. See [Configuration → Persistence](/rest-api-guide/run-locally/configuration#persistence) for details.
+
+You can tail the logs with:
+
+```bash
+docker compose logs -f
+```
 
 On startup you should see:
 

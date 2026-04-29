@@ -4,10 +4,7 @@ sidebar_position: 3
 
 # Configuration
 
-The service reads its entire runtime config from a single YAML file. Path resolution:
-
-1. `CONFIG_PATH` environment variable (used by Docker Compose to inject from `.env`).
-2. `./config.yaml` in the working directory.
+The service reads its entire runtime config from a single YAML file. The path is selected by the `CONFIG_PATH` environment variable; the bundled `docker-compose.yml` sets it to `/src/config/config.yaml`, which corresponds to `./config/config.yaml` on the host.
 
 ## Top-level keys
 
@@ -119,10 +116,10 @@ Set `https` in the config to run TLS directly:
 ```yaml
 https:
   keyPath: "./tls/server.key"
-  certPath: "./tls/server.crt"
+  certPath: "./tls/server.cert"
 ```
 
-Both paths are resolved relative to the `config.yaml` file.
+Both paths are resolved relative to the `config.yaml` file. With the bundled compose layout that means you can keep the certificate, key, or symlinks to them under `config/tls/` and mount the whole `config/` directory into the container read-only.
 
 The server watches both files with a 1 s poll interval. On any change it schedules a 60 s-delayed reload (debounced) via `server.setSecureContext(...)` — Node keeps serving existing connections during the swap. This is designed to work cleanly with Let's Encrypt / certbot renewal hooks: the renewal hook writes both files, the server picks them up within a minute without a restart.
 
@@ -138,12 +135,19 @@ You can also let the reverse proxy handle TLS and omit the `https` section from 
 
 ## Persistence
 
-The container writes SQLite files in the working directory (`/src`):
+The container writes SQLite files into the directory pointed to by the `STORAGE_DIR` environment variable. The bundled compose file sets it to `/src/storage`, mapped to `./storage` on the host:
 
 - `CHAIN_atomiqsdk-1-<CHAINID>.sqlite3` — one per active smart chain; swap state for that chain.
 - `STORE_<name>.sqlite3` — additional SDK state (e.g. `solAccounts`).
 
-The bundled `docker-compose.yml` mounts `./config.yaml` read-only and persists `/src` as a named `atomiq-data` volume so swap state survives restarts and upgrades. If you run the container directly with `docker run`, pass `-v "$PWD/atomiq-data:/src"` — without a volume the instance cannot resume in-flight swaps after an upgrade.
+The bundled `docker-compose.yml` uses two bind mounts so swap state and config live as plain files in the project directory:
+
+| Host path | Container path | Mode | Purpose |
+|---|---|---|---|
+| `./config` | `/src/config` | read-only | `config.yaml` and (optionally) `tls/` |
+| `./storage` | `/src/storage` | read-write | SQLite swap state |
+
+Back up `./storage/` to preserve in-flight swaps across host migrations.
 
 ## Background maintenance timers
 

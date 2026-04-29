@@ -18,14 +18,9 @@ The service is published as [`atomiqlabs/atomiq-api-docker`](https://github.com/
 
 Clients talk to it inbound over HTTP(S). The container never holds user keys — signing happens in the **client wallet**; the API only generates unsigned transactions and submits signed ones.
 
-```mermaid
-flowchart LR
-    CLIENT["Client<br/>(wallet UI, backend, script)"] -->|"HTTP(S)"| API["atomiq-api-docker"]
-    API --- DB[("SQLite<br/>swap state")]
-    API -->|"RFQ / HTLC setup"| LPS["Atomiq LP nodes"]
-    API -->|"read-only RPC"| SC["Smart chains"]
-    API -->|"fee rates, PSBT building"| BTC["Bitcoin / Lightning"]
-```
+![System architecture](/img/rest-api/docker-swap-backend.svg)
+
+A typical deployment has the wallet backend running the container on an internal network and terminating TLS on it directly (or behind a reverse proxy).
 
 ## What This Service Is Not
 
