@@ -1,0 +1,38 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://docs.atomiq.exchange/rest-api-reference/overview",
+      "service-desc": [
+        {
+          "href": "https://docs.atomiq.exchange/openapi.json",
+          "type": "application/json",
+          "title": "Atomiq REST API — OpenAPI 3.1 specification"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://docs.atomiq.exchange/rest-api-reference/overview",
+          "type": "text/html",
+          "title": "Atomiq REST API Reference"
+        },
+        {
+          "href": "https://docs.atomiq.exchange/rest-api-guide",
+          "type": "text/html",
+          "title": "Atomiq REST API Guide"
+        }
+      ],
+      "describedby": [
+        {
+          "href": "https://docs.atomiq.exchange/sdk-reference",
+          "type": "text/html",
+          "title": "Atomiq SDK Reference (TypeScript)"
+        },
+        {
+          "href": "https://docs.atomiq.exchange/sdk-guide",
+          "type": "text/html",
+          "title": "Atomiq SDK Guide"
+        }
+      ]
+    }
+  ]
+}

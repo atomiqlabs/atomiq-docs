@@ -1,0 +1,105 @@
+# Atomiq Docs — robots.txt
+# Sitemap reference (RFC 9309)
+Sitemap: https://docs.atomiq.exchange/sitemap.xml
+
+# Content Signals (contentsignals.org / IETF draft)
+# Declare AI usage preferences for this site.
+Content-Signal: search=yes, ai-train=yes, ai-input=yes
+
+# ---------------------------------------------------------------------------
+# Default policy — allow all standard crawlers.
+# ---------------------------------------------------------------------------
+User-agent: *
+Allow: /
+
+# ---------------------------------------------------------------------------
+# Explicit allow-list for AI / LLM crawlers and agent fetchers.
+# Atomiq docs are intended to be readable by AI agents that build, integrate
+# with, or assist users in using the Atomiq cross-chain swap protocol.
+# ---------------------------------------------------------------------------
+
+# OpenAI
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: OpenAI-SearchBot
+Allow: /
+
+# Anthropic
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Google
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+# Common Crawl (used by many LLM training pipelines)
+User-agent: CCBot
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Meta
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# Apple
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# DuckDuckGo
+User-agent: DuckAssistBot
+Allow: /
+
+# Mistral
+User-agent: MistralAI-User
+Allow: /
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+
+# ByteDance / TikTok
+User-agent: Bytespider
+Allow: /
+
+# Diffbot (used by LLM tools)
+User-agent: Diffbot
+Allow: /
+
+# You.com
+User-agent: YouBot
+Allow: /
+
+# AI agent runtimes (browser-based, fetch-on-demand)
+User-agent: Operator
+Allow: /
+
+User-agent: ChatGPT-Operator
+Allow: /

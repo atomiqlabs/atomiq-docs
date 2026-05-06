@@ -25,6 +25,10 @@ yarn-error.log*
 sdk-reference/api/
 rest-api-reference/
 
+# Copied from repos/atomiq-sdk/openapi.json by `npm run copy-openapi`
+# (runs automatically as prestart/prebuild). Source of truth lives in the SDK repo.
+static/openapi.json
+
 
 .claude/settings.local.json
 repos/

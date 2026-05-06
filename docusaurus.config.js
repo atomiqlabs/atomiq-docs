@@ -46,6 +46,8 @@ const config = {
 
   future: {
     v4: true,
+    // Use git history for sitemap <lastmod> dates and per-page freshness signals.
+    experimental_vcs: true,
   },
 
   url: 'https://docs.atomiq.exchange',
@@ -76,6 +78,7 @@ const config = {
         path: 'sdk-reference',
         routeBasePath: 'sdk-reference',
         sidebarPath: './sidebars-sdk-reference.js',
+        showLastUpdateTime: true,
       },
     ],
 
@@ -90,6 +93,7 @@ const config = {
         routeBasePath: 'rest-api-reference',
         sidebarPath: './sidebars-rest-api-reference.js',
         docItemComponent: '@theme/ApiItem',
+        showLastUpdateTime: true,
       },
     ],
 
@@ -138,6 +142,74 @@ const config = {
         readme: 'none',
         ...sharedTypedocOptions,
         mergeModulesMergeMode: 'module',
+      },
+    ],
+
+    // ============================================
+    // llms.txt + per-page markdown mirrors for AI agents
+    // - /llms.txt          → hierarchical index of every page
+    // - /llms-full.txt     → all docs concatenated (single fetch)
+    // - /<route>.md        → markdown mirror of every HTML page
+    // ============================================
+    [
+      '@signalwire/docusaurus-plugin-llms-txt',
+      {
+        siteTitle: 'Atomiq Docs',
+        siteDescription:
+          'Atomiq is a fully trustless cross-chain DEX enabling swaps between ' +
+          'Bitcoin/Lightning and smart chains (Solana, Starknet, EVM) using a ' +
+          'Bitcoin light client, submarine swaps (HTLCs), and a Request-for-Quote ' +
+          'Liquidity Provider network.',
+        depth: 2,
+        enableDescriptions: true,
+        content: {
+          enableMarkdownFiles: true,
+          enableLlmsFullTxt: true,
+          relativePaths: false,
+          includeBlog: false,
+          includePages: true,
+          includeDocs: true,
+          // Skip search, redirect aliases, and the unrelated `superpowers/`
+          // build artefact so the index stays focused on canonical routes.
+          excludeRoutes: [
+            '/search',
+            '/search/**',
+            '/superpowers/**',
+            '/developers/**',
+            '/rest-api/**',
+            '/api-reference/**',
+          ],
+        },
+        optionalLinks: [
+          {
+            title: 'Atomiq REST API — OpenAPI 3.1 spec (JSON)',
+            url: 'https://docs.atomiq.exchange/openapi.json',
+            description:
+              'Machine-readable OpenAPI specification for the Atomiq REST API. ' +
+              'Use this as the source of truth for endpoint shapes, parameters, ' +
+              'and error responses when generating client code.',
+          },
+          {
+            title: 'Atomiq SDK on npm',
+            url: 'https://www.npmjs.com/package/@atomiqlabs/sdk',
+            description: 'TypeScript SDK package for integrating Atomiq swaps.',
+          },
+          {
+            title: 'Atomiq GitHub organization',
+            url: 'https://github.com/atomiqlabs',
+            description: 'All Atomiq protocol, SDK, and contract repositories.',
+          },
+        ],
+        // Top-level prioritisation: getting-started → guides → SDK → REST API.
+        includeOrder: [
+          '/',
+          '/overview/**',
+          '/guides/**',
+          '/sdk-guide/**',
+          '/sdk-reference/**',
+          '/rest-api-guide/**',
+          '/rest-api-reference/**',
+        ],
       },
     ],
 
@@ -193,10 +265,33 @@ const config = {
           sidebarPath: './sidebars.js',
           routeBasePath: '/', // Docs at root
           editUrl: 'https://github.com/atomiqlabs/atomiq-docs/tree/main/',
+          // Surface git-based last-updated timestamps for AI agents and humans
+          // alike. Feeds <lastmod> in sitemap.xml and the per-page footer.
+          showLastUpdateTime: true,
         },
         blog: false, // Disable blog
         theme: {
           customCss: './src/css/custom.css',
+        },
+        // Emit <lastmod> for AI agents and search engines so they can
+        // prioritise fresh content. ignorePatterns excludes search and
+        // tag pages from the sitemap.
+        sitemap: {
+          changefreq: 'weekly',
+          priority: 0.5,
+          lastmod: 'date',
+          ignorePatterns: ['/tags/**', '/search'],
+          filename: 'sitemap.xml',
+          // Fall back to today's build date for routes without git history
+          // (auto-generated TypeDoc + OpenAPI pages live in gitignored
+          // folders and would otherwise be emitted without a <lastmod>).
+          createSitemapItems: async ({defaultCreateSitemapItems, ...rest}) => {
+            const items = await defaultCreateSitemapItems(rest);
+            const today = new Date().toISOString().split('T')[0];
+            return items.map((item) =>
+              item.lastmod ? item : {...item, lastmod: today},
+            );
+          },
         },
       }),
     ],
