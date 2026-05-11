@@ -15,3 +15,11 @@ $DRAWIO -x -b 20 -f svg -o "$OUTPUT_DIR/nostr-frombtcln-diagram.svg" nostr-fromb
 #   name="${file%.drawio}"
 #   $DRAWIO -x -b 20 -f svg -o "$OUTPUT_DIR/$name.svg" "$file"
 # done
+
+# for mermaid files:
+# PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+# mmdc -i diagrams/rest-api-swap-lifecycle.mmd \
+#         -o static/img/rest-api/swap-lifecycle.svg -b transparent
+
+# The PUPPETEER_EXECUTABLE_PATH is needed because mmdc's bundled Chrome wasn't installed — it falls back to your system Chrome. If you'd rather not set the env var each time, run npx
+# puppeteer browsers install chrome-headless-shell once.
