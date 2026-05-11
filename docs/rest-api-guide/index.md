@@ -4,9 +4,11 @@ sidebar_position: 1
 
 # REST API Guide
 
-The **Atomiq REST API** is an HTTP interface for executing trustless cross-chain swaps between **Bitcoin / Lightning** and smart chains (**Starknet, Solana, Botanix, Citrea, Alpen, Goat**). It wraps the Atomiq SDK's `SwapperApi` so a wallet backend, frontend, or any other HTTP client can embed swaps without pulling the full SDK into every mobile, extension, or web app.
+The **Atomiq REST API** is a dockerized HTTP interface for the Atomiq cross-chain DEX. It lets you offer trustless swaps between **Bitcoin / Lightning** and smart chains (**Starknet, Solana, Botanix, Citrea, Alpen, Goat**) without bundling the full Atomiq SDK into every mobile, extension, or web client.
 
-The API is **non-custodial**: it never holds user keys. All signing happens in the client wallet; the API builds unsigned transactions and submits signed ones.
+This guide is written for integrators, but it's just as useful if you simply want to run the API as part of your own infrastructure and expose swaps to your users.
+
+The API is **non-custodial**: it never holds user keys. All signing happens in the client wallet — the API builds unsigned transactions and submits signed ones.
 
 :::tip
 - Looking for exact request / response shapes? → **[REST API Reference](/rest-api-reference/overview)**
@@ -17,11 +19,9 @@ The API is **non-custodial**: it never holds user keys. All signing happens in t
 
 ## What this guide covers
 
-This guide is organized by **task**, not by endpoint. Each page answers one concrete question that comes up while building a swap integration.
-
 | Section | What you'll learn |
 |---|---|
-| **[Concepts](/rest-api-guide/concepts)** | Shared vocabulary: token IDs, amount encoding, the quote → execute model, error shape. Start here. |
+| **[Concepts](/rest-api-guide/concepts)** | Shared vocabulary: token IDs, amount encoding, the quote → execute model, error shape. |
 | **[Quoting Swaps](/rest-api-guide/quoting)** | How to populate a swap form — supported tokens, compatible counter-tokens, min/max limits. |
 | **[Creating & Executing a Swap](/rest-api-guide/creating-and-executing)** | The core lifecycle: create, poll, sign, submit. Action types. Execution steps. |
 | **[Bitcoin & Lightning Specifics](/rest-api-guide/bitcoin-and-lightning)** | PSBT signing, BOLT11 invoices, LNURL-pay / LNURL-withdraw, preimage reveal. |
