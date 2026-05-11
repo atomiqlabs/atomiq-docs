@@ -8,45 +8,7 @@ This page covers the core swap lifecycle that every direction follows: **create 
 
 ## Lifecycle overview
 
-```mermaid
-sequenceDiagram
-    autonumber
-    participant W as Client Wallet
-    participant A as REST API
-    participant LP as Atomiq LP
-    participant C1 as Source chain
-    participant C2 as Destination chain
-
-    W->>A: POST /createSwap<br/>{ srcToken, dstToken, amount, ... }
-    A->>LP: RFQ request
-    LP-->>A: quote
-    A-->>W: { swapId, quote, state: CREATED }
-
-    loop Poll every action.pollTimeSeconds (default 5s)
-        W->>A: GET /getSwapStatus?swapId=<br/>+ bitcoin wallet info if needed
-        A-->>W: { state, currentAction, isFinished, requiresSecretReveal }
-
-        alt currentAction = SignPSBT
-            W->>W: sign PSBT (BTC key)
-            W->>A: POST /submitTransaction<br/>{ signedTxs: [psbtHex] }
-            A->>C1: broadcast
-            A-->>W: { txHashes }
-        else currentAction = SignSmartChainTransaction
-            W->>W: sign smart-chain tx
-            W->>A: POST /submitTransaction
-            A->>C2: broadcast
-            A-->>W: { txHashes }
-        else currentAction = SendToAddress
-            W->>C1: pay address externally<br/>(or LNURL flow)
-        else currentAction = Wait
-            Note over W,A: Just keep polling until<br/>expectedTimeSeconds elapses
-        else requiresSecretReveal = true
-            W->>A: GET /getSwapStatus?swapId=…&secret=<preimage>
-        end
-    end
-
-    Note over W,A: isFinished=true ⇒ stop polling.<br/>isSuccess / isFailed / isExpired<br/>describes the terminal state.
-```
+![REST API swap lifecycle — create, poll, sign, submit until finished](/img/rest-api/swap-lifecycle.svg)
 
 ## 1. Create the swap
 
