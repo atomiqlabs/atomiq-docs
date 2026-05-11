@@ -4,17 +4,21 @@ sidebar_position: 1
 
 # REST API Guide
 
-The **Atomiq REST API** is a dockerized HTTP interface for the Atomiq cross-chain DEX. It lets you offer trustless swaps between **Bitcoin / Lightning** and smart chains (**Starknet, Solana, Botanix, Citrea, Alpen, Goat**) without bundling the full Atomiq SDK into every mobile, extension, or web client.
+The **Atomiq REST API** is a dockerized HTTP interface for the Atomiq cross-chain DEX, covering trustless swaps between **Bitcoin / Lightning** and smart chains (**Starknet, Solana, Botanix, Citrea, Alpen, Goat**).
+
+:::info[Prefer the SDK when you can]
+If you're building in a JavaScript / TypeScript environment, the **[Atomiq SDK](/sdk-guide/)** is the recommended integration surface — it runs in-process, has no network hop, and isn't tied to a hosted service's availability. Reach for the REST API when the SDK can't run: non-JS runtimes, environments without local persistence, or when you want to isolate Atomiq behind a service boundary you operate.
+:::
 
 This guide is written for integrators, but it's just as useful if you simply want to run the API as part of your own infrastructure and expose swaps to your users.
 
 The API is **non-custodial**: it never holds user keys. All signing happens in the client wallet — the API builds unsigned transactions and submits signed ones.
 
 :::tip
+- Want to use Atomiq in-process from TypeScript? → **[SDK Guide](/sdk-guide/)** *(recommended)*
 - Looking for exact request / response shapes? → **[REST API Reference](/rest-api-reference/overview)**
-- Want to use Atomiq in-process from TypeScript instead of over HTTP? → **[SDK Guide](/sdk-guide/)**
 - Need to self-host the service? → **[Run REST API Locally](/rest-api-guide/run-locally/)**
-- **Machine-readable OpenAPI 3.1 spec:** [`/openapi.json`](/openapi.json) — for code generators, AI agents, and tooling.
+- **Machine-readable OpenAPI 3.1 spec:** [`/rest-api-reference/openapi.json`](/rest-api-reference/openapi.json) — for code generators, AI agents, and tooling.
 :::
 
 ## What this guide covers

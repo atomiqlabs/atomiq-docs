@@ -4,7 +4,7 @@
       "anchor": "https://docs.atomiq.exchange/rest-api-reference/overview",
       "service-desc": [
         {
-          "href": "https://docs.atomiq.exchange/openapi.json",
+          "href": "https://docs.atomiq.exchange/rest-api-reference/openapi.json",
           "type": "application/json",
           "title": "Atomiq REST API — OpenAPI 3.1 specification"
         }

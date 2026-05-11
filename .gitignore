@@ -25,9 +25,9 @@ yarn-error.log*
 sdk-reference/api/
 rest-api-reference/
 
-# Copied from repos/atomiq-sdk/openapi.json by `npm run copy-openapi`
-# (runs automatically as prestart/prebuild). Source of truth lives in the SDK repo.
-static/openapi.json
+# Copied from repos/atomiq-sdk/openapi.json at docusaurus.config.js load time.
+# Source of truth lives in the SDK repo.
+static/rest-api-reference/openapi.json
 
 
 .claude/settings.local.json

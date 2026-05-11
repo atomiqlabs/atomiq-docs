@@ -8,6 +8,17 @@ if (!fs.existsSync(apiReferenceDir)) {
   fs.mkdirSync(apiReferenceDir, {recursive: true});
 }
 
+// Copy the canonical OpenAPI spec from the SDK repo into the static dir so it
+// ships in the build at /rest-api-reference/openapi.json (next to the generated
+// reference pages). Source of truth lives in the SDK repo.
+const openapiSrc = new URL('./repos/atomiq-sdk/openapi.json', import.meta.url);
+const openapiStaticDir = new URL('./static/rest-api-reference/', import.meta.url);
+const openapiDest = new URL('./openapi.json', openapiStaticDir);
+if (fs.existsSync(openapiSrc)) {
+  fs.mkdirSync(openapiStaticDir, {recursive: true});
+  fs.copyFileSync(openapiSrc, openapiDest);
+}
+
 // Shared TypeDoc options for consistent formatting
 const sharedTypedocOptions = {
   skipErrorChecking: true,
@@ -159,7 +170,10 @@ const config = {
           'Atomiq is a fully trustless cross-chain DEX enabling swaps between ' +
           'Bitcoin/Lightning and smart chains (Solana, Starknet, EVM) using a ' +
           'Bitcoin light client, submarine swaps (HTLCs), and a Request-for-Quote ' +
-          'Liquidity Provider network.',
+          'Liquidity Provider network. Two integration surfaces exist: the ' +
+          'TypeScript SDK (preferred for JavaScript/TypeScript environments) and ' +
+          'a self-hostable REST API (use when the SDK cannot run — non-JS runtimes ' +
+          'or environments without local persistence).',
         depth: 2,
         enableDescriptions: true,
         content: {
@@ -183,7 +197,7 @@ const config = {
         optionalLinks: [
           {
             title: 'Atomiq REST API — OpenAPI 3.1 spec (JSON)',
-            url: 'https://docs.atomiq.exchange/openapi.json',
+            url: 'https://docs.atomiq.exchange/rest-api-reference/openapi.json',
             description:
               'Machine-readable OpenAPI specification for the Atomiq REST API. ' +
               'Use this as the source of truth for endpoint shapes, parameters, ' +
