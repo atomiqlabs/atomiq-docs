@@ -148,6 +148,7 @@ const sidebars = {
       id: 'rest-api-guide/index',
       label: 'Overview',
     },
+    'rest-api-guide/quickstart',
     'rest-api-guide/concepts',
     'rest-api-guide/quoting',
     'rest-api-guide/creating-and-executing',
@@ -160,7 +161,6 @@ const sidebars = {
       link: { type: 'doc', id: 'rest-api-guide/run-locally/index' },
       collapsed: true,
       items: [
-        'rest-api-guide/run-locally/quick-start',
         'rest-api-guide/run-locally/configuration',
       ],
     },

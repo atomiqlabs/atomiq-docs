@@ -1,0 +1,336 @@
+---
+sidebar_position: 1
+---
+
+# Quick Start
+
+This page covers the core swap lifecycle that every direction follows: **create → poll → sign → submit → repeat** until finished. Bitcoin- and Lightning-specific details (PSBT building, LNURL, preimage reveal) are split into [Bitcoin & Lightning Specifics](/rest-api-guide/bitcoin-and-lightning).
+
+## 1. Create the swap
+
+```json
+curl -X POST "https://mainnet.swaps-api.atomiq.exchange/createSwap" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "srcToken":   "BITCOIN-BTC",
+    "dstToken":   "STARKNET-STRK",
+    "amount":     "150000",
+    "amountType": "EXACT_IN",
+    "srcAddress": "bc1q…",
+    "dstAddress": "0x0123…"
+  }'
+```
+
+This creates a swap to send 0.0015 BTC (150,000 sats) from the user to the Atomiq LP network, in exchange for whatever that amount of BTC is worth in STRK at the moment of creation. Note that `amount` is in base units (sats for Bitcoin, wei for Ethereum, etc), and we defined the amount type as `EXACT_IN` to fix the source amount rather than the destination.
+
+:::info
+For Lightning to smart-chain swaps, `srcAddress` is an LNURL-withdraw link or it should be left empty.
+:::
+
+The response is a **swap record** — the same shape every subsequent `getSwapStatus` call will return:
+
+```json
+{
+  "swapId":   "…",
+  "swapType": "FROM_BTC",
+  "state":    { "number": 1, "name": "CREATED", "description": "…" },
+  "quote":    {
+    "inputAmount":  { "amount": "0.0015",      "rawAmount": "150000", ... },
+    "outputAmount": { "amount": "4.21",        "rawAmount": "4210000000000000000", ... },
+    "fees":         { "swap": { ... }, "networkOutput": { ... } },
+    "expiry":       1713360000000,
+    "outputAddress": "0x0123…"
+  },
+  "createdAt": 1713359700000,
+  "steps":    [ /* SwapExecutionStep[] — see below */ ]
+}
+```
+
+## 2. Poll for the current action
+
+Drive the swap forward by calling `GET /getSwapStatus` on each tick:
+
+```json
+curl "https://mainnet.swaps-api.atomiq.exchange/getSwapStatus?swapId=<id>"
+```
+
+:::info
+For Bitcoin → smart-chain swaps, pass `bitcoinAddress` + `bitcoinPublicKey` on **every** call as the API needs them to build funded PSBTs.
+
+```json
+curl "https://mainnet.swaps-api.atomiq.exchange/getSwapStatus?swapId=<id>&bitcoinAddress=<addr>&bitcoinPublicKey=<hex>"
+```
+:::
+
+The response extends the swap record with four boolean flags and a `currentAction`:
+
+```json
+{
+  /* ... all swap-record fields ... */
+  "isFinished":       false,
+  "isSuccess":        false,
+  "isFailed":         false,
+  "isExpired":        false,
+  "currentAction":    { "type": "SignPSBT", /* ... */ },
+  "requiresSecretReveal": false
+}
+```
+
+When `isFinished === true`, stop polling. See [Concepts → Terminal states](/rest-api-guide/concepts#terminal-states).
+
+## 3. Handle the current action
+
+`currentAction` is one of the following four shapes, which correspond to types that the client should branch on:
+
+### `SignPSBT`
+
+Here, the API has built a Bitcoin PSBT for the user's deposit and needs your wallet (client) to sign the specified inputs.
+
+```json
+{
+  "type": "SignPSBT",
+  "chain": "BITCOIN",
+  "name": "Deposit on Bitcoin",
+  "description": "Sign the funding transaction to commit the deposit.",
+  "pollTimeSeconds": 5,
+  "txs": [
+    {
+      "type": "FUNDED_PSBT",
+      "psbtHex":    "70736274ff0100…ac0000000000",
+      "psbtBase64": "cHNidP8BAH0CAAA…rAAAAAAA=",
+      "signInputs": [0, 2],
+      "feeRate": 3.5
+    }
+  ]
+}
+```
+
+For each PSBT in `action.txs`, sign the inputs listed in `signInputs` with the user's Bitcoin wallet and post the signed PSBTs back to `/submitTransaction`. The API finalizes, broadcasts, and advances the swap state.
+
+:::info
+In case you didn't supply `bitcoinAddress` + `bitcoinPublicKey` on `getSwapStatus` (see [step 2](#2-poll-for-the-current-action)) it returns the `RAW_PSBT` instead of `FUNDED_PSBT`, and the client must add its own inputs (coin-selection) before signing — see [Bitcoin & Lightning → PSBT signing](/rest-api-guide/bitcoin-and-lightning#psbt-signing).
+:::
+
+Submit each signed PSBT as a **hex- or base64-encoded** string. Order in `signedTxs` must match the order in `action.txs`:
+
+```json
+curl -X POST "https://mainnet.swaps-api.atomiq.exchange/submitTransaction" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "swapId": "0x9f3c…",
+    "signedTxs": ["70736274ff01..."]
+  }'
+```
+
+The response contains the broadcast Bitcoin txid(s):
+
+```json
+{ "txHashes": ["a1b2c3d4e5f6…"] }
+```
+
+On the next `getSwapStatus` poll, `currentAction` will flip to a `Wait` while the deposit confirms on-chain.
+
+### `SignSmartChainTransaction`
+
+Here, the API has pre-built one or more chain-native transactions (destination-side init/claim, gas-drop ATA creation, account deployment, etc.) and needs the user's smart-chain wallet to sign them.
+
+```json
+{
+  "type": "SignSmartChainTransaction",
+  "chain": "SOLANA",
+  "name": "Commit on Solana",
+  "description": "Sign and submit the escrow-funding transaction.",
+  "pollTimeSeconds": 3,
+  "txs": [
+    "{\"tx\":\"01a4f1b2…\",\"signers\":[\"<hex>\"],\"lastValidBlockheight\":345678901}"
+  ]
+}
+```
+
+Each entry of `action.txs` is a **JSON-stringified envelope** whose shape depends on `action.chain`. Parse it, sign it with the chain's standard wallet API, re-serialize, and post the result back to `/submitTransaction`. The order in `signedTxs` must match the order in `action.txs`.
+
+**Solana** — envelope is `{ tx, signers, lastValidBlockheight }` where `tx` is a hex-encoded legacy `Transaction`, `signers` is an array of hex-encoded secret keys for any ephemeral co-signers the LP needs you to include, and `lastValidBlockheight` is the block-height expiry. Use `partialSign` — the LP may already have signed.
+
+**Starknet** — envelope is `{ type, tx, details, ... }`. `type` is either `INVOKE` (regular call) or `DEPLOY_ACCOUNT` (first-time account deployment). For `INVOKE`, build the signed invocation from `tx` + `details`. For `DEPLOY_ACCOUNT`, the API can't know your account class, so build the deployment payload yourself using the supplied `details` (fees, nonce). Convert every `resourceBounds.*.*` value to `BigInt` before signing. Populate `parsed.signed` and re-stringify (use a BigInt → string replacer).
+
+**EVM** (Botanix / Citrea / Alpen / Goat) — `txs[i]` is a serialized unsigned Ethers transaction. Parse with `EthersTransaction.from`, sign, and push the result back.
+
+```ts
+const signedTxs: string[] = [];
+for (const tx of action.txs) {
+  switch (action.chain) {
+    case "SOLANA": {
+      const parsed = JSON.parse(tx);
+      const extraSigners = parsed.signers.map((k: string) =>
+        Keypair.fromSecretKey(Buffer.from(k, "hex")),
+      );
+      const solTx = SolanaTransaction.from(Buffer.from(parsed.tx, "hex"));
+      solTx.lastValidBlockHeight = parsed.lastValidBlockheight;
+      solTx.partialSign(solanaWallet, ...extraSigners);   // preserves LP sig
+      signedTxs.push(solTx.serialize().toString("hex"));
+      break;
+    }
+    case "STARKNET": {
+      const parsed = JSON.parse(tx);
+      // Coerce resourceBounds back to BigInt
+      for (const t in parsed.details.resourceBounds)
+        for (const p in parsed.details.resourceBounds[t])
+          parsed.details.resourceBounds[t][p] = BigInt(parsed.details.resourceBounds[t][p]);
+
+      if (parsed.type === "INVOKE") {
+        parsed.signed = await starknetWallet.buildInvocation(parsed.tx, parsed.details);
+      } else if (parsed.type === "DEPLOY_ACCOUNT") {
+        // API can't know your account class — build the deployment payload yourself.
+        parsed.signed = await starknetWallet.buildAccountDeployPayload(
+          starknetWalletDeploymentPayload,
+          parsed.details,
+        );
+      }
+      signedTxs.push(JSON.stringify(parsed, (_, v) => typeof v === "bigint" ? v.toString() : v));
+      break;
+    }
+    default: { // EVM chains
+      const parsedTx = EthersTransaction.from(tx);
+      signedTxs.push(await evmWallet.signTransaction(parsedTx));
+      break;
+    }
+  }
+}
+```
+
+:::info
+The full reference implementation lives at [`scripts/process-swap.ts`](https://github.com/atomiqlabs/atomiq-api-docker/blob/main/scripts/process-swap.ts) in the Docker repo — it's the canonical source if the docs and code disagree.
+:::
+
+Submit the signed payloads. Encoding per chain: hex for Solana and EVM; JSON-stringified envelope (with `signed` populated) for Starknet.
+
+```json
+curl -X POST "https://mainnet.swaps-api.atomiq.exchange/submitTransaction" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "swapId": "0x9f3c…",
+    "signedTxs": ["<hex or JSON envelope>"]
+  }'
+```
+
+The response contains one broadcast tx hash per signed transaction, in input order:
+
+```json
+{ "txHashes": ["3KZv8Fq…SolanaSig…"] }
+```
+
+On the next `getSwapStatus` poll, `currentAction` will typically flip to `Wait` while the destination chain settles, or directly to the terminal state.
+
+### `SendToAddress`
+
+Here, the user must pay an address out of band — an on-chain Bitcoin address or a BOLT11 Lightning invoice. The API can't sign for the user, so the client just surfaces the payment request and keeps polling.
+
+```json
+{
+  "type": "SendToAddress",
+  "name": "Pay Lightning invoice",
+  "description": "Pay the BOLT11 invoice from any Lightning wallet.",
+  "pollTimeSeconds": 5,
+  "expectedTimeSeconds": 60,
+  "txs": [
+    {
+      "name":    "Lightning payment",
+      "address": "lnbc1500n1p3z7…",
+      "amount":  { "amount": "0.00015", "symbol": "BTC" }
+    }
+  ]
+}
+```
+
+Show the `address` and `amount` from each entry of `action.txs` to the user (a QR code is ideal) and let them pay from whichever wallet they like. Keep polling `getSwapStatus`; the server detects the incoming payment and advances the state automatically.
+
+:::info
+If `status.lnurl?.withdraw` is set, the swap can be settled automatically via LNURL-withdraw instead of asking the user to pay an invoice — call [`settleWithLnurl`](/rest-api-guide/bitcoin-and-lightning#settlewithlnurl--lnurl-withdraw-settlement) instead.
+:::
+
+### `Wait`
+
+Here, there's nothing actionable right now — the API is waiting for confirmations, a counterparty action, or a timer to elapse.
+
+```json
+{
+  "type": "Wait",
+  "name": "Waiting for confirmations",
+  "description": "1/3 confirmations seen. ETA ~30 min.",
+  "expectedTimeSeconds": 1800,
+  "pollTimeSeconds": 30
+}
+```
+
+Sleep `pollTimeSeconds` and call `getSwapStatus` again. Use `expectedTimeSeconds` to render an ETA in the UI. The server flips `currentAction` on its own once the wait clears.
+
+
+Details for each action type (especially PSBTs and LNURL) live in [Bitcoin & Lightning](/rest-api-guide/bitcoin-and-lightning).
+
+
+
+## 5. Minimal client loop
+
+The whole thing in pseudocode:
+
+```ts
+const { swapId } = await post("/createSwap", {
+  srcToken, dstToken, amount, amountType, dstAddress,
+});
+
+for (;;) {
+  const s = await get("/getSwapStatus", { swapId, bitcoinAddress, bitcoinPublicKey });
+  if (s.isFinished) break;
+
+  if (s.requiresSecretReveal) {
+    await get("/getSwapStatus", { swapId, secret: preimageHex });
+    continue;
+  }
+
+  const action = s.currentAction;
+  let signedTxs;
+  switch (action?.type) {
+    case "SignPSBT":                  signedTxs = await signPSBTs(action.txs); break;
+    case "SignSmartChainTransaction": signedTxs = await signSmartChain(action); break;
+    case "SendToAddress":             showAddressToUser(action.txs[0]);         break;
+    case "Wait":                      /* no-op */                               break;
+  }
+  if (signedTxs?.length) await post("/submitTransaction", { swapId, signedTxs });
+
+  await sleep((action?.pollTimeSeconds ?? 5) * 1000);
+}
+
+// s.isSuccess / s.isFailed / s.isExpired describes the terminal state.
+```
+
+## Swap execution steps
+
+Every swap record carries a `steps` array alongside the action-level state. `steps` is a **UX hint** describing the swap as a linear sequence of stages — good for rendering a progress strip. The *actionable* state still lives in `currentAction`.
+
+| `type` | Meaning | Statuses |
+|---|---|---|
+| `Setup` | Destination-side setup (e.g. creating the destination HTLC / escrow). | `awaiting`, `completed`, `soft_expired`, `expired` |
+| `Payment` | The user's payment that initiates or funds the swap on the source side. | `inactive`, `awaiting`, `received`, `confirmed`, `soft_expired`, `expired` |
+| `Settlement` | Payout / settlement on the destination side. | `inactive`, `waiting_lp`, `awaiting_automatic`, `awaiting_manual`, `soft_settled`, `soft_expired`, `settled`, `expired` |
+| `Refund` | Source-side refund path after a failed swap. | `inactive`, `awaiting`, `refunded` |
+
+Bitcoin `Payment` steps also carry a `confirmations: { current, target, etaSeconds }` progress object once the funding transaction has been seen on-chain. Step objects expose `initTxId`, `settleTxId`, `setupTxId`, or `refundTxId` fields as the underlying transactions are broadcast — handy for linking into a block explorer.
+
+```json
+// Example step — Bitcoin payment being confirmed
+{
+  "type":        "Payment",
+  "side":        "source",
+  "chain":       "BITCOIN",
+  "title":       "Bitcoin deposit",
+  "description": "Waiting for 3 block confirmations.",
+  "status":      "received",
+  "confirmations": { "current": 1, "target": 3, "etaSeconds": 1200 },
+  "initTxId":    "a1b2…"
+}
+```
+
+## What next?
+
+- Handling Bitcoin-specific bits (PSBT inputs, fee rates), Lightning invoices, and LNURL settlement → [Bitcoin & Lightning Specifics](/rest-api-guide/bitcoin-and-lightning).
+- Persisting state across app restarts, refunds, "needs your attention" UIs → [Managing Swaps](/rest-api-guide/managing-swaps).
