@@ -120,6 +120,7 @@ const config = {
           swapperApi: {
             specPath: 'repos/atomiq-sdk/openapi.json',
             outputDir: 'rest-api-reference',
+            showSchemas: true,
             sidebarOptions: {
               groupPathsBy: 'tag',
               categoryLinkSource: 'tag',
