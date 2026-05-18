@@ -78,7 +78,7 @@ curl "https://mainnet.swaps-api.atomiq.exchange/getSwapStatus?swapId=<id>&bitcoi
 ```
 :::
 
-The response extends the swap record with four boolean flags and a `currentAction`, which indicates the action, that has to be executed by the user:
+The response extends the swap record with four boolean flags and a `currentAction`, which indicates the action, that has to be executed by the user. Reference for each action type can be found at the [`SerializedAction`](/rest-api-reference/schemas/serializedaction) schema.
 
 ```json
 {
@@ -295,8 +295,6 @@ Here, there's nothing actionable right now — the API is waiting for confirmati
 ```
 
 Wait `pollTimeSeconds` and call `getSwapStatus` again. Use `expectedTimeSeconds` to render an ETA in the UI.
-
-Details for each action type can be found at the `currentAction` field in the [`Response`](/rest-api-reference/get-swap-status#responses). Specific details for PSBTs and LNURL live in [Bitcoin & Lightning](/rest-api-guide/bitcoin-and-lightning).
 
 ## Lifecycle overview
 
