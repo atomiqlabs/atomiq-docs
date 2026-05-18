@@ -8,6 +8,8 @@ This page covers the core swap lifecycle that every direction follows: **create 
 
 ## 1. Create the swap
 
+Use [`POST /createSwap`](/rest-api-reference/create-swap) to create a new swap: 
+
 ```json
 curl -X POST "https://mainnet.swaps-api.atomiq.exchange/createSwap" \
   -H "Content-Type: application/json" \
@@ -34,12 +36,10 @@ const paymentHash: string = crypto.createHash("sha256").update(secret).digest("h
 // Store the preimage, i.e. in browser storage
 ```
 
-Then pass the hex-encoded payment hash to the `POST /createSwap` API as a `paymentHash` parameter.
+Then pass the hex-encoded payment hash to the [`POST /createSwap`](/rest-api-reference/create-swap) API as a `paymentHash` parameter.
 :::
 
-[//]: # (TODO: Add reference to the getSwapStatus returned object from rest api reference)
-
-The response is a **swap record** — the same shape every subsequent `GET /getSwapStatus` call will return:
+The response is a **swap record** — the same shape every subsequent [`GET /getSwapStatus`](/rest-api-reference/get-swap-status) call will return (see the REST API Reference for the full response schema):
 
 ```json
 {
@@ -64,7 +64,7 @@ The response is a **swap record** — the same shape every subsequent `GET /getS
 The full reference implementation of the polling loop, handling all the actions in TypeScript can be found at [`scripts/process-swap.ts`](https://github.com/atomiqlabs/atomiq-api-docker/blob/main/scripts/process-swap.ts) in the `atomiq-api-docker` repo.
 :::
 
-The swap process might include multiple actions that must be executed sequentially, you should therefore call `GET /getSwapStatus` in a polling loop, which returns the current action that the user should execute.
+The swap process might include multiple actions that must be executed sequentially, you should therefore call [`GET /getSwapStatus`](/rest-api-reference/get-swap-status) in a polling loop, which returns the current action that the user should execute.
 
 ```json
 curl "https://mainnet.swaps-api.atomiq.exchange/getSwapStatus?swapId=<id>"
@@ -95,7 +95,7 @@ The response extends the swap record with four boolean flags and a `currentActio
 When `isFinished === true`, stop polling. See [Concepts → Terminal states](/rest-api-guide/concepts#terminal-states).
 
 :::info[Lightning secret reveal]
-For **Lightning → Smart chain** swaps, the `requiresSecretReveal` parameter indicates when the swap secret should be revealed. To reveal the swap secret, include the `secret` parameter in the subsequent `GET /getSwapStatus` calls:
+For **Lightning → Smart chain** swaps, the `requiresSecretReveal` parameter indicates when the swap secret should be revealed. To reveal the swap secret, include the `secret` parameter in the subsequent [`GET /getSwapStatus`](/rest-api-reference/get-swap-status) calls:
 
 ```json
 curl "https://mainnet.swaps-api.atomiq.exchange/getSwapStatus?swapId=<id>&secret=<hex-encoded swap secret>"
@@ -127,7 +127,7 @@ Here, the API has built a Bitcoin PSBT for the user's deposit and needs the clie
 }
 ```
 
-For each PSBT in `action.txs`, sign the inputs listed in `signInputs` with the user's Bitcoin wallet and post the signed PSBTs back to `POST /submitTransaction`, for the API to broadcast the transaction. I.e. in this example the client should parse the PSBT from its `psbtHex` or `psbtBase64`, sign inputs with indexes 0 and 2.
+For each PSBT in `action.txs`, sign the inputs listed in `signInputs` with the user's Bitcoin wallet and post the signed PSBTs back to [`POST /submitTransaction`](/rest-api-reference/submit-transaction), for the API to broadcast the transaction. I.e. in this example the client should parse the PSBT from its `psbtHex` or `psbtBase64`, sign inputs with indexes 0 and 2.
 
 :::info
 In case you didn't supply `bitcoinAddress` + `bitcoinPublicKey` on `GET /getSwapStatus` (see [step 2](#2-poll-for-the-current-action)) it returns the `RAW_PSBT` objects in `action.txs` instead of `FUNDED_PSBT`, and the client must add its own inputs (coin-selection) before signing — see [Bitcoin & Lightning → PSBT signing](/rest-api-guide/bitcoin-and-lightning#psbt-signing).
@@ -243,7 +243,7 @@ curl -X POST "https://mainnet.swaps-api.atomiq.exchange/submitTransaction" \
 ```
 
 :::info
-Smart chain transaction submission endpoint usually waits for the smart chain transaction to confirm before responding, ensure you call the `POST /submitTransaction` with a long enough timeout, to accommodate transaction confirmation delays.
+Smart chain transaction submission endpoint usually waits for the smart chain transaction to confirm before responding, ensure you call the [`POST /submitTransaction`](/rest-api-reference/submit-transaction) with a long enough timeout, to accommodate transaction confirmation delays.
 :::
 
 The response contains transaction IDs of the submitted and broadcasted transactions:
@@ -274,7 +274,7 @@ Here, the user has to pay to either an on-chain Bitcoin address or a BOLT11 Ligh
 }
 ```
 
-Show the `address` and `amount` from each entry of `action.txs` to the user (or use a `hyperlink`, which can be displayed as a QR code, or used as clickable deeplink) and let them pay from whichever wallet they like. Keep polling `getSwapStatus`; the server detects the incoming payment and advances the state automatically.
+Show the `address` and `amount` from each entry of `action.txs` to the user (or use a `hyperlink`, which can be displayed as a QR code, or used as clickable deeplink) and let them pay from whichever wallet they like. Keep polling [`getSwapStatus`](/rest-api-reference/get-swap-status); the server detects the incoming payment and advances the state automatically.
 
 :::info
 A Lightning → Smart chain swap can also be settled via LNURL-withdraw instead of asking the user to pay an invoice — call [`settleWithLnurl`](/rest-api-guide/bitcoin-and-lightning#settlewithlnurl--lnurl-withdraw-settlement) instead.
@@ -296,7 +296,16 @@ Here, there's nothing actionable right now — the API is waiting for confirmati
 
 Wait `pollTimeSeconds` and call `getSwapStatus` again. Use `expectedTimeSeconds` to render an ETA in the UI.
 
-Details for each action type (especially PSBTs and LNURL) live in [Bitcoin & Lightning](/rest-api-guide/bitcoin-and-lightning).
+Details for each action type can be found at the `currentAction` field in the [`Response`](/rest-api-reference/get-swap-status#responses). Specific details for PSBTs and LNURL live in [Bitcoin & Lightning](/rest-api-guide/bitcoin-and-lightning).
+
+
+
+## Lifecycle overview
+
+![REST API swap lifecycle — create, poll, sign, submit until finished](/img/rest-api/swap-lifecycle.svg)
+
+
+
 
 ## What next?
 
