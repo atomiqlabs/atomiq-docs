@@ -24,7 +24,7 @@ curl "http://localhost:3000/getSupportedTokens?side=INPUT"
 
 Each token in the response is an `ApiToken`:
 
-```jsonc
+```json
 {
   "id":       "STARKNET-STRK",          // use this exact string elsewhere in the API
   "chainId":  "STARKNET",
@@ -63,7 +63,7 @@ curl "http://localhost:3000/getSwapLimits?srcToken=BITCOIN-BTC&dstToken=STARKNET
 
 Response:
 
-```jsonc
+```json
 {
   "input":  { "min": { /* ApiAmount */ }, "max": { /* ApiAmount */ } },
   "output": { "min": { /* ApiAmount */ }, "max": { /* ApiAmount */ } }

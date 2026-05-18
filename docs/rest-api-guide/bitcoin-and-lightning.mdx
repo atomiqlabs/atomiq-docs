@@ -14,7 +14,7 @@ If you're new to the flow, read [Creating & Executing a Swap](/rest-api-guide/cr
 
 When a swap needs a Bitcoin payment from the user's wallet (e.g. `BITCOIN-BTC → STARKNET-STRK`), `getSwapStatus` returns a `SignPSBT` action. The `txs` array always contains PSBTs of a single variant — either already-funded (`FUNDED_PSBT`) or raw (`RAW_PSBT`):
 
-```jsonc
+```json
 {
   "type": "SignPSBT",
   "name": "Deposit on Bitcoin",
@@ -37,7 +37,7 @@ When a swap needs a Bitcoin payment from the user's wallet (e.g. `BITCOIN-BTC �
 
 Submit the signed PSBT as hex or base64 via `POST /submitTransaction`:
 
-```jsonc
+```json
 { "swapId": "…", "signedTxs": ["70736274ff01…signed…"] }
 ```
 
@@ -97,7 +97,7 @@ The SDK resolves them internally. This is convenient but implicitly trusts the A
 
 For `LIGHTNING-BTC → smart-chain` swaps where the client supplied `paymentHash` on `createSwap`, the preimage stays entirely on the client. When the destination-chain HTLC is ready to be claimed, `getSwapStatus` returns:
 
-```jsonc
+```json
 {
   /* ... */
   "requiresSecretReveal": true,
@@ -127,7 +127,7 @@ If the swap was **already created with an LNURL-withdraw** (i.e. `createSwap` re
 
 Response:
 
-```jsonc
+```json
 { "paymentHash": "<hex>" }
 ```
 

@@ -15,11 +15,11 @@ Two general-purpose helpers that don't belong to any single swap — they cover 
 
 `parseAddress` accepts anything the user might reasonably paste into an address / invoice field — on-chain addresses, BOLT11 invoices, LNURL-pay / LNURL-withdraw links, Bitcoin URIs (`bitcoin:…`), and smart-chain addresses — and returns the parsed `type` plus structured data.
 
-```bash
+```json
 curl "http://localhost:3000/parseAddress?address=lnurl1dp68gurn8ghj7…"
 ```
 
-```jsonc
+```json
 {
   "address": "https://example.com/.well-known/lnurlp/user",
   "type":    "LNURL",
@@ -57,7 +57,7 @@ async function onRecipientChange(input: string) {
 
 `getSpendableBalance` returns the balance a wallet can *actually spend* on a swap after accounting for chain fees — the number you want behind a "Max" button, not the raw on-chain balance.
 
-```bash
+```json
 curl "http://localhost:3000/getSpendableBalance?wallet=0x0123…&token=STARKNET-STRK"
 ```
 
@@ -73,7 +73,7 @@ curl "http://localhost:3000/getSpendableBalance?wallet=0x0123…&token=STARKNET-
 
 Response:
 
-```jsonc
+```json
 {
   "balance": { "amount": "0.00243", "rawAmount": "243000", "decimals": 8, "symbol": "BTC", "chain": "BITCOIN" },
   "feeRate": 3.5     // only when estimating BTC on Bitcoin
