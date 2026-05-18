@@ -4,22 +4,35 @@ sidebar_position: 1
 
 # REST API Guide
 
-The **Atomiq REST API** is a dockerized HTTP interface for the Atomiq cross-chain DEX, covering trustless swaps between **Bitcoin / Lightning** and smart chains (**Starknet, Solana, Botanix, Citrea, Alpen, Goat**).
+The **Atomiq REST API** is an HTTP interface for the Atomiq cross-chain DEX, covering trustless swaps between **Bitcoin / Lightning** and smart chains (**Starknet, Solana, Botanix, Citrea, Alpen, Goat**).
 
-:::info[Prefer the SDK when you can]
-If you're building in a JavaScript / TypeScript environment, the **[Atomiq SDK](/sdk-guide/)** is the recommended integration surface — it runs in-process, has no network hop, and isn't tied to a hosted service's availability. Reach for the REST API when the SDK can't run: non-JS runtimes, environments without local persistence, or when you want to isolate Atomiq behind a service boundary you operate.
+You can either self-host the REST API on your own infrastructure using Docker (refer to **[Run REST API Locally](/rest-api-guide/run-locally/)**), or use the public API provided by Atomiq:
+
+- Mainnet: `https://mainnet.swaps-api.atomiq.exchange/`
+- Testnet4: `https://testnet4.swaps-api.atomiq.exchange/`
+
+:::warning
+By using the REST API you fully trust the backend to correctly validate swap data and serve properly constructed transactions to the clients. A compromised backend might drain your user's funds.
+
+Prefer the **[Atomiq SDK](/sdk-guide/)**, which verifies everything locally and doesn't rely on trusted external APIs. Use the REST API only when you cannot use the SDK: non-JS runtimes or environments without local persistence.
 :::
-
-This guide is written for integrators, but it's just as useful if you simply want to run the API as part of your own infrastructure and expose swaps to your users.
 
 The API is **non-custodial**: it never holds user keys. All signing happens in the client wallet — the API builds unsigned transactions and submits signed ones.
 
 :::tip
-- Want to use Atomiq in-process from TypeScript? → **[SDK Guide](/sdk-guide/)** *(recommended)*
 - Looking for exact request / response shapes? → **[REST API Reference](/rest-api-reference/atomiq-rest-api)**
-- Need to self-host the service? → **[Run REST API Locally](/rest-api-guide/run-locally/)**
 - **Machine-readable OpenAPI 3.1 spec:** [`/rest-api-reference/openapi.json`](/rest-api-reference/openapi.json) — for code generators, AI agents, and tooling.
 :::
+
+## Conventions used throughout
+
+[//]: # (TODO: Review this, we now use the public API urls throughout the docs, error shape might not actually contain the `retryAfter` - it surely doesn't in the public API &#40;azure based&#41; and the polling part is very specific)
+
+- **Base URL** — every example uses `http://localhost:3000` for the self-hosted container. Replace with your public API base URL when pointing at the hosted service.
+- **`GET` vs `POST`** — `GET` endpoints read parameters from the query string, `POST` endpoints from a JSON body.
+- **Big numbers** — TypeScript `bigint` fields are encoded as decimal strings (e.g. `"150000"`), because JSON cannot safely represent arbitrary-precision integers. See [Concepts → Amounts](/rest-api-guide/concepts#amounts-and-bigint-as-string).
+- **Error shape** — every error response is JSON: `{ "error": "<message>" }` for 4xx, with `retryAfter` added for 429. See [Concepts → Errors](/rest-api-guide/concepts#error-shape).
+- **Polling** — swap progress is observed by repeatedly calling `getSwapStatus`. There is no streaming / webhook channel in the current version.
 
 ## What this guide covers
 
@@ -32,11 +45,3 @@ The API is **non-custodial**: it never holds user keys. All signing happens in t
 | **[Managing Swaps](/rest-api-guide/managing-swaps)** | Listing history, the "needs your attention" badge, resuming after restart, refunds. |
 | **[Utilities](/rest-api-guide/utilities)** | Normalizing paste-field input, estimating spendable balance for a "Max" button. |
 | **[Run REST API Locally](/rest-api-guide/run-locally/)** | Run `atomiq-api-docker` yourself with Docker Compose, plus full config reference. |
-
-## Conventions used throughout
-
-- **Base URL** — every example uses `http://localhost:3000` for the self-hosted container. Replace with your public API base URL when pointing at the hosted service.
-- **`GET` vs `POST`** — `GET` endpoints read parameters from the query string, `POST` endpoints from a JSON body.
-- **Big numbers** — TypeScript `bigint` fields are encoded as decimal strings (e.g. `"150000"`), because JSON cannot safely represent arbitrary-precision integers. See [Concepts → Amounts](/rest-api-guide/concepts#amounts-and-bigint-as-string).
-- **Error shape** — every error response is JSON: `{ "error": "<message>" }` for 4xx, with `retryAfter` added for 429. See [Concepts → Errors](/rest-api-guide/concepts#error-shape).
-- **Polling** — swap progress is observed by repeatedly calling `getSwapStatus`. There is no streaming / webhook channel in the current version.
