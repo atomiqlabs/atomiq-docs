@@ -190,8 +190,6 @@ const config = {
             '/search/**',
             '/superpowers/**',
             '/developers/**',
-            '/rest-api/**',
-            '/api-reference/**',
           ],
         },
         optionalLinks: [
@@ -234,16 +232,10 @@ const config = {
       '@docusaurus/plugin-client-redirects',
       {
         // Generates a legacy-path alias for every real page.
-        // Every /sdk-guide/* page also serves at the old /developers/* URL, etc.
+        // Every /sdk-guide/* page also serves at the old /developers/* URL.
         createRedirects(existingPath) {
           if (existingPath.startsWith('/sdk-guide')) {
             return [existingPath.replace(/^\/sdk-guide/, '/developers')];
-          }
-          if (existingPath.startsWith('/rest-api-guide')) {
-            return [existingPath.replace(/^\/rest-api-guide/, '/rest-api')];
-          }
-          if (existingPath.startsWith('/rest-api-reference')) {
-            return [existingPath.replace(/^\/rest-api-reference/, '/api-reference')];
           }
           return undefined;
         },
