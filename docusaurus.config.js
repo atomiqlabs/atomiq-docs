@@ -350,7 +350,7 @@ const config = {
                 label: 'REST API Guide',
               },
               {
-                to: '/rest-api-reference/overview',
+                to: '/rest-api-reference/atomiq-rest-api',
                 label: 'REST API Reference',
               },
             ],

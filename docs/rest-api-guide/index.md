@@ -16,7 +16,7 @@ The API is **non-custodial**: it never holds user keys. All signing happens in t
 
 :::tip
 - Want to use Atomiq in-process from TypeScript? → **[SDK Guide](/sdk-guide/)** *(recommended)*
-- Looking for exact request / response shapes? → **[REST API Reference](/rest-api-reference/overview)**
+- Looking for exact request / response shapes? → **[REST API Reference](/rest-api-reference/atomiq-rest-api)**
 - Need to self-host the service? → **[Run REST API Locally](/rest-api-guide/run-locally/)**
 - **Machine-readable OpenAPI 3.1 spec:** [`/rest-api-reference/openapi.json`](/rest-api-reference/openapi.json) — for code generators, AI agents, and tooling.
 :::
