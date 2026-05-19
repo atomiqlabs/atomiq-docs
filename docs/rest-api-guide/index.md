@@ -28,10 +28,8 @@ The API is **non-custodial**: it never holds user keys. All signing happens in t
 
 - **Base URL** — examples use `https://mainnet.swaps-api.atomiq.exchange` (the hosted public API). Replace with `https://testnet4.swaps-api.atomiq.exchange` for testnet, or with `http://localhost:3000` when running the self-hosted container.
 - **`GET` vs `POST`** — `GET` endpoints read parameters from the query string, `POST` endpoints from a JSON body.
-- **Big numbers** — TypeScript `bigint` fields are encoded as decimal strings (e.g. `"150000"`), because JSON cannot safely represent arbitrary-precision integers. See [Amounts](#amounts-and-bigint-as-string) below.
-- **Error shape** — every 4xx response is JSON: `{ "error": "<message>" }`. See [Errors](#error-shape) below.
 
-The rest of this guide assumes you're familiar with the shared vocabulary described here. If you've used the SDK before, most of this will be familiar — the REST API preserves the SDK's types field-for-field, just serialized to JSON.
+The rest of this guide assumes you're familiar with the shared vocabulary described here.
 
 ### Token identifiers
 
@@ -43,15 +41,15 @@ Tokens are identified by a single string in the form `<network>-<ticker>`. Typic
 | `LIGHTNING-BTC` | Bitcoin over the Lightning Network |
 | `STARKNET-STRK`, `STARKNET-ETH`, `STARKNET-<erc20-address>` | Starknet native and ERC-20 tokens |
 | `SOLANA-SOL`, `SOLANA-<spl-mint>` | Solana native and SPL tokens |
-| `CITREA-CBTC`, `BOTANIX-BTC`, `ALPEN-BTC`, `GOAT-BTC` | Supported EVM-style chains |
+| `CITREA-CBTC`, `BOTANIX-BTC`, `ALPEN-BTC`, `GOAT-BTC` | Supported EVM chains |
 
-You don't need to hard-code this list. Use `GET /getSupportedTokens` and `GET /getSwapCounterTokens` to enumerate what the current LP set supports — see [Quoting Swaps](/rest-api-guide/quoting).
+You don't need to hard-code this list. Use [`GET /getSupportedTokens`](/rest-api-reference/get-supported-tokens) and [`GET /getSwapCounterTokens`](/rest-api-reference/get-swap-counter-tokens) to enumerate what the current LP network supports — see [Quoting Swaps](/rest-api-guide/quoting).
 
 ### Amounts and BigInt-as-string
 
-TypeScript `bigint` values appear in this API as **decimal strings** (e.g. `"150000"`, `"1500000000000000000"`), because JSON cannot safely encode arbitrary-precision integers as native numbers.
+Numerical integer values (like TypeScript's `bigint`) appear in this API as [**BigIntString**](/rest-api-reference/schemas/bigintstring) (e.g. `"150000"`, `"1500000000000000000"`), because JSON cannot safely encode arbitrary-precision integers as native numbers.
 
-Every monetary amount returned by the API uses the `ApiAmount` shape:
+Every monetary amount returned by the API uses the [`ApiAmount`](/rest-api-reference/schemas/apiamount) shape:
 
 ```json
 {
@@ -63,7 +61,7 @@ Every monetary amount returned by the API uses the `ApiAmount` shape:
 }
 ```
 
-When sending amounts to the API (for example in `createSwap.amount`), always pass the **raw base-unit string** — not a decimal, not a number. `"150000"` for 0.0015 BTC, not `0.0015`.
+When sending amounts to the API, for example when creating a swap always pass the **raw base-unit string** — not a decimal, not a number. `"150000"` for 0.0015 BTC, not `0.0015`.
 
 ### Error shape
 
