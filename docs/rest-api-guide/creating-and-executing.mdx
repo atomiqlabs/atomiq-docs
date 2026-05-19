@@ -1,10 +1,14 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # Creating & Executing a Swap
 
 This page covers the core swap lifecycle that every direction follows: **create → poll → sign → submit → repeat** until finished. Bitcoin- and Lightning-specific details (PSBT building, LNURL, preimage reveal) are split into [Bitcoin & Lightning Specifics](/rest-api-guide/bitcoin-and-lightning).
+
+:::tip
+This page covers the minimum needed to create and execute a swap. If you're building a complete swap form (e.g. token pickers, "Max" button, amount limit validation, recipient address parsing), see [Quoting Swaps](/rest-api-guide/quoting) first to populate the form inputs.
+:::
 
 ## 1. Create the swap
 
@@ -92,7 +96,7 @@ The response extends the swap record with four boolean flags and a `currentActio
 }
 ```
 
-When `isFinished === true`, stop polling. See [Concepts → Terminal states](/rest-api-guide/concepts#terminal-states).
+When `isFinished === true`, stop polling. See [Terminal states](#terminal-states) below for what the other three flags mean.
 
 :::info[Lightning secret reveal]
 For **Lightning → Smart chain** swaps, the `requiresSecretReveal` parameter indicates when the swap secret should be revealed. To reveal the swap secret, include the `secret` parameter in the subsequent [`GET /getSwapStatus`](/rest-api-reference/get-swap-status) calls:
@@ -296,6 +300,18 @@ Here, there's nothing actionable right now — the API is waiting for confirmati
 
 Wait `pollTimeSeconds` and call `getSwapStatus` again. Use `expectedTimeSeconds` to render an ETA in the UI.
 
+## Terminal states
+
+A swap is **finished** when `isFinished === true`. The terminal state is described by three additional flags:
+
+| Flag | Meaning |
+|---|---|
+| `isSuccess` | The swap completed successfully and the user received the destination token. |
+| `isFailed` | The swap failed after funds were committed — typically results in a refund flow. |
+| `isExpired` | The quote expired before the user paid. No on-chain state was created. |
+
+Once `isFinished` is true, stop polling. These flags are mutually exclusive.
+
 ## Lifecycle overview
 
 ![REST API swap lifecycle — create, poll, sign, submit until finished](/img/rest-api/swap-lifecycle.svg)
@@ -330,4 +346,4 @@ Bitcoin `Payment` steps also carry a `confirmations: { current, target, etaSecon
 ## What next?
 
 - Handling Bitcoin-specific bits (PSBT inputs, fee rates), Lightning invoices, and LNURL settlement → [Bitcoin & Lightning Specifics](/rest-api-guide/bitcoin-and-lightning).
-- Persisting state across app restarts, refunds, "needs your attention" UIs → [Managing Swaps](/rest-api-guide/managing-swaps).
+- Persisting state across app restarts, refunds, "needs your attention" UIs → [Listing Swaps](/rest-api-guide/listing-swaps).

@@ -1,8 +1,8 @@
 ---
-sidebar_position: 6
+sidebar_position: 4
 ---
 
-# Managing Swaps
+# Listing Swaps
 
 The API keeps a persistent record of every swap a signer has ever opened against it. Two endpoints expose that history — together they cover the "Recent swaps" screen, the "You have 2 swaps that need action" badge, and the post-restart recovery flow.
 
@@ -16,7 +16,7 @@ Both endpoints take the same query parameters and return the same `ListSwapOutpu
 ## 1. List all swaps
 
 ```bash
-curl "http://localhost:3000/listSwaps?signer=0x0123…&chainId=STARKNET"
+curl "https://mainnet.swaps-api.atomiq.exchange/listSwaps?signer=0x0123…&chainId=STARKNET"
 ```
 
 | Query param | Required | Notes |
@@ -49,7 +49,7 @@ Sort by `createdAt` descending to render a newest-first transactions list.
 ## 2. List only pending swaps
 
 ```bash
-curl "http://localhost:3000/listPendingSwaps?signer=0x0123…"
+curl "https://mainnet.swaps-api.atomiq.exchange/listPendingSwaps?signer=0x0123…"
 ```
 
 Same query parameters, same response shape — filtered down to swaps that still need user action (so every entry has `isFinished: false` and typically a non-null `currentAction` once you drill in).

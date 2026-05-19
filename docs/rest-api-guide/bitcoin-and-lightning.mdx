@@ -2,7 +2,7 @@
 sidebar_position: 5
 ---
 
-# Bitcoin & Lightning Specifics
+# Bitcoin & Lightning
 
 Most of the API looks the same across all supported chains. Bitcoin on-chain and Lightning are the exceptions — PSBTs, BOLT11 invoices, LNURL, and Lightning preimages are Bitcoin-world concepts the smart-chain side doesn't share. This page groups everything direction-specific in one place.
 
@@ -46,7 +46,7 @@ Submit the signed PSBT as hex or base64 via `POST /submitTransaction`:
 For Bitcoin-source directions, pass both `bitcoinAddress` and `bitcoinPublicKey` (hex-encoded) as query parameters on **every** `getSwapStatus` call. The API needs them to build the funded PSBT.
 
 ```bash
-curl "http://localhost:3000/getSwapStatus?swapId=<id>\
+curl "https://mainnet.swaps-api.atomiq.exchange/getSwapStatus?swapId=<id>\
 &bitcoinAddress=bc1q…\
 &bitcoinPublicKey=02…"
 ```
@@ -59,7 +59,7 @@ Bitcoin fee rates are in **sats/vB** everywhere in the API.
 
 On `getSwapStatus`, pass an optional `bitcoinFeeRate` to override the API's default (the currently-fetched economical rate). You can also set this on `createSwap` for directions that lock the rate up-front.
 
-On `getSpendableBalance` for BTC balances, the `feeRate` query parameter is a positive number in sats/vB. See [Utilities → Spendable balance](/rest-api-guide/utilities#estimate-spendable-balance).
+On `getSpendableBalance` for BTC balances, the `feeRate` query parameter is a positive number in sats/vB. See [Quoting Swaps → Spendable balance](/rest-api-guide/quoting#3-estimate-spendable-balance).
 
 ## Lightning Network
 
@@ -82,7 +82,7 @@ LNURL-pay / LNURL-withdraw links can be either resolved **client-side** before y
 
 #### Recommended — resolve client-side
 
-Resolve the LNURL in the wallet UI (using the `parseAddress` endpoint — see [Utilities → Parse address](/rest-api-guide/utilities#parse-an-address)), present the decoded payee info to the user, then pass the resulting BOLT11 invoice or amount to `createSwap`. This minimizes the trust the client places on the middleware — the API never touches a link that could be substituted to redirect funds.
+Resolve the LNURL in the wallet UI (using the `parseAddress` endpoint — see [Quoting Swaps → Parse the destination address](/rest-api-guide/quoting#5-parse-the-destination-address)), present the decoded payee info to the user, then pass the resulting BOLT11 invoice or amount to `createSwap`. This minimizes the trust the client places on the middleware — the API never touches a link that could be substituted to redirect funds.
 
 #### Supported — pass through
 
@@ -108,7 +108,7 @@ For `LIGHTNING-BTC → smart-chain` swaps where the client supplied `paymentHash
 Reveal the preimage by calling `getSwapStatus` with it in the query string:
 
 ```bash
-curl "http://localhost:3000/getSwapStatus?swapId=<id>&secret=<preimage-hex>"
+curl "https://mainnet.swaps-api.atomiq.exchange/getSwapStatus?swapId=<id>&secret=<preimage-hex>"
 ```
 
 The API then broadcasts the secret over Nostr for automatic settlement, or returns signing actions for manual settlement.
@@ -118,7 +118,7 @@ The API then broadcasts the secret over Nostr for automatic settlement, or retur
 For Lightning-to-smart-chain swaps where the `currentAction` is `SendToAddress` (stage `PR_CREATED`) and the swap should settle via LNURL-withdraw rather than the user paying a BOLT11 invoice directly, call:
 
 ```bash
-curl -X POST "http://localhost:3000/settleWithLnurl" \
+curl -X POST "https://mainnet.swaps-api.atomiq.exchange/settleWithLnurl" \
   -H "Content-Type: application/json" \
   -d '{ "swapId": "…", "lnurlWithdraw": "lnurl1…" }'
 ```
@@ -137,4 +137,4 @@ For Bitcoin / Lightning → smart-chain swaps you can optionally request a small
 
 Set `gasAmount` on `createSwap` (base-unit string, same convention as `amount`). The quote's `fees` will reflect the extra cost — usually charged in the source token.
 
-Gas-drop also affects spendable-balance math; see [Utilities → Spendable balance](/rest-api-guide/utilities#estimate-spendable-balance).
+Gas-drop also affects spendable-balance math; see [Quoting Swaps → Spendable balance](/rest-api-guide/quoting#3-estimate-spendable-balance).

@@ -149,11 +149,9 @@ const sidebars = {
       label: 'Overview',
     },
     'rest-api-guide/creating-and-executing',
-    'rest-api-guide/concepts',
     'rest-api-guide/quoting',
+    'rest-api-guide/listing-swaps',
     'rest-api-guide/bitcoin-and-lightning',
-    'rest-api-guide/managing-swaps',
-    'rest-api-guide/utilities',
     {
       type: 'category',
       label: 'Run REST API Locally',
