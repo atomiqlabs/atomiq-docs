@@ -82,7 +82,7 @@ curl "https://mainnet.swaps-api.atomiq.exchange/getSwapStatus?swapId=<id>&bitcoi
 ```
 :::
 
-The response extends the swap record with four boolean flags and a `currentAction`, which indicates the action, that has to be executed by the user. Reference for each action type can be found at the [`SerializedAction`](/rest-api-reference/schemas/serializedaction) schema.
+The response extends the swap record with four boolean flags and a `currentAction`, which indicates the action, that has to be executed by the user.
 
 ```json
 {
@@ -106,9 +106,11 @@ curl "https://mainnet.swaps-api.atomiq.exchange/getSwapStatus?swapId=<id>&secret
 ```
 :::
 
-The returned `currentAction` is one of the following four shapes, which correspond to types that the client should branch on:
+The returned `currentAction`, uses the [`SerializedAction`](/rest-api-reference/schemas/serializedaction) schema, and is one of the following four shapes, which correspond to types that the client should branch on:
 
 ### `SignPSBT`
+
+<p style={{marginTop: "-0.8em"}}>Reference: [SerializedActionSignPSBT](/rest-api-reference/schemas/serializedactionsignpsbt)</p>
 
 Here, the API has built a Bitcoin PSBT for the user's deposit and needs the client's wallet to sign the PSBT, then return the signed PSBT back to the API.
 
@@ -155,6 +157,8 @@ The response contains the broadcasted Bitcoin transaction IDs:
 ```
 
 ### `SignSmartChainTransaction`
+
+<p style={{marginTop: "-0.8em"}}>Reference: [SerializedActionSignSmartChainTransaction](/rest-api-reference/schemas/serializedactionsignsmartchaintransaction)</p>
 
 Here, the API has pre-built smart chain (i.e. non-Bitcoin: EVM, Solana, Starknet, etc.) transactions and needs the user's smart chain wallet to sign them.
 
@@ -258,6 +262,8 @@ The response contains transaction IDs of the submitted and broadcasted transacti
 
 ### `SendToAddress`
 
+<p style={{marginTop: "-0.8em"}}>Reference: [SerializedActionSendToAddress](/rest-api-reference/schemas/serializedactionsendtoaddress)</p>
+
 Here, the user has to pay to either an on-chain Bitcoin address or a BOLT11 Lightning invoice.
 
 ```json
@@ -278,13 +284,15 @@ Here, the user has to pay to either an on-chain Bitcoin address or a BOLT11 Ligh
 }
 ```
 
-Show the `address` and `amount` from each entry of `action.txs` to the user (or use a `hyperlink`, which can be displayed as a QR code, or used as clickable deeplink) and let them pay from whichever wallet they like. Keep polling [`getSwapStatus`](/rest-api-reference/get-swap-status); the server detects the incoming payment and advances the state automatically.
+Show the `address` and `amount` from each entry of `action.txs` to the user (or use a `hyperlink`, which can be displayed as a QR code, or used as clickable deeplink) and let them pay from whichever wallet they like. Keep polling [`GET /getSwapStatus`](/rest-api-reference/get-swap-status); the server detects the incoming payment and advances the state automatically.
 
 :::info
 A Lightning → Smart chain swap can also be settled via LNURL-withdraw instead of asking the user to pay an invoice — call [`settleWithLnurl`](/rest-api-guide/bitcoin-and-lightning#settlewithlnurl--lnurl-withdraw-settlement) instead.
 :::
 
 ### `Wait`
+
+<p style={{marginTop: "-0.8em"}}>Reference: [SerializedActionWait](/rest-api-reference/schemas/serializedactionwait)</p>
 
 Here, there's nothing actionable right now — the API is waiting for confirmations, a counterparty action, or a timer to elapse.
 
@@ -298,7 +306,7 @@ Here, there's nothing actionable right now — the API is waiting for confirmati
 }
 ```
 
-Wait `pollTimeSeconds` and call `getSwapStatus` again. Use `expectedTimeSeconds` to render an ETA in the UI.
+Wait `pollTimeSeconds` and call [`GET /getSwapStatus`](/rest-api-reference/get-swap-status) again. Use `expectedTimeSeconds` to render an ETA in the UI.
 
 ## Terminal states
 
@@ -318,16 +326,14 @@ Once `isFinished` is true, stop polling. These flags are mutually exclusive.
 
 ## Swap execution steps
 
-Every swap record carries a `steps` array alongside the action-level state. `steps` is a **UX hint** describing the swap as a linear sequence of stages — good for rendering a progress strip. The *actionable* state still lives in `currentAction`.
+Every swap record carries a `steps` array alongside the action-level state, which is a **UX hint** describing the swap as a linear sequence of stages — good for rendering the swap progress. The *actionable* state still lives in `currentAction`. Individual steps in the array use the [`SwapExecutionStep`](/rest-api-reference/schemas/swapexecutionstep) schema, which always contains a `status` field, plus additional fields based on the type:
 
-| `type` | Meaning | Statuses |
-|---|---|---|
-| `Setup` | Destination-side setup (e.g. creating the destination HTLC / escrow). | `awaiting`, `completed`, `soft_expired`, `expired` |
-| `Payment` | The user's payment that initiates or funds the swap on the source side. | `inactive`, `awaiting`, `received`, `confirmed`, `soft_expired`, `expired` |
-| `Settlement` | Payout / settlement on the destination side. | `inactive`, `waiting_lp`, `awaiting_automatic`, `awaiting_manual`, `soft_settled`, `soft_expired`, `settled`, `expired` |
-| `Refund` | Source-side refund path after a failed swap. | `inactive`, `awaiting`, `refunded` |
-
-Bitcoin `Payment` steps also carry a `confirmations: { current, target, etaSeconds }` progress object once the funding transaction has been seen on-chain. Step objects expose `initTxId`, `settleTxId`, `setupTxId`, or `refundTxId` fields as the underlying transactions are broadcast — handy for linking into a block explorer.
+| `type` | Meaning | Statuses | Additional fields |
+|---|---|---|---|
+| [`Setup`](/rest-api-reference/schemas/swapexecutionstepsetup) | Destination-side setup (e.g. creating the destination HTLC / escrow). | `awaiting`, `completed`, `soft_expired`, `expired` | `setupTxId` |
+| [`Payment`](/rest-api-reference/schemas/swapexecutionsteppayment) | The user's payment that initiates or funds the swap on the source side. | `inactive`, `awaiting`, `received`, `confirmed`, `soft_expired`, `expired` | `initTxId`, `settleTxId`, `confirmations?` (BTC-only) |
+| [`Settlement`](/rest-api-reference/schemas/swapexecutionstepsettlement) | Payout / settlement on the destination side. | `inactive`, `waiting_lp`, `awaiting_automatic`, `awaiting_manual`, `soft_settled`, `soft_expired`, `settled`, `expired` | `initTxId`, `settleTxId` |
+| [`Refund`](/rest-api-reference/schemas/swapexecutionsteprefund) | Source-side refund path after a failed swap. | `inactive`, `awaiting`, `refunded` | `refundTxId` |
 
 ```json
 // Example step — Bitcoin payment being confirmed
@@ -346,4 +352,4 @@ Bitcoin `Payment` steps also carry a `confirmations: { current, target, etaSecon
 ## What next?
 
 - Handling Bitcoin-specific bits (PSBT inputs, fee rates), Lightning invoices, and LNURL settlement → [Bitcoin & Lightning Specifics](/rest-api-guide/bitcoin-and-lightning).
-- Persisting state across app restarts, refunds, "needs your attention" UIs → [Listing Swaps](/rest-api-guide/listing-swaps).
+- Listing existing swaps for a user or swaps that have a pending action, requiring user's attention → [Listing Swaps](/rest-api-guide/listing-swaps).
