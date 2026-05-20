@@ -13,7 +13,7 @@ The API keeps a persistent record of every swap a signer has ever opened against
 
 Both endpoints take the same query parameters and return the same `ListSwapOutput[]` shape (a swap record plus the four terminal flags).
 
-## 1. List all swaps
+## List all swaps
 
 ```bash
 curl "https://mainnet.swaps-api.atomiq.exchange/listSwaps?signer=0x0123…&chainId=STARKNET"
@@ -46,7 +46,7 @@ The response is an array where each entry extends the swap record with the same 
 
 Sort by `createdAt` descending to render a newest-first transactions list.
 
-## 2. List only pending swaps
+## List only pending swaps
 
 ```bash
 curl "https://mainnet.swaps-api.atomiq.exchange/listPendingSwaps?signer=0x0123…"

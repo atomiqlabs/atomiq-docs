@@ -10,7 +10,7 @@ This page covers the core swap lifecycle that every direction follows: **create 
 This page covers the minimum needed to create and execute a swap. If you're building a complete swap form (e.g. token pickers, "Max" button, amount limit validation, recipient address parsing), see [Quoting Swaps](/rest-api-guide/quoting) first to populate the form inputs.
 :::
 
-## 1. Create the swap
+## Create the swap
 
 Use [`POST /createSwap`](/rest-api-reference/create-swap) to create a new swap: 
 
@@ -62,7 +62,7 @@ The response is a **swap record** — the same shape every subsequent [`GET /get
 }
 ```
 
-## 2. Poll for the current action
+## Poll for the current action
 
 :::tip
 The full reference implementation of the polling loop, handling all the actions in TypeScript can be found at [`scripts/process-swap.ts`](https://github.com/atomiqlabs/atomiq-api-docker/blob/main/scripts/process-swap.ts) in the `atomiq-api-docker` repo.

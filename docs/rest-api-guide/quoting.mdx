@@ -18,7 +18,7 @@ Five endpoints, in the order you typically call them:
 
 Together, these let you build a swap form that never lets the user assemble an impossible quote.
 
-## 1. List supported tokens
+## List supported tokens
 
 Call [`GET /getSupportedTokens`](/rest-api-reference/get-supported-tokens) with `side=INPUT` (source picker) or `side=OUTPUT` (destination picker).
 
@@ -41,7 +41,7 @@ The response is an array of [`ApiToken`](/rest-api-reference/schemas/apitoken) o
 
 The `id` field is the canonical identifier — always pass this string back to the API, never construct token IDs by hand.
 
-## 2. Find compatible counter-tokens
+## Find compatible counter-tokens
 
 Once the user has picked one side (say `BITCOIN-BTC` as input), call [`GET /getSwapCounterTokens`](/rest-api-reference/get-swap-counter-tokens) to discover which tokens actually have liquidity as the other side:
 
@@ -57,7 +57,7 @@ The response is the same [`ApiToken[]`](/rest-api-reference/schemas/apitoken) sh
 Call `getSupportedTokens` **once** at startup to populate the source picker, then call `getSwapCounterTokens` **on change** of the source token to filter the destination picker. You don't need to re-fetch when the user changes the amount.
 :::
 
-## 3. Estimate spendable balance
+## Estimate spendable balance
 
 [`GET /getSpendableBalance`](/rest-api-reference/get-spendable-balance) returns the balance a wallet can *actually spend* on a swap after accounting for chain fees — the number you want behind a "Max" button, not the raw on-chain balance.
 
@@ -119,7 +119,7 @@ async function onMaxClick() {
 
 Re-run this call whenever the target chain or `gasDrop` toggle changes — both affect the estimate. You don't need to re-run it every keystroke in the amount field.
 
-## 4. Get swap limits
+## Get swap limits
 
 Once both tokens are chosen, call [`GET /getSwapLimits`](/rest-api-reference/get-swap-limits) to fetch the current min/max for the pair:
 
@@ -144,7 +144,7 @@ Both `input` and `output` limits are returned so you can enforce the constraint 
 Limits can drift as LPs come and go. Re-fetch before calling [`POST /createSwap`](/rest-api-reference/create-swap) if a stale limit might otherwise let through an amount the LP will refuse.
 :::
 
-## 5. Parse the destination address
+## Parse the destination address
 
 [`GET /parseAddress`](/rest-api-reference/parse-address) accepts anything the user might reasonably paste into an address / invoice field — on-chain addresses, BOLT11 invoices, LNURL-pay / LNURL-withdraw links, Bitcoin URIs (`bitcoin:…`), and smart-chain addresses — and returns the parsed `type` plus structured data (see [`ParseAddressOutput`](/rest-api-reference/schemas/parseaddressoutput) for the full response shape).
 
