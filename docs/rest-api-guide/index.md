@@ -61,7 +61,7 @@ Every monetary amount returned by the API uses the [`ApiAmount`](/rest-api-refer
 }
 ```
 
-When sending amounts to the API, for example when creating a swap always pass the **raw base-unit string** — not a decimal, not a number. `"150000"` for 0.0015 BTC, not `0.0015`.
+When sending amounts to the API, for example when creating a swap with [`POST /createSwap`](/rest-api-reference/create-swap), always pass the **raw base-unit string** — not a decimal, not a number. `"150000"` for 0.0015 BTC, not `0.0015`.
 
 ### Error shape
 

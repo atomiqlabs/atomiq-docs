@@ -54,7 +54,7 @@ The response is an array of ongoing swaps that still need user action. Each entr
 
 To process the pending swaps, use the usual [polling loop](/rest-api-guide/creating-and-executing#poll-for-the-current-action) from the **Creating & Executing a Swap** section.
 
-Because every swap record includes the full `quote`, `state`, `steps`, and (via `getSwapStatus`) `currentAction`, the client does not need its own persistence layer — just remember the `signer` address and whatever pairing you have with the user account:
+Because every swap record includes the full `quote`, `state`, `steps`, and (via [`GET /getSwapStatus`](/rest-api-reference/get-swap-status)) `currentAction`, the client does not need its own persistence layer — just remember the `signer` address and whatever pairing you have with the user account:
 
 ```ts
 // on app start
@@ -66,14 +66,14 @@ for (const swap of pending) {
 ```
 
 :::tip
-If your wallet supports multiple accounts, call `listPendingSwaps` **per account** and aggregate the results. There is no endpoint that merges across signers.
+If your wallet supports multiple accounts, call [`GET /listPendingSwaps`](/rest-api-reference/list-pending-swaps) **per account** and aggregate the results. There is no endpoint that merges across signers.
 :::
 
 ### Refunds and expired quotes
 
-The API exposes refunds through the same `currentAction` machinery as the happy path — you don't need a separate endpoint. When a swap enters a refundable state, the polling loop using `GET /getSwapStatus` will get either:
+The API exposes refunds through the same `currentAction` machinery as the happy path — you don't need a separate endpoint. When a swap enters a refundable state, the polling loop using [`GET /getSwapStatus`](/rest-api-reference/get-swap-status) will get either:
 
-- **`SignSmartChainTransaction`** with `name: "Refund"` — sign the refund transaction and submit it back via `submitTransaction`.
+- **`SignSmartChainTransaction`** with `name: "Refund"` — sign the refund transaction and submit it back via [`POST /submitTransaction`](/rest-api-reference/submit-transaction).
 - **`Wait`** — if the refund is automatic (LP-settled), no client action is needed.
 
 For **expired quotes** — swaps where the quote elapsed before the user paid — `isExpired` becomes `true`, `isFinished` becomes `true`, and no on-chain state was ever created. Safe to drop from the pending list and silently discard from local UI state.
@@ -86,14 +86,14 @@ Use [`GET /listSwaps`](/rest-api-reference/list-swaps) to query all swaps (compl
 curl "https://mainnet.swaps-api.atomiq.exchange/listSwaps?signer=0x0123…&chainId=STARKNET"
 ```
 
-Uses the same `signer` and optional `chainId` query parameters as `listPendingSwaps`. The response includes the full swap history for the signer, with the same record shape and terminal flags.
+Uses the same `signer` and optional `chainId` query parameters as [`GET /listPendingSwaps`](/rest-api-reference/list-pending-swaps). The response includes the full swap history for the signer, with the same record shape and terminal flags.
 
 ## UI patterns
 
 A few small conventions that come up in real integrations:
 
 - **Badge count** — `(await get("/listPendingSwaps", { signer })).length`.
-- **Transactions list** — `listSwaps`, sorted by `createdAt desc`, grouped by `state.name` or by the first / last `step.title`.
+- **Transactions list** — [`GET /listSwaps`](/rest-api-reference/list-swaps), sorted by `createdAt desc`, grouped by `state.name` or by the first / last `step.title`.
 - **Per-swap detail screen** — once the user taps an entry, switch to the per-swap polling loop ([Creating & Executing](/rest-api-guide/creating-and-executing)) using the `swapId` from the list.
 - **Multi-chain aggregation** — call without `chainId`; the returned records already include `quote.inputAmount.chain` / `quote.outputAmount.chain` to label which chain each one belongs to.
 

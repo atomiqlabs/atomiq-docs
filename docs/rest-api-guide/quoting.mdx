@@ -53,12 +53,12 @@ curl "https://mainnet.swaps-api.atomiq.exchange/getSwapCounterTokens?token=BITCO
 
 `side` describes how the caller's `token` is being used. `side=INPUT` means "the user is spending BTC, show me what they can receive." `side=OUTPUT` means "the user wants to receive X, show me what they can pay with."
 
-The response is the same [`ApiToken[]`](/rest-api-reference/schemas/apitoken) shape as `getSupportedTokens`. Using this list for the *destination* picker avoids showing combinations the LP network can't actually quote.
+The response is the same [`ApiToken[]`](/rest-api-reference/schemas/apitoken) shape as [`GET /getSupportedTokens`](/rest-api-reference/get-supported-tokens). Using this list for the *destination* picker avoids showing combinations the LP network can't actually quote.
 
 ---
 
 :::tip
-Call `getSupportedTokens` **once** at startup to populate the source and destination token picker, then call `getSwapCounterTokens` when the user selects either the source or destination token to narrow down the token picker on the other side. You don't need to re-fetch when the user changes the amount.
+Call [`GET /getSupportedTokens`](/rest-api-reference/get-supported-tokens) **once** at startup to populate the source and destination token picker, then call [`GET /getSwapCounterTokens`](/rest-api-reference/get-swap-counter-tokens) when the user selects either the source or destination token to narrow down the token picker on the other side. You don't need to re-fetch when the user changes the amount.
 :::
 
 ## Estimate spendable balance
