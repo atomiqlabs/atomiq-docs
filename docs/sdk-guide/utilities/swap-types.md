@@ -8,7 +8,7 @@ sidebar_position: 5
 
 For an overview and background on various swap types, see [Swap Types](/sdk-guide/swaps/).
 
-:::tip Runnable Example
+:::tip
 See the complete working example: [utils/swapTypes.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/utils/swapTypes.ts)
 :::
 

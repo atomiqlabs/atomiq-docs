@@ -6,7 +6,7 @@ sidebar_position: 3
 
 Customize the swapper instance with advanced options.
 
-:::tip Runnable Example
+:::tip
 See the complete working example: [setup.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/setup.ts)
 :::
 

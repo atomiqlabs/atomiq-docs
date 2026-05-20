@@ -17,7 +17,7 @@ That means `Factory.Tokens` gives you the static typed token catalog with a list
 Call these helpers after `await swapper.init()` so LP discovery has already completed. The returned set depends on the currently discovered LPs and the chains you initialized.
 :::
 
-:::tip Runnable Example
+:::tip
 See the complete working example: [utils/supportedTokens.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/utils/supportedTokens.ts)
 :::
 

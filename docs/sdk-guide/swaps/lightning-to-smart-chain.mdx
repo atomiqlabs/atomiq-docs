@@ -9,14 +9,14 @@ import TabItem from '@theme/TabItem';
 
 Swap Bitcoin Lightning to Starknet or EVM tokens. These swaps are based on an LP-initiated [HTLC](/overview/core-primitives/htlc/) on the destination chain. After the LP receives the Lightning payment, it creates the HTLC and the user broadcasts the payment secret over Nostr so [watchtowers](/overview/actors/) can claim on the user's behalf. The user can always self-claim as a fallback.
 
-:::tip Runnable Examples
+:::tip
 - [btcln-to-smartchain/swapBasic.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapBasic.ts)
 - [btcln-to-smartchain/swapBasicLNURL.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapBasicLNURL.ts)
 - [btcln-to-smartchain/swapAdvancedStarknet.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapAdvancedStarknet.ts)
 - [btcln-to-smartchain/swapAdvancedEVM.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapAdvancedEVM.ts)
 :::
 
-:::info Looking for Solana?
+:::info
 Solana uses a different (legacy) swap protocol. See [Lightning to Solana](./solana/lightning-to-solana).
 :::
 

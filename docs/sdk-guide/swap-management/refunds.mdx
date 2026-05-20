@@ -12,7 +12,7 @@ When a swap in the **Smart Chain → Bitcoin** direction fails, you can refund y
 - the LP tried to execute but failed (e.g. Lightning routing failed) and returned a cooperative refund authorization allowing the user to refund immediately.
 - the LP went offline and didn't execute the swap within the timelock period, in this case you have to wait for the timelock to expire this is **12 hours** for Bitcoin on-chain swaps and **4-5 days** for Lightning network swaps (swap then becomes refundable automatically).
 
-:::tip Runnable Example
+:::tip
 See the complete working example: [utils/pastSwaps.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/utils/pastSwaps.ts)
 :::
 

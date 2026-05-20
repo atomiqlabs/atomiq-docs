@@ -39,7 +39,7 @@ Not all chains are available on all Bitcoin testnets. Use the table below to pic
 
 The `bitcoinNetwork` setting determines both the Bitcoin network and which smart chain network is used by the chain initializers.
 
-:::tip Getting Testnet Tokens
+:::tip
 - **Bitcoin Testnet/Testnet4** - Use a [Bitcoin testnet faucet](https://bitcoinfaucet.uo1.net/) or [Bitcoin testnet4 faucet](https://mempool.space/testnet4/faucet)
 - **Solana Devnet** - Use Solana CLI's `solana airdrop 1` or the [Solana faucet](https://faucet.solana.com/)
 - **Starknet Sepolia** - Use the [Starknet faucet](https://starknet-faucet.vercel.app/)

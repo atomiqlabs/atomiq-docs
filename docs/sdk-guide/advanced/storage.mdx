@@ -107,7 +107,7 @@ const swapper = Factory.newSwapper({
 
 Use custom storage when you want the SDK to persist into your existing backend, such as AWS DynamoDB, Azure Cosmos DB, PostgreSQL, MySQL, MongoDB Atlas, or another hosted database service.
 
-:::info Key-Value Helper Adapter
+:::info
 If you already have a simple key-value store and do not want to implement both interfaces from scratch, you can use the [`@atomiqlabs/storage-memory-indexed-kv`](/sdk-reference/api/atomiq-storage-memory-indexed-kv/src/) wrapper, which can use any simple key-value storage backend (synchronous or async). It keeps the indexes required for `query()` operations in memory and serializes writes through a single queue. It is meant for single-user, client-side style datasets, not shared multi-user backends or large server-side swap databases.
 :::
 
@@ -137,7 +137,7 @@ const swapper = Factory.newSwapper({
 });
 ```
 
-:::tip SQLite Reference
+:::tip
 For an example storage backend integration, you can check out how the SQLite storage library implements the storage interfaces:
 
 - [`SqliteUnifiedStorage`](https://github.com/atomiqlabs/atomiq-storage-sqlite/blob/main/src/SqliteUnifiedStorage.ts) for the indexed `IUnifiedStorage` implementation.

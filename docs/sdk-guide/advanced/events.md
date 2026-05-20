@@ -6,7 +6,7 @@ sidebar_position: 4
 
 The SDK emits events on both individual swaps and the top-level `swapper`. Use them for real-time UI state, pending swap tracking, analytics, LP monitoring, and route-limit refreshes.
 
-:::tip Runnable Example
+:::tip
 See the complete working example: [utils/events.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/utils/events.ts)
 :::
 
