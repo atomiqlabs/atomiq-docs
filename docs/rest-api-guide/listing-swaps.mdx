@@ -4,39 +4,35 @@ sidebar_position: 4
 
 # Listing Swaps
 
-The API keeps a persistent record of every swap a signer has ever opened against it. Two endpoints expose that history — together they cover the "Recent swaps" screen, the "You have 2 swaps that need action" badge, and the post-restart recovery flow.
+[//]: # (TODO: Change the wording here, also should hint at the fact that expired non-executed swaps are purged and won't be available here. )
+
+The API keeps a persistent record of every created swap, except the expired and non-executed swaps (which are purged from the database). These endpoints allow you to get either the subset of swaps which are currently pending/ongoing or a list of all swaps executed by a given wallet address. This is useful for the "Pending swaps" screen, the post-app-restart recovery flow and for simply showing the history of all the swaps the given user has completed.
 
 | Endpoint | Use for |
 |---|---|
+| [`GET /listPendingSwaps`](/rest-api-reference/list-pending-swaps) | Only swaps that are currently ongoing, might contain an action for the user to execute. |
 | [`GET /listSwaps`](/rest-api-reference/list-swaps) | Full swap history for a signer — e.g. a "Transactions" tab. |
-| [`GET /listPendingSwaps`](/rest-api-reference/list-pending-swaps) | Only swaps that currently need user attention — "needs your attention" badges, notification center. |
 
-Both endpoints take the same query parameters and return the same `ListSwapOutput[]` shape (a swap record plus the four terminal flags).
-
-## List all swaps
-
-```bash
-curl "https://mainnet.swaps-api.atomiq.exchange/listSwaps?signer=0x0123…&chainId=STARKNET"
-```
+Both endpoints take the same query parameters:
 
 | Query param | Required | Notes |
 |---|---|---|
 | `signer` | ✓ | Smart-chain signer address whose swaps to return. |
 | `chainId` | optional | Filter to a single chain (`SOLANA`, `STARKNET`, `CITREA`, …). Omit to include every chain. |
 
-The response is an array where each entry extends the swap record with the same four flags returned by `getSwapStatus`:
+They also both return the same [`ListSwapOutput`](/rest-api-reference/schemas/listswapsoutput) shape (an array of swap records with the four terminal flags and with the `currentAction` field):
 
 ```json
 [
   {
     "swapId":     "…",
     "swapType":   "FROM_BTC",
-    "state":      { "number": 4, "name": "CLAIM_CLAIMED", "description": "…" },
+    "state":      { "number": 3, "name": "CLAIM_COMMITED", "description": "…" },
     "quote":      { /* ... */ },
     "createdAt":  1713359700000,
     "steps":      [ /* ... */ ],
-    "isFinished": true,
-    "isSuccess":  true,
+    "isFinished": false,
+    "isSuccess":  false,
     "isFailed":   false,
     "isExpired":  false
   },
@@ -44,21 +40,21 @@ The response is an array where each entry extends the swap record with the same 
 ]
 ```
 
-Sort by `createdAt` descending to render a newest-first transactions list.
+## List pending swaps
 
-## List only pending swaps
+You can query the [`GET /listPendingSwaps`](/rest-api-reference/list-pending-swaps) endpoint on app startup to restore the polling loops of pending swaps.
 
 ```bash
 curl "https://mainnet.swaps-api.atomiq.exchange/listPendingSwaps?signer=0x0123…"
 ```
 
-Same query parameters, same response shape — filtered down to swaps that still need user action (so every entry has `isFinished: false` and typically a non-null `currentAction` once you drill in).
+The response is an array of ongoing swaps that still need user action. Each entry should be in a non-terminal state with `isFinished: false`, the `currentAction` field is not populated by this endpoint.
 
-Poll this list at app startup or on foreground to drive a badge count like **"2 swaps need your attention"**. The count is `response.length` — no extra call required.
+### Processing pending swaps
 
-## Resuming a swap after restart
+To process the pending swaps, use the usual [polling loop](/rest-api-guide/creating-and-executing#poll-for-the-current-action) from the **Creating & Executing a Swap** section.
 
-The server is the source of truth, so recovering mid-flight swaps is a three-line job:
+Because every swap record includes the full `quote`, `state`, `steps`, and (via `getSwapStatus`) `currentAction`, the client does not need its own persistence layer — just remember the `signer` address and whatever pairing you have with the user account:
 
 ```ts
 // on app start
@@ -69,22 +65,28 @@ for (const swap of pending) {
 }
 ```
 
-Because every swap record includes the full `quote`, `state`, `steps`, and (via `getSwapStatus`) `currentAction`, the client does not need its own persistence layer — just remember the `signer` address and whatever pairing you have with the user account.
-
 :::tip
 If your wallet supports multiple accounts, call `listPendingSwaps` **per account** and aggregate the results. There is no endpoint that merges across signers.
 :::
 
-## Refunds and expired quotes
+### Refunds and expired quotes
 
-The API exposes refunds through the same `currentAction` machinery as the happy path — you don't need a separate endpoint. When a swap enters a refundable state, `getSwapStatus` returns either:
+The API exposes refunds through the same `currentAction` machinery as the happy path — you don't need a separate endpoint. When a swap enters a refundable state, the polling loop using `GET /getSwapStatus` will get either:
 
 - **`SignSmartChainTransaction`** with `name: "Refund"` — sign the refund transaction and submit it back via `submitTransaction`.
 - **`Wait`** — if the refund is automatic (LP-settled), no client action is needed.
 
-Inspect `steps` to distinguish: a `Refund` step with `status: "awaiting"` means the user must sign; `status: "refunded"` means it's complete.
-
 For **expired quotes** — swaps where the quote elapsed before the user paid — `isExpired` becomes `true`, `isFinished` becomes `true`, and no on-chain state was ever created. Safe to drop from the pending list and silently discard from local UI state.
+
+## List all swaps
+
+Use [`GET /listSwaps`](/rest-api-reference/list-swaps) to query all swaps (completed and pending) for a given signer.
+
+```bash
+curl "https://mainnet.swaps-api.atomiq.exchange/listSwaps?signer=0x0123…&chainId=STARKNET"
+```
+
+Uses the same `signer` and optional `chainId` query parameters as `listPendingSwaps`. The response includes the full swap history for the signer, with the same record shape and terminal flags.
 
 ## UI patterns
 
