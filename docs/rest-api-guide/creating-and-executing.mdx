@@ -27,6 +27,8 @@ curl -X POST "https://mainnet.swaps-api.atomiq.exchange/createSwap" \
   }'
 ```
 
+[//]: # (//TODO: Here we could also add a reference to the gas drop)
+
 This creates a swap of 0.0015 BTC (150,000 sats) to STRK token. Note that `amount` is in base units (sats for Bitcoin, wei for EVM, etc.), and the amount type can be either `EXACT_IN` or `EXACT_OUT`, based on whether the `amount` field specifies an input amount or output amount. For some swap types (e.g. Lightning → Smart chain and Bitcoin → Smart chain) the `srcAddress` can be left empty.
 
 :::info[Lightning network swaps]
