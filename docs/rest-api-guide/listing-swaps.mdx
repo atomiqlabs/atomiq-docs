@@ -4,9 +4,7 @@ sidebar_position: 4
 
 # Listing Swaps
 
-[//]: # (TODO: Change the wording here, also should hint at the fact that expired non-executed swaps are purged and won't be available here. )
-
-The API keeps a persistent record of every created swap, except the expired and non-executed swaps (which are purged from the database). These endpoints allow you to get either the subset of swaps which are currently pending/ongoing or a list of all swaps executed by a given wallet address. This is useful for the "Pending swaps" screen, the post-app-restart recovery flow and for simply showing the history of all the swaps the given user has completed.
+The API keeps a persistent record of every created swap, except the expired non-executed swaps (which are purged from the database). These endpoints allow you to get either the subset of swaps which are currently pending/ongoing or a list of all swaps executed by a given wallet address. This is useful for the "Pending swaps" screen, the post-app-restart recovery flow and for simply showing the history of all the swaps the given user has completed.
 
 | Endpoint | Use for |
 |---|---|
@@ -97,4 +95,18 @@ A few small conventions that come up in real integrations:
 - **Per-swap detail screen** — once the user taps an entry, switch to the per-swap polling loop ([Creating & Executing](/rest-api-guide/creating-and-executing)) using the `swapId` from the list.
 - **Multi-chain aggregation** — call without `chainId`; the returned records already include `quote.inputAmount.chain` / `quote.outputAmount.chain` to label which chain each one belongs to.
 
-[//]: # (//TODO: Maybe add next steps?)
+## Next Steps
+
+### Creating & Executing
+
+Use the same polling and action-handling loop when resuming pending swaps from a list response.
+
+**[Creating & Executing a Swap →](/rest-api-guide/creating-and-executing)**
+
+---
+
+### Quoting Swaps
+
+Build the token, amount, and recipient-address form before creating new swaps.
+
+**[Quoting Swaps →](/rest-api-guide/quoting)**

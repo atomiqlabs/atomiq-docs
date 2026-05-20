@@ -73,14 +73,12 @@ All errors are JSON. For `4xx` responses the body is `{ "error": "<message>" }`.
 
 Rate-limit (`429`) responses may include additional fields depending on how the API is deployed — the self-hosted container returns `retryAfter` in seconds inside the body, while hosted deployments typically expose `Retry-After` only as a standard HTTP header. Treat both as advisory and back off accordingly.
 
-[//]: # (//TODO: Go over the table here and update based on what's currently in the pages)
-
 ## What this guide covers
 
-| Section | What you'll learn |
-|---|---|
-| **[Creating & Executing a Swap](/rest-api-guide/creating-and-executing)** | The core lifecycle: create, poll, sign, submit. Action types. Execution steps. Terminal states. The simple path — start here if you just want to fire a swap. |
-| **[Quoting Swaps](/rest-api-guide/quoting)** | The full pre-swap flow: list tokens, find compatible counter-tokens, estimate spendable balance, fetch limits, parse and validate the recipient address. |
-| **[Listing Swaps](/rest-api-guide/listing-swaps)** | Listing history and the "needs your attention" badge; resuming swaps after restart; refunds. |
-| **[Bitcoin & Lightning Specifics](/rest-api-guide/bitcoin-and-lightning)** | PSBT signing, BOLT11 invoices, LNURL-pay / LNURL-withdraw, preimage reveal, gas-drop. |
-| **[Run REST API Locally](/rest-api-guide/run-locally/)** | Run `atomiq-api-docker` yourself with Docker Compose, plus full config reference. |
+| Section | What you'll learn                                                                                                                                             |
+|---|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **[Creating & Executing a Swap](/rest-api-guide/creating-and-executing)** | Create a swap, poll `currentAction`, sign PSBTs or smart-chain transactions, submit signed payloads, render execution steps, and stop at terminal states.     |
+| **[Quoting Swaps](/rest-api-guide/quoting)** | Build the pre-swap form: list supported tokens, narrow compatible counter-tokens, estimate spendable balance, validate limits, and parse recipient addresses. |
+| **[Listing Swaps](/rest-api-guide/listing-swaps)** | Restore pending swaps after restart, list signer history, resume polling from list results, and handle refunds.                                               |
+| **[Bitcoin & Lightning Specifics](/rest-api-guide/bitcoin-and-lightning)** | Handle Bitcoin PSBT variants, Lightning HTLC-based hashes and swap secret reveal, BOLT11 invoices, LNURLs, and gas drops.                                     |
+| **[Run REST API Locally](/rest-api-guide/run-locally/)** | Self-host `atomiq-api-docker` with Docker Compose and configure chains, LP connectivity, storage, rate limits, and server settings.                           |

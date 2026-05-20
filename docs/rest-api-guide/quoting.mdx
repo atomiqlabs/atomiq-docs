@@ -213,6 +213,18 @@ const limits = await get("/getSwapLimits", {
 setAmountBounds(limits.input.min.rawAmount, limits.input.max?.rawAmount);
 ```
 
-[//]: # (//TODO: Maybe add next steps?)
+## Next Steps
 
-Once the form passes validation, the user continues to [Creating & Executing a Swap](/rest-api-guide/creating-and-executing).
+### Creating & Executing
+
+Once the form passes validation, create the swap and run the polling/signing loop until it reaches a terminal state.
+
+**[Creating & Executing a Swap →](/rest-api-guide/creating-and-executing)**
+
+---
+
+### Bitcoin & Lightning
+
+Handle PSBT details, Lightning invoices, LNURL flows, preimage reveal, and gas-drop behavior for Bitcoin-specific routes.
+
+**[Bitcoin & Lightning Specifics →](/rest-api-guide/bitcoin-and-lightning)**
