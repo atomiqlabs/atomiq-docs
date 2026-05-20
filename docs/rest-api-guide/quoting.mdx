@@ -174,7 +174,7 @@ Two ways to use the result:
 - **Validate the recipient field.** Show a chip ("Bitcoin address" / "Lightning invoice" / …) once `type` resolves; surface an error if the call throws.
 - **Auto-pick the destination token / swap type.** The returned `type` tells you which destination chain the user actually pasted, so you can switch the destination picker to e.g. `BITCOIN-BTC` when they paste an on-chain address, or `LIGHTNING-BTC` when they paste a BOLT11 invoice / LNURL link.
 
-When `type` is `LNURL`, the response includes an [`ApiLNURL`](/rest-api-reference/schemas/apilnurl) object that's either an [`ApiLNURLPay`](/rest-api-reference/schemas/apilnurlpay) or [`ApiLNURLWithdraw`](/rest-api-reference/schemas/apilnurlwithdraw) variant — see [Bitcoin & Lightning → LNURL](/rest-api-guide/bitcoin-and-lightning#lnurl-handling) for how to use the resolved payload.
+When `type` is `LNURL`, the response includes an [`ApiLNURL`](/rest-api-reference/schemas/apilnurl) object that's either an [`ApiLNURLPay`](/rest-api-reference/schemas/apilnurlpay) or [`ApiLNURLWithdraw`](/rest-api-reference/schemas/apilnurlwithdraw) variant — see [Bitcoin & Lightning → LNURL](/rest-api-guide/bitcoin-and-lightning#lnurls-and-static-internet-identifiers) for how to use the resolved payload.
 
 ## Putting it together
 

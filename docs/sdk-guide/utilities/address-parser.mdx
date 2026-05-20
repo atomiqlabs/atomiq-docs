@@ -221,7 +221,7 @@ if (parsed?.type === "LNURL" && parsed.lnurl.type === "withdraw") {
     Tokens.BITCOIN.BTCLN,           // Swapping from Lightning
     Tokens.STARKNET.STRK,
     parsed.max?.amount,             // Swap the maximum LNURL-withdraw amount
-    SwapAmountType.EXACT_OUT,       // Use EXACT_IN mode, since the LNURL maximum is defined in sats
+    SwapAmountType.EXACT_IN,        // Use EXACT_IN mode, since the LNURL maximum is defined in sats
     parsed.lnurl,                   // Use parsed LNURL-withdraw object as source
     starknetSigner.getAddress()     // Starknet signer's address as destination
   );

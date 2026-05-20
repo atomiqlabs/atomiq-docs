@@ -107,7 +107,7 @@ The atomiq API only supports invoices which contain an explicit satoshis (BTC) a
 
 LNURLs come in two variants:
 
-- LNURL-pay — allow dynamic payments with optional min/max bounds, descriptions and repeated payments
+- LNURL-pay — allow dynamic payments with optional min/max bounds, descriptions, repeated payments and also support `EXACT_IN` swaps (unlike BOLT11 invoices)
 - LNURL-withdraw — can be used as source for **Lightning → Smart chain** swaps, allows the user to "pull" amount from the address
 - Static internet identifiers (i.e. lightning "e-mail" addresses: `joe@example.com`) — can be used interchangeably as LNURL-pay
 
@@ -165,5 +165,5 @@ curl -X POST "https://mainnet.swaps-api.atomiq.exchange/createSwap" \
 This creates a swap of 150,000 sats (0.0015 BTC) from Bitcoin into WBTC and also adds a 10 STRK gas drop on Starknet. The 10 STRK gas drop value is subtracted from the output WBTC amount (as part of the swap value was converted into the STRK).
 
 :::info
-Requesting gas-drop also affects spendable-balance math; see [Quoting Swaps → Spendable balance](/rest-api-guide/quoting#3-estimate-spendable-balance).
+Requesting gas-drop also affects spendable-balance math; see [Quoting Swaps → Spendable balance](/rest-api-guide/quoting#estimate-spendable-balance).
 :::

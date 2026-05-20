@@ -10,7 +10,7 @@ The API keeps a persistent record of every created swap, except the expired and 
 
 | Endpoint | Use for |
 |---|---|
-| [`GET /listPendingSwaps`](/rest-api-reference/list-pending-swaps) | Only swaps that are currently ongoing, might contain an action for the user to execute. |
+| [`GET /listPendingSwaps`](/rest-api-reference/list-pending-swaps) | Only swaps that are currently ongoing, might also require an action from the user to continue executions. |
 | [`GET /listSwaps`](/rest-api-reference/list-swaps) | Full swap history for a signer — e.g. a "Transactions" tab. |
 
 Both endpoints take the same query parameters:

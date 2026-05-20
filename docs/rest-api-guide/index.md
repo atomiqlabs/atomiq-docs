@@ -49,6 +49,10 @@ You don't need to hard-code this list. Use [`GET /getSupportedTokens`](/rest-api
 
 Numerical integer values (like TypeScript's `bigint`) appear in this API as [**BigIntString**](/rest-api-reference/schemas/bigintstring) (e.g. `"150000"`, `"1500000000000000000"`), because JSON cannot safely encode arbitrary-precision integers as native numbers.
 
+:::info
+The SDK accepts human-readable values as strings and base unit values as `bigint`s, since the REST API cannot differentiate between these types (both would be string-serialized) only base unit amounts are supported by the API!
+:::
+
 Every monetary amount returned by the API uses the [`ApiAmount`](/rest-api-reference/schemas/apiamount) shape:
 
 ```json

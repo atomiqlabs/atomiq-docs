@@ -331,7 +331,7 @@ const lnurlOrLightningAddress: string = "lnurl1...";
 if(!swapper.Utils.isValidLNURL(lnurlOrLightningAddress))
   throw new Error("Invalid LNURL specified!");
 // Fetch the details of the LNURL, it can be either LNURL-pay or LNURL-withdraw
-const lnurlDetails: LNURLPay | LNURLWithdraw = await swapper.Utils.getLNURLTypeAndData();
+const lnurlDetails: LNURLPay | LNURLWithdraw = await swapper.Utils.getLNURLTypeAndData(lnurlOrLightningAddress);
 // Check if the LNURL is of the LNURL-pay type
 if(!isLNURLPay(lnurlDetails))
   throw new Error("LNURL isn't of the LNURL-pay type!");

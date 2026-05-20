@@ -26,7 +26,7 @@ const swap = await swapper.swap(
 :::info
 Preferably use the `Tokens.<chain>.<asset>` notation for `fromToken` and `toToken` for to get automatic swap type inference.
 
-You can alternatively also use ticker strings such as `"BTC"`, `"BTC-LN"`, `"WBTC"`, or chain + ticker combination, such as `"STARKNET-WBTC"`, `"SOLANA-WBTC"`, `"CITREA-CBTC"`. But these don't automatically infer the swap type of the returned quote. You can use the [isSwapType](/sdk-reference/api/atomiq-sdk/src/functions/isSwapType) type-guard to narrow down the type in those cases.
+You can alternatively also use ticker strings such as `"BTC"`, `"BTC-LN"`, `"WBTC"`, or chain + ticker combination, such as `"BITCOIN-BTC"`, `"LIGHTNING-BTC"`, `"STARKNET-WBTC"`, `"SOLANA-WBTC"`, `"CITREA-CBTC"`. But these don't automatically infer the swap type of the returned quote. You can use the [isSwapType](/sdk-reference/api/atomiq-sdk/src/functions/isSwapType) type-guard to narrow down the type in those cases.
 :::
 
 ## Example
@@ -113,7 +113,7 @@ if (swap.isFinished()) {
 ```
 
 :::info
-If you need the raw swap type specific state value, use [`getState()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstate). If you want something human-readable, use [`getStateInfo()`](http://localhost:3000/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstateinfo).
+If you need the raw swap type specific state value, use [`getState()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstate). If you want something human-readable, use [`getStateInfo()`](/sdk-reference/api/atomiq-sdk/src/classes/ISwap#getstateinfo).
 :::
 
 ## EXACT_IN vs EXACT_OUT

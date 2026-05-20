@@ -48,7 +48,7 @@ The response is a **swap record** — the same shape every subsequent [`GET /get
 ```json
 {
   "swapId":   "54cbe34e2ee1bf...",
-  "swapType": "FROM_BTC",
+  "swapType": "SPV_VAULT_FROM_BTC",
   "state":    { "number": 1, "name": "CREATED", "description": "..." },
   "quote":    {
     "inputAmount":  { "amount": "0.0015",      "rawAmount": "150000", ... },
@@ -136,7 +136,7 @@ Here, the API has built a Bitcoin PSBT for the user's deposit and needs the clie
 For each PSBT in `action.txs`, sign the inputs listed in `signInputs` with the user's Bitcoin wallet and post the signed PSBTs back to [`POST /submitTransaction`](/rest-api-reference/submit-transaction), for the API to broadcast the transaction. I.e. in this example the client should parse the PSBT from its `psbtHex` or `psbtBase64`, sign inputs with indexes 0 and 2.
 
 :::info
-In case you didn't supply `bitcoinAddress` + `bitcoinPublicKey` on `GET /getSwapStatus` (see [step 2](#2-poll-for-the-current-action)) it returns the `RAW_PSBT` objects in `action.txs` instead of `FUNDED_PSBT`, and the client must add its own inputs (coin-selection) before signing — see [Bitcoin & Lightning → PSBT signing](/rest-api-guide/bitcoin-and-lightning#psbt-signing).
+In case you didn't supply `bitcoinAddress` + `bitcoinPublicKey` on `GET /getSwapStatus` the endpoint, returns the `RAW_PSBT` objects in `action.txs` instead of `FUNDED_PSBT`, and the client must add its own inputs (coin-selection) before signing — see [Bitcoin & Lightning → PSBT signing](/rest-api-guide/bitcoin-and-lightning#bitcoin-psbts).
 :::
 
 Submit each signed PSBT as a **hex or base64 encoded** string. Order of the PSBTs in `signedTxs` must match the order in `action.txs`:
@@ -287,7 +287,7 @@ Here, the user has to pay to either an on-chain Bitcoin address or a BOLT11 Ligh
 Show the `address` and `amount` from each entry of `action.txs` to the user (or use a `hyperlink`, which can be displayed as a QR code, or used as clickable deeplink) and let them pay from whichever wallet they like. Keep polling [`GET /getSwapStatus`](/rest-api-reference/get-swap-status); the server detects the incoming payment and advances the state automatically.
 
 :::info
-A Lightning → Smart chain swap can also be settled via LNURL-withdraw instead of asking the user to pay an invoice — call [`settleWithLnurl`](/rest-api-guide/bitcoin-and-lightning#settlewithlnurl--lnurl-withdraw-settlement) instead.
+A Lightning → Smart chain swap can also be settled via LNURL-withdraw instead of asking the user to pay an invoice — use the [LNURL-withdraw settlement](/rest-api-guide/bitcoin-and-lightning#settle-the-swap-with-lnurl-withdraw-link) instead.
 :::
 
 ### `Wait`
