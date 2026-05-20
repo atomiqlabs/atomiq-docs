@@ -69,6 +69,8 @@ All errors are JSON. For `4xx` responses the body is `{ "error": "<message>" }`.
 
 Rate-limit (`429`) responses may include additional fields depending on how the API is deployed — the self-hosted container returns `retryAfter` in seconds inside the body, while hosted deployments typically expose `Retry-After` only as a standard HTTP header. Treat both as advisory and back off accordingly.
 
+[//]: # (//TODO: Go over the table here and update based on what's currently in the pages)
+
 ## What this guide covers
 
 | Section | What you'll learn |

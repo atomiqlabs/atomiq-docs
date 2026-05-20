@@ -96,3 +96,5 @@ A few small conventions that come up in real integrations:
 - **Transactions list** — `listSwaps`, sorted by `createdAt desc`, grouped by `state.name` or by the first / last `step.title`.
 - **Per-swap detail screen** — once the user taps an entry, switch to the per-swap polling loop ([Creating & Executing](/rest-api-guide/creating-and-executing)) using the `swapId` from the list.
 - **Multi-chain aggregation** — call without `chainId`; the returned records already include `quote.inputAmount.chain` / `quote.outputAmount.chain` to label which chain each one belongs to.
+
+[//]: # (//TODO: Maybe add next steps?)

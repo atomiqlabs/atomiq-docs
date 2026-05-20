@@ -2,6 +2,8 @@
 sidebar_position: 1
 ---
 
+[//]: # (TOOD: Maybe we move this under the guides?)
+
 # Run REST API Locally
 
 Most integrators will talk to the **public Atomiq REST API**. This section is for teams that need to host the API themselves — to keep quote traffic on their own infrastructure, run against testnets, control rate limits centrally, or combine it with a custom auth layer.
