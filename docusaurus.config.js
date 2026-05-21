@@ -315,7 +315,8 @@ const config = {
       navbar: {
         logo: {
           alt: 'Atomiq Logo',
-          src: 'img/logo.png',
+          src: 'img/logo-light.svg',
+          srcDark: 'img/logo-dark.svg',
         },
         items: [
           {
