@@ -2,6 +2,11 @@
  * Custom Atomiq theme colors
  */
 
+.navbar__logo {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
 :root {
   --ifm-color-primary: #6366f1;
   --ifm-color-primary-dark: #4f46e5;

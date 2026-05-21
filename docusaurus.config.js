@@ -313,7 +313,6 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: 'Atomiq',
         logo: {
           alt: 'Atomiq Logo',
           src: 'img/logo.png',
