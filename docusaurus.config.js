@@ -19,6 +19,35 @@ if (fs.existsSync(openapiSrc)) {
   fs.copyFileSync(openapiSrc, openapiDest);
 }
 
+function removeDocusaurusHashLinks() {
+  return (tree) => {
+    function visit(node) {
+      if (!node || !Array.isArray(node.children)) {
+        return;
+      }
+
+      node.children = node.children.filter((child) => {
+        if (child.type !== 'element' || child.tagName !== 'a') {
+          return true;
+        }
+
+        const className = child.properties?.className;
+        const classes = Array.isArray(className)
+          ? className
+          : typeof className === 'string'
+            ? className.split(/\s+/)
+            : [];
+
+        return !classes.includes('hash-link');
+      });
+
+      node.children.forEach(visit);
+    }
+
+    visit(tree);
+  };
+}
+
 // Shared TypeDoc options for consistent formatting
 const sharedTypedocOptions = {
   skipErrorChecking: true,
@@ -184,6 +213,7 @@ const config = {
           includeBlog: false,
           includePages: true,
           includeDocs: true,
+          beforeDefaultRehypePlugins: [removeDocusaurusHashLinks],
           // Skip search, redirect aliases, and the unrelated `superpowers/`
           // build artefact so the index stays focused on canonical routes.
           excludeRoutes: [
