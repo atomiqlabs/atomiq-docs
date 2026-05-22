@@ -329,11 +329,11 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'guidesSidebar',
             position: 'left',
-            label: 'Guides',
+            label: 'Liquidity Providers',
           },
           {
             type: 'dropdown',
-            label: 'Developers',
+            label: 'Integrate',
             position: 'left',
             items: [
               {
@@ -342,17 +342,24 @@ const config = {
                 label: 'SDK Guide',
               },
               {
-                to: '/sdk-reference/',
-                label: 'SDK Reference',
-              },
-              {
                 type: 'docSidebar',
                 sidebarId: 'restApiGuideSidebar',
                 label: 'REST API Guide',
               },
+            ],
+          },
+          {
+            type: 'dropdown',
+            label: 'Reference',
+            position: 'left',
+            items: [
+              {
+                to: '/sdk-reference/',
+                label: 'SDK TypeDoc',
+              },
               {
                 to: '/rest-api-reference/atomiq-rest-api',
-                label: 'REST API Reference',
+                label: 'REST OpenAPI',
               },
             ],
           },

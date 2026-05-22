@@ -57,7 +57,6 @@ const sidebars = {
 
   // Guides (practical how-to guides)
   guidesSidebar: [
-    'guides/webapp',
     {
       type: 'category',
       label: 'Liquidity Provider Nodes',
