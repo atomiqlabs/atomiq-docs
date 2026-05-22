@@ -57,7 +57,6 @@ const sidebars = {
 
   // Guides (practical how-to guides)
   guidesSidebar: [
-    'guides/webapp',
     {
       type: 'category',
       label: 'Liquidity Provider Nodes',
@@ -69,38 +68,38 @@ const sidebars = {
     },
   ],
   
-  // SDK Tutorials (developer-focused)
-  developersSidebar: [
+  // SDK Guide (developer-focused tutorials)
+  sdkGuideSidebar: [
     {
       type: 'doc',
-      id: 'developers/index',
+      id: 'sdk-guide/index',
       label: 'Overview',
     },
     {
       type: 'category',
       label: 'Quick Start',
-      link: { type: 'doc', id: 'developers/quick-start/index' },
+      link: { type: 'doc', id: 'sdk-guide/quick-start/index' },
       items: [
-        'developers/quick-start/quick-start-browser',
-        'developers/quick-start/quick-start-nodejs',
-        'developers/quick-start/creating-quotes',
-        'developers/quick-start/executing-swaps',
+        'sdk-guide/quick-start/quick-start-browser',
+        'sdk-guide/quick-start/quick-start-nodejs',
+        'sdk-guide/quick-start/creating-quotes',
+        'sdk-guide/quick-start/executing-swaps',
       ],
     },
     {
       type: 'category',
       label: 'Swap Guides',
-      link: { type: 'doc', id: 'developers/swaps/index' },
+      link: { type: 'doc', id: 'sdk-guide/swaps/index' },
       items: [
-        'developers/swaps/smart-chain-to-btc',
-        'developers/swaps/btc-to-smart-chain',
-        'developers/swaps/lightning-to-smart-chain',
+        'sdk-guide/swaps/smart-chain-to-btc',
+        'sdk-guide/swaps/btc-to-smart-chain',
+        'sdk-guide/swaps/lightning-to-smart-chain',
         {
           type: 'category',
           label: 'Legacy (Solana)',
           items: [
-            'developers/swaps/solana/btc-to-solana',
-            'developers/swaps/solana/lightning-to-solana',
+            'sdk-guide/swaps/solana/btc-to-solana',
+            'sdk-guide/swaps/solana/lightning-to-solana',
           ],
         },
       ],
@@ -109,36 +108,58 @@ const sidebars = {
     {
       type: 'category',
       label: 'Swap Management',
-      link: { type: 'doc', id: 'developers/swap-management/index' },
+      link: { type: 'doc', id: 'sdk-guide/swap-management/index' },
       items: [
-        'developers/swap-management/historical-swaps',
-        'developers/swap-management/refunds',
-        'developers/swap-management/claiming',
+        'sdk-guide/swap-management/historical-swaps',
+        'sdk-guide/swap-management/refunds',
+        'sdk-guide/swap-management/claiming',
       ],
     },
     {
       type: 'category',
       label: 'Utilities',
-      link: { type: 'doc', id: 'developers/utilities/index' },
+      link: { type: 'doc', id: 'sdk-guide/utilities/index' },
       items: [
-        'developers/utilities/address-parser',
-        'developers/utilities/wallet-balance',
-        'developers/utilities/supported-tokens',
-        'developers/utilities/swap-types',
-        'developers/utilities/swap-limits',
+        'sdk-guide/utilities/address-parser',
+        'sdk-guide/utilities/wallet-balance',
+        'sdk-guide/utilities/supported-tokens',
+        'sdk-guide/utilities/swap-types',
+        'sdk-guide/utilities/swap-limits',
       ],
     },
     {
       type: 'category',
       label: 'Advanced',
-      link: { type: 'doc', id: 'developers/advanced/index' },
+      link: { type: 'doc', id: 'sdk-guide/advanced/index' },
       items: [
-        'developers/advanced/manual-transactions',
-        'developers/advanced/events',
-        'developers/advanced/configuration',
-        'developers/advanced/storage'
+        'sdk-guide/advanced/manual-transactions',
+        'sdk-guide/advanced/events',
+        'sdk-guide/advanced/configuration',
+        'sdk-guide/advanced/storage'
       ],
     }
+  ],
+
+  // REST API Guide
+  restApiGuideSidebar: [
+    {
+      type: 'doc',
+      id: 'rest-api-guide/index',
+      label: 'Overview',
+    },
+    'rest-api-guide/creating-and-executing',
+    'rest-api-guide/quoting',
+    'rest-api-guide/listing-swaps',
+    'rest-api-guide/bitcoin-and-lightning',
+    {
+      type: 'category',
+      label: 'Run REST API Locally',
+      link: { type: 'doc', id: 'rest-api-guide/run-locally/index' },
+      collapsed: true,
+      items: [
+        'rest-api-guide/run-locally/configuration',
+      ],
+    },
   ],
 };
 

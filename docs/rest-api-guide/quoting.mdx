@@ -1,0 +1,230 @@
+---
+sidebar_position: 3
+---
+
+# Quoting Swaps
+
+These endpoints let you build a complete swap form with dynamic token pickers, "Send Max" button, amount limit validation and address parsing. You usually use them before creating the swap, to constrain the tokens and amounts the user is allowed to swap. For the bare-minimum create and execute flow, see [Creating & Executing a Swap](/rest-api-guide/creating-and-executing).
+
+| Endpoint | Purpose |
+|---|---|
+| [`GET /getSupportedTokens`](/rest-api-reference/get-supported-tokens) | Populate the initial source/destination token pickers. |
+| [`GET /getSwapCounterTokens`](/rest-api-reference/get-swap-counter-tokens) | After one side is picked, show only tokens that actually route with it. |
+| [`GET /getSpendableBalance`](/rest-api-reference/get-spendable-balance) | Maximum spendable balance (considering network fees) - i.e. a "Send Max" button. |
+| [`GET /getSwapLimits`](/rest-api-reference/get-swap-limits) | Min / max bounds for the amount field. |
+| [`GET /parseAddress`](/rest-api-reference/parse-address) | Validate and classify the destination address; can also pre-pick the swap type. |
+
+Together, these let you build a swap form that never lets the user assemble an impossible quote.
+
+:::info
+Supported tokens list, swap counter tokens and swap limits might change over time as LPs join/leave the network, refresh them as necessary (i.e. once every 5 minutes)
+:::
+
+## List supported tokens
+
+Call [`GET /getSupportedTokens`](/rest-api-reference/get-supported-tokens) with `side=INPUT` (source picker) or `side=OUTPUT` (destination picker), to get the tokens available as a swap source or destination.
+
+```bash
+curl "https://mainnet.swaps-api.atomiq.exchange/getSupportedTokens?side=INPUT"
+```
+
+The response is an array of [`ApiToken`](/rest-api-reference/schemas/apitoken) objects:
+
+```json
+{
+  "id":       "STARKNET-STRK",          // use this exact string elsewhere in the API
+  "chainId":  "STARKNET",
+  "ticker":   "STRK",
+  "name":     "Starknet Token",
+  "decimals": 18,
+  "address":  "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
+}
+```
+
+The `id` field of the token is its canonical identifier (in the form of `<chainId>-<ticker>`), which is used throughout the API.
+
+## Find compatible counter-tokens
+
+Once the user has picked one side (say `BITCOIN-BTC` as input), call [`GET /getSwapCounterTokens`](/rest-api-reference/get-swap-counter-tokens) to discover which tokens actually have liquidity as the other side:
+
+```bash
+curl "https://mainnet.swaps-api.atomiq.exchange/getSwapCounterTokens?token=BITCOIN-BTC&side=INPUT"
+```
+
+`side` describes how the caller's `token` is being used. `side=INPUT` means "the user is spending BTC, show me what they can receive." `side=OUTPUT` means "the user wants to receive X, show me what they can pay with."
+
+The response is the same [`ApiToken[]`](/rest-api-reference/schemas/apitoken) shape as [`GET /getSupportedTokens`](/rest-api-reference/get-supported-tokens). Using this list for the *destination* picker avoids showing combinations the LP network can't actually quote.
+
+---
+
+:::tip
+Call [`GET /getSupportedTokens`](/rest-api-reference/get-supported-tokens) **once** at startup to populate the source and destination token picker, then call [`GET /getSwapCounterTokens`](/rest-api-reference/get-swap-counter-tokens) when the user selects either the source or destination token to narrow down the token picker on the other side. You don't need to re-fetch when the user changes the amount.
+:::
+
+## Estimate spendable balance
+
+[`GET /getSpendableBalance`](/rest-api-reference/get-spendable-balance) returns the balance a wallet can *actually spend* on a swap after accounting for chain fees. Usable as an upper limit on the swap source amount or the amount you want behind a "Send Max" button.
+
+```bash
+curl "https://mainnet.swaps-api.atomiq.exchange/getSpendableBalance?wallet=0x0123…&token=STARKNET-STRK"
+```
+
+:::warning[Lightning network balances]
+**Lightning balances are not supported** by this endpoint. For `LIGHTNING-BTC`, the API will throw. Lightning is an off-chain system with no public information about balances.
+:::
+
+Query parameters (see [`GetSpendableBalanceInput`](/rest-api-reference/schemas/getspendablebalanceinput) for the authoritative schema):
+
+| Query param | Required | Notes |
+|---|---|---|
+| `wallet` | ✓ | Address to inspect. |
+| `token` | ✓ | Token identifier (e.g. `BITCOIN-BTC`, `STARKNET-STRK`). |
+| `feeRate` | optional | Manual fee-rate override. Chain-specific format defined by [`SpendableBalanceFeeRate`](/rest-api-reference/schemas/spendablebalancefeerate) — see [Fee-rate format](#fee-rate-format). |
+| `feeMultiplier` | optional, number | Multiplier applied to the auto-fetched fee rate. Mutually exclusive with `feeRate`. |
+| **Bitcoin-only** |
+| `gasDrop` | optional, boolean | For `BITCOIN-BTC`-source swaps: include gas-drop transaction overhead in the estimate. |
+| `targetChain` | optional | Destination chain identifier (`STARKNET`, `SOLANA`, ...). Only for `BITCOIN-BTC` balances, changes the estimate because different targets may use different swap protocols, and have different Bitcoin network fees. |
+| `minBitcoinFeeRate` | optional, number | Floor for the fetched Bitcoin fee rate (sats/vB). Only for `BITCOIN-BTC` |
+
+Response shape ([`GetSpendableBalanceOutput`](/rest-api-reference/schemas/getspendablebalanceoutput)):
+
+```json
+{
+  "balance": { "amount": "0.00243", "rawAmount": "243000", "decimals": 8, "symbol": "BTC", "chain": "BITCOIN" },
+  "feeRate": 3.5     // only when estimating BTC on Bitcoin
+}
+```
+
+`balance` follows the [`ApiAmount`](/rest-api-reference/schemas/apiamount) shape used throughout the API.
+
+### Fee-rate format
+
+`feeRate` is chain-specific. The authoritative format is the [`SpendableBalanceFeeRate`](/rest-api-reference/schemas/spendablebalancefeerate) schema, but in brief:
+
+| Chain | Format | Example |
+|---|---|---|
+| **Bitcoin** | Positive number, sats/vB | `3.5` |
+| **Solana** | `<microLamports/CU>[;<base fee in lamports>]` | `"10000;500"` |
+| **Starknet** | `<l1GasCost>,<l2GasCost>,<l1DataGasCost>;v3` (in Fri per gas) | `"1000000000,1000000000,0;v3"` |
+| **EVM** (Botanix, Citrea, Alpen, Goat) | `<baseFeePerGas>,<priorityFeePerGas>` (in Wei per gas) | `"30000000000,2000000000"` |
+
+---
+
+:::tip
+Re-run this call whenever the target chain or `gasDrop` toggle changes — both affect the estimate, then check periodically as fee rate does change over time. You don't need to re-run it every keystroke in the amount field.
+:::
+
+## Get swap limits
+
+Once both tokens are chosen, call [`GET /getSwapLimits`](/rest-api-reference/get-swap-limits) to fetch the current min/max for the pair:
+
+```bash
+curl "https://mainnet.swaps-api.atomiq.exchange/getSwapLimits?srcToken=BITCOIN-BTC&dstToken=STARKNET-STRK"
+```
+
+Response ([`GetSwapLimitsOutput`](/rest-api-reference/schemas/getswaplimitsoutput)) contains two [`GetSwapLimitsSide`](/rest-api-reference/schemas/getswaplimitsside) entries, each carrying [`ApiAmount`](/rest-api-reference/schemas/apiamount) `min` / `max` values:
+
+```json
+{
+  "input":  { "min": { /* ApiAmount */ }, "max": { /* ApiAmount */ } },
+  "output": { "min": { /* ApiAmount */ }, "max": { /* ApiAmount */ } }
+}
+```
+
+Both `input` and `output` limits are returned so you can enforce the constraint on whichever side the user is editing — relevant when `amountType` is `EXACT_IN` vs `EXACT_OUT` (see [`ExactAmountType`](/rest-api-reference/schemas/exactamounttype)).
+
+`max` is optional and may be absent when the LP network does not enforce a hard ceiling.
+
+:::info
+Limits can change as LPs join/leave the network, re-fetch the swap limits as needed (e.g. every 5 minutes)
+:::
+
+## Parse the destination address
+
+[`GET /parseAddress`](/rest-api-reference/parse-address) accepts anything the user might reasonably paste into an address field:
+- Bitcoin on-chain addresses, also [BIP-21](https://en.bitcoin.it/wiki/BIP_0021) bitcoin payment URIs - `bitcoin:...`
+- BOLT11 invoices, also lightning deeplinks - `lightning:...`
+- LNURL-pay ([LUD-6](https://github.com/lnurl/luds/blob/luds/06.md)), LNURL-withdraw ([LUD-3](https://github.com/lnurl/luds/blob/luds/03.md)) links and lightning static internet identifiers ([LUD-16](https://github.com/lnurl/luds/blob/luds/16.md))
+- Smart-chain addresses (Starknet, Solana, EVM)
+
+Returns the parsed `type` plus structured data (see [`ParseAddressOutput`](/rest-api-reference/schemas/parseaddressoutput) for the full response shape).
+
+:::info
+Be sure to URL-encode the address in the GET request parameter, as bitcoin/lightning payment URIs might contain non-URL-safe characters.
+:::
+
+```bash
+curl "https://mainnet.swaps-api.atomiq.exchange/parseAddress?address=lnbc510400n1p4qm..."
+```
+
+```json
+{
+  "address": "lnbc510400n1p4qm...",
+  "type":    "LIGHTNING",
+  "amount":  { "amount": "0.00051040", "rawAmount": "51040", "decimals": 8, "symbol": "BTC", "chain": "LIGHTNING" }
+}
+```
+
+`type` is one of `BITCOIN`, `LIGHTNING`, `LNURL`, `SOLANA`, `STARKNET`, `CITREA`, … (or other supported chains).
+
+For BOLT11 invoices and Bitcoin URIs with `amount` parameters, the response may include an [`ApiAmount`](/rest-api-reference/schemas/apiamount) `amount` field (and `min` / `max` for LNURL). Use these to pre-populate the amount field if the user pasted a request that already carries one.
+
+Two ways to use the result:
+
+- **Validate the recipient field.** Show a chip ("Bitcoin address" / "Lightning invoice" / …) once `type` resolves; surface an error if the call throws.
+- **Auto-pick the destination token / swap type.** The returned `type` tells you which destination chain the user actually pasted, so you can switch the destination picker to e.g. `BITCOIN-BTC` when they paste an on-chain address, or `LIGHTNING-BTC` when they paste a BOLT11 invoice / LNURL link.
+
+When `type` is `LNURL`, the response includes an [`ApiLNURL`](/rest-api-reference/schemas/apilnurl) object that's either an [`ApiLNURLPay`](/rest-api-reference/schemas/apilnurlpay) or [`ApiLNURLWithdraw`](/rest-api-reference/schemas/apilnurlwithdraw) variant — see [Bitcoin & Lightning → LNURL](/rest-api-guide/bitcoin-and-lightning#lnurls-and-static-internet-identifiers) for how to use the resolved payload.
+
+## Putting it together
+
+A minimal quote form flow:
+
+```ts
+// on mount
+const inputTokens = await get("/getSupportedTokens", { side: "INPUT" });
+populateSourcePicker(inputTokens);
+
+// on source-token change
+const outputTokens = await get("/getSwapCounterTokens", {
+  token: srcToken.id,
+  side: "INPUT",
+});
+populateDestinationPicker(outputTokens);
+
+// on destination-address paste
+const parsed = await get("/parseAddress", { address: pastedRecipient });
+pickDestinationTokenFromType(parsed.type);
+
+// on "Max" click
+const { balance } = await get("/getSpendableBalance", {
+  wallet:      srcAddress,
+  token:       srcToken.id,
+  targetChain: dstToken.chainId,
+  gasDrop:     userWantsGasDrop,
+});
+setAmountField(balance.rawAmount);
+
+// on both selected (or on amount focus)
+const limits = await get("/getSwapLimits", {
+  srcToken: srcToken.id,
+  dstToken: dstToken.id,
+});
+setAmountBounds(limits.input.min.rawAmount, limits.input.max?.rawAmount);
+```
+
+## Next Steps
+
+### Creating & Executing
+
+Once the form passes validation, create the swap and run the polling/signing loop until it reaches a terminal state.
+
+**[Creating & Executing a Swap →](/rest-api-guide/creating-and-executing)**
+
+---
+
+### Bitcoin & Lightning
+
+Handle PSBT details, Lightning invoices, LNURL flows, preimage reveal, and gas-drop behavior for Bitcoin-specific routes.
+
+**[Bitcoin & Lightning Specifics →](/rest-api-guide/bitcoin-and-lightning)**

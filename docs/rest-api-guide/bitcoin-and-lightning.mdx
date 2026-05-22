@@ -1,0 +1,141 @@
+---
+sidebar_position: 5
+---
+
+# Bitcoin & Lightning
+
+Most of the API looks the same across all supported chains. Bitcoin on-chain and Lightning are the exceptions — PSBTs, BOLT11 invoices, LNURL, and Lightning preimages are Bitcoin-world concepts the smart-chain side doesn't share. This page groups everything direction-specific in one place.
+
+If you're new to the flow, read [Creating & Executing a Swap](/rest-api-guide/creating-and-executing) first — this page extends the patterns there.
+
+## Bitcoin PSBTs
+
+When a swap needs a Bitcoin payment from the user's wallet (e.g. `BITCOIN-BTC → STARKNET-STRK`), [`GET /getSwapStatus`](/rest-api-reference/get-swap-status) returns a `SignPSBT` action. The `txs` array always contains PSBTs of a single variant — either already-funded (`FUNDED_PSBT`) or raw (`RAW_PSBT`):
+
+```json
+{
+  "type": "SignPSBT",
+  "name": "Deposit on Bitcoin",
+  "chain": "BITCOIN",
+  "description": "Sign the funding transaction to commit the deposit.",
+  "txs": [
+    {
+      "type": "FUNDED_PSBT",
+      "psbtHex": "70736274ff01…",
+      "psbtBase64": "cHNidP8B…",
+      "signInputs": [0, 2],       // which input indices to sign
+      "feeRate": 3.5              // sats / vB, matches what's encoded in the PSBT
+    }
+  ]
+}
+```
+
+- **`FUNDED_PSBT`** — inputs are already selected and populated by the API. The client just signs the indices listed in `signInputs` and submits back.
+- **`RAW_PSBT`** — the client needs to add its own inputs (e.g. using its wallet's coin-selection) before signing. Carries an additional `in1sequence` field whose value must be preserved on the corresponding input; every other input can use default sequence.
+
+:::info
+The API needs the bitcoin wallet details to properly build `FUNDED_PSBT` variant of PSBTs, if not provided a `RAW_PSBT` will be returned and you have to run the coinselection on the client-side. Pass `bitcoinAddress` and `bitcoinPublicKey` (hex-encoded) on **every** [`GET /getSwapStatus`](/rest-api-reference/get-swap-status) call.
+
+You can also optionally pass a `bitcoinFeeRate` parameter to set the bitcoin fee rate (sats/vB) that the transaction will use, if omitted the current economical fee rate is used.
+
+```bash
+curl "https://mainnet.swaps-api.atomiq.exchange/getSwapStatus?swapId=<id> \
+    &bitcoinAddress=bc1q… \
+    &bitcoinPublicKey=02… \
+    &bitcoinFeeRate=10"
+```
+:::
+
+Submit the signed PSBT as hex or base64 via [`POST /submitTransaction`](/rest-api-reference/submit-transaction):
+
+```json
+{ "swapId": "…", "signedTxs": ["70736274ff01…signed…"] }
+```
+
+## Lightning Network
+
+Lightning network swaps allow you to specify an additional set of fields when creating the swap through [`POST /createSwap`](/rest-api-reference/create-swap):
+
+| Field | Direction | Purpose |
+|---|---|---|
+| `paymentHash` | **Lightning → Smart chain** | Client-supplied payment hash so you retain the preimage. Hex string. See [Lightning → Smart chain swaps](#lightning--smart-chain-swaps). |
+| `lightningInvoiceDescription` | **Lightning → Smart chain** | Optional custom description to include in the generated BOLT11 invoice. |
+| `lightningInvoiceDescriptionHash` | **Lightning → Smart chain** | Optional description-hash to use in the generated BOLT11 invoice, hex-encoded. |
+| `lightningPaymentHTLCTimeout` | **Smart chain → Lightning** | Optional HTLC timeout override in seconds. Longer = more routing hops available; shorter = faster lockup release if the LP misbehaves. |
+
+### Lightning → Smart chain swaps
+
+Swaps in the **Lightning → Smart chain** direction use the **HTLC swap protocol**, which requires the user to create a swap secret and paymentHash pair and to later reveal the swap secret once prompted to. Therefore you have to:
+
+1. Generate a cryptographically secure random 32-byte buffer, this is your swap secret, then hash this secret using sha256 hash function to derive a payment hash. Store the swap secret securely for later reveal (i.e. in the browser local storage).
+
+    ```typescript
+    const secret: Buffer = crypto.randomBytes(32);
+    const paymentHash: string = crypto.createHash("sha256").update(secret).digest("hex");
+    // Store the preimage, i.e. in browser storage
+    ```
+
+2. Pass the hex-encoded payment hash to the [`POST /createSwap`](/rest-api-reference/create-swap) API as a `paymentHash` parameter.
+
+3. Wait till [`GET /getSwapStatus`](/rest-api-reference/get-swap-status) returns the `requiresSecretReveal: true` prompting the user to reveal the swap secret:
+
+    ```json
+    {
+      /* ... */
+      "requiresSecretReveal": true,
+      "currentAction": null
+    }
+    ```
+
+4. Reveal the swap secret by calling [`GET /getSwapStatus`](/rest-api-reference/get-swap-status) with the secret in the string, the API then broadcasts the secret over Nostr for automatic settlement, or returns signing actions for manual settlement:
+
+    ```bash
+    curl "https://mainnet.swaps-api.atomiq.exchange/getSwapStatus?swapId=<id>&secret=<preimage-hex>"
+    ```
+
+### BOLT11 invoices
+
+BOLT11 invoices are the most common way of receiving lightning network payments, usually supported by all the wallets. They are single-use only, so need to be re-generated after every swap to the specific invoice.
+
+:::warning
+The atomiq API only supports invoices which contain an explicit satoshis (BTC) amount, invoices without an amount are not supported. This means for **Smart chain → Lightning** routes using BOLT11 invoices as the destination address only `EXACT_OUT` quoting is supported.
+:::
+
+### LNURLs and static internet identifiers
+
+LNURLs come in two variants:
+
+- LNURL-pay — allow dynamic payments with optional min/max bounds, descriptions, repeated payments and also support `EXACT_IN` swaps (unlike BOLT11 invoices)
+- LNURL-withdraw — can be used as source for **Lightning → Smart chain** swaps, allows the user to "pull" amount from the address
+- Static internet identifiers (i.e. lightning "e-mail" addresses: `joe@example.com`) — can be used interchangeably as LNURL-pay
+
+Since both of these LNURL types use the same format you should first resolve them using the [`GET /parseAddress`](/rest-api-reference/parse-address) endpoint (see [Quoting Swaps → Parse the destination address](/rest-api-guide/quoting#parse-the-destination-address)), this returns the information about what type of the LNURL it is, along with the min/max values and descriptions.
+
+You can then pass these LNURLs directly to [`POST /createSwap`](/rest-api-reference/create-swap):
+
+- LNURL-withdraw as `srcAddress` when `srcToken = LIGHTNING-BTC`.
+- LNURL-pay as `dstAddress` when `dstToken = LIGHTNING-BTC`.
+
+:::info
+While the atomiq API supports the parsing and automatic handling of the LNURLs, you should always (if possible) prefer to resolve and handle them yourself on the client-side. This removes the trust from the backend to resolve the LNURLs honestly.
+:::
+
+### Settle the swap with LNURL-withdraw link
+
+For **Lightning -> Smart chain** which are in a state where they request a payment of the BOLT11 invoice by the user (`currentAction` is `SendToAddress`, stage `PR_CREATED`), you can instead use the LNURL-withdraw link to settle the swap by calling [`POST /settleWithLnurl`](/rest-api-reference/settle-with-lnurl):
+
+```bash
+curl -X POST "https://mainnet.swaps-api.atomiq.exchange/settleWithLnurl" \
+  -H "Content-Type: application/json" \
+  -d '{ "swapId": "a3cabd3ef93...", "lnurlWithdraw": "lnurl1..." }'
+```
+
+:::info
+If the swap was already created with an LNURL-withdraw link (i.e. [`POST /createSwap`](/rest-api-reference/create-swap) received the LNURL-withdraw as `srcAddress`), omit the `lnurlWithdraw` parameter. Passing it in that case is a validation error.
+:::
+
+Response:
+
+```json
+{ "paymentHash": "<hex>" }
+```

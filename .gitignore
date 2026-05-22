@@ -23,6 +23,12 @@ yarn-error.log*
 
 # Generated SDK docs (TypeDoc output - api/ is auto-generated, index.mdx is manually maintained)
 sdk-reference/api/
+rest-api-reference/
+
+# Copied from repos/atomiq-sdk/openapi.json at docusaurus.config.js load time.
+# Source of truth lives in the SDK repo.
+static/rest-api-reference/openapi.json
+
 
 .claude/settings.local.json
 repos/

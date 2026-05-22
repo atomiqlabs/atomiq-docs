@@ -1,0 +1,36 @@
+sequenceDiagram
+    autonumber
+    participant W as Client Wallet
+    participant A as atomiq-api-docker
+    participant LP as Atomiq LP
+    participant C as Source/Destination chain
+
+    W->>A: POST /createSwap<br/>{ srcToken, dstToken, amount, ... }
+    A->>LP: RFQ request
+    LP-->>A: quote
+    A-->>W: { swapId, quote, state: CREATED }
+
+    loop Poll every action.pollTimeSeconds (default 5s)
+        W->>A: GET /getSwapStatus?swapId=<br/>+ bitcoin wallet info if needed
+        A-->>W: { state, currentAction, isFinished, requiresSecretReveal }
+
+        alt currentAction = SignPSBT
+            W->>W: sign PSBT (BTC key)
+            W->>A: POST /submitTransaction<br/>{ signedTxs: [psbtHex] }
+            A->>C: broadcast
+            A-->>W: { txHashes }
+        else currentAction = SignSmartChainTransaction
+            W->>W: sign smart-chain tx
+            W->>A: POST /submitTransaction
+            A->>C: broadcast
+            A-->>W: { txHashes }
+        else currentAction = SendToAddress
+            W->>C: pay address externally<br/>(or LNURL flow)
+        else currentAction = Wait
+            Note over W,A: Just keep polling until<br/>isFinished=true or next action becomes available
+        else requiresSecretReveal = true
+            W->>A: GET /getSwapStatus?swapId=…&secret=<preimage>
+        end
+    end
+
+    Note over W,A: isFinished=true ⇒ stop polling.<br/>isSuccess / isFailed / isExpired<br/>describes the terminal state.

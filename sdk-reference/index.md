@@ -61,6 +61,6 @@ If you already have a key-value storage backend you can use the [**Memory Indexe
 
 ---
 
-**Ready to integrate?** Visit the [SDK Guide](/developers/) for detailed tutorials and examples.
+**Ready to integrate?** Visit the [SDK Guide](/sdk-guide/) for detailed tutorials and examples.
 
 **Want to learn more about the Atomiq protocol?** Check out the [protocol overview](/).
