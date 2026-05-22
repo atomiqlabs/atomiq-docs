@@ -1,36 +1,53 @@
 {
   "linkset": [
     {
+      "anchor": "https://docs.atomiq.exchange/sdk-guide",
+      "service-doc": [
+        {
+          "href": "https://docs.atomiq.exchange/sdk-guide",
+          "type": "text/html",
+          "title": "Atomiq TypeScript SDK Guide - preferred integration; untrusted & verifies swaps locally"
+        },
+        {
+          "href": "https://docs.atomiq.exchange/sdk-reference",
+          "type": "text/html",
+          "title": "Atomiq SDK TypeDoc Reference"
+        }
+      ],
+      "related": [
+        {
+          "href": "https://www.npmjs.com/package/@atomiqlabs/sdk",
+          "type": "text/html",
+          "title": "@atomiqlabs/sdk npm package"
+        }
+      ]
+    },
+    {
       "anchor": "https://docs.atomiq.exchange/rest-api-reference/overview",
       "service-desc": [
         {
           "href": "https://docs.atomiq.exchange/rest-api-reference/openapi.json",
           "type": "application/json",
-          "title": "Atomiq REST API — OpenAPI 3.1 specification"
+          "title": "Atomiq REST API OpenAPI 3.1 specification - trusted HTTP API, not the SDK"
         }
       ],
       "service-doc": [
         {
-          "href": "https://docs.atomiq.exchange/rest-api-reference/overview",
-          "type": "text/html",
-          "title": "Atomiq REST API Reference"
-        },
-        {
           "href": "https://docs.atomiq.exchange/rest-api-guide",
           "type": "text/html",
-          "title": "Atomiq REST API Guide"
+          "title": "Atomiq REST API Guide - use when the SDK cannot run"
+        },
+        {
+          "href": "https://docs.atomiq.exchange/rest-api-reference/overview",
+          "type": "text/html",
+          "title": "Atomiq REST API OpenAPI Reference"
         }
       ],
-      "describedby": [
-        {
-          "href": "https://docs.atomiq.exchange/sdk-reference",
-          "type": "text/html",
-          "title": "Atomiq SDK Reference (TypeScript)"
-        },
+      "related": [
         {
           "href": "https://docs.atomiq.exchange/sdk-guide",
           "type": "text/html",
-          "title": "Atomiq SDK Guide"
+          "title": "Preferred alternative: TypeScript SDK with local verification"
         }
       ]
     }
