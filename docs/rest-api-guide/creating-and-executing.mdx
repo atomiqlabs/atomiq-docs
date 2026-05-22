@@ -27,7 +27,7 @@ curl -X POST "https://mainnet.swaps-api.atomiq.exchange/createSwap" \
   }'
 ```
 
-For **Bitcoin / Lightning → Smart chain** swaps, you can also request a destination-chain gas drop by passing `gasAmount`; see [Bitcoin & Lightning Specifics → Gas-drop](/rest-api-guide/bitcoin-and-lightning#gas-drop).
+For **Bitcoin / Lightning → Smart chain** swaps, you can also request a destination-chain gas drop by passing `gasAmount`; see [Gas-drop](#gas-drop).
 
 This creates a swap of 0.0015 BTC (150,000 sats) to STRK token. Note that `amount` is in base units (sats for Bitcoin, wei for EVM, etc.), and the amount type can be either `EXACT_IN` or `EXACT_OUT`, based on whether the `amount` field specifies an input amount or output amount. For some swap types (e.g. Lightning → Smart chain and Bitcoin → Smart chain) the `srcAddress` can be left empty.
 
@@ -63,6 +63,34 @@ The response is a **swap record** — the same shape every subsequent [`GET /get
   "steps":    [ ... ]
 }
 ```
+
+### Gas-drop
+
+For **Bitcoin / Lightning → Smart chain** swaps you can optionally request a small portion of the swap amount to be swapped into destination chain's native gas token (e.g. STRK on Starknet, CBTC on Citrea, ...). This is useful for providing new wallets with some native token balance to cover transaction fees, such that they can start interacting with other dApps on the network immediately.
+
+To request a gas drop set the `gasAmount` parameter (base-unit string, same convention as `amount`) when creating the swap with [`POST /createSwap`](/rest-api-reference/create-swap), the gas drop is usually not available when already swapping to the native token of the chain (it is anyway only useful when you swap to a non-native token):
+
+```json
+curl -X POST "https://mainnet.swaps-api.atomiq.exchange/createSwap" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "srcToken":   "BITCOIN-BTC",
+    "dstToken":   "STARKNET-WBTC",
+    "amount":     "150000",
+    "amountType": "EXACT_IN",
+    "srcAddress": "bc1q…",
+    "dstAddress": "0x0123…",
+    "gasAmount": "10000000000000000000"
+  }'
+```
+
+This creates a swap of 150,000 sats (0.0015 BTC) from Bitcoin into WBTC and also adds a 10 STRK gas drop on Starknet. The 10 STRK gas drop value is subtracted from the output WBTC amount (as part of the swap value was converted into the STRK).
+
+:::info
+Requesting gas-drop also affects spendable-balance math; see [Quoting Swaps → Spendable balance](/rest-api-guide/quoting#estimate-spendable-balance).
+:::
+
+
 
 ## Poll for the current action
 
