@@ -31,7 +31,7 @@ jobs:
             echo "Cloning $repo..."
             git clone --depth 1 "https://github.com/atomiqlabs/$repo.git" "repos/$repo"
           done
-          git clone -b api --single-branch --depth 1 "https://github.com/atomiqlabs/atomiq-sdk.git" "repos/$repo"
+          git clone -b api --single-branch --depth 1 "https://github.com/atomiqlabs/atomiq-sdk.git" "repos/atomiq-sdk"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
