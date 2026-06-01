@@ -7,6 +7,10 @@ title: Overview
 
 The Atomiq SDK provides a complete TypeScript/JavaScript interface for trustless cross-chain swaps between Bitcoin and smart chains (Solana, Starknet, EVM).
 
+:::info
+This page only contains the SDK API surface reference, for actual guides about how to integrate swaps please start with [SDK Guide](/sdk-guide/).
+:::
+
 ## What You'll Find Here
 
 ### **Core SDK**
