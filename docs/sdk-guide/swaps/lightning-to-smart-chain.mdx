@@ -7,7 +7,7 @@ import TabItem from '@theme/TabItem';
 
 # Lightning → Smart Chain
 
-Swap Bitcoin Lightning to Starknet or EVM tokens. These swaps are based on an LP-initiated [HTLC](/overview/core-primitives/htlc/) on the destination chain. After the LP receives the Lightning payment, it creates the HTLC and the user broadcasts the payment secret over Nostr so [watchtowers](/overview/actors/) can claim on the user's behalf. The user can always self-claim as a fallback.
+Swap Bitcoin Lightning to Starknet or EVM tokens. These swaps are based on an LP-initiated [HTLC](/overview/core-primitives/htlc/) on the destination chain. After the LP receives the Lightning payment, it creates the HTLC and the user broadcasts the payment secret over Nostr so [watchtowers](/overview/actors/) can claim on the user's behalf. The automatic settlement via watchtowers should complete within a minute, if it takes longer the user can always self-claim as a fallback.
 
 :::tip
 - [btcln-to-smartchain/swapBasic.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/btcln-to-smartchain/swapBasic.ts)

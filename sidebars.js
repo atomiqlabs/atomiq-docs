@@ -88,6 +88,16 @@ const sidebars = {
     },
     {
       type: 'category',
+      label: 'Swap Management',
+      link: { type: 'doc', id: 'sdk-guide/swap-management/index' },
+      items: [
+        'sdk-guide/swap-management/historical-swaps',
+        'sdk-guide/swap-management/refunds',
+        'sdk-guide/swap-management/claiming',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Swap Guides',
       link: { type: 'doc', id: 'sdk-guide/swaps/index' },
       items: [
@@ -102,17 +112,6 @@ const sidebars = {
             'sdk-guide/swaps/solana/lightning-to-solana',
           ],
         },
-      ],
-    },
-
-    {
-      type: 'category',
-      label: 'Swap Management',
-      link: { type: 'doc', id: 'sdk-guide/swap-management/index' },
-      items: [
-        'sdk-guide/swap-management/historical-swaps',
-        'sdk-guide/swap-management/refunds',
-        'sdk-guide/swap-management/claiming',
       ],
     },
     {

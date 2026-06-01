@@ -24,6 +24,16 @@ Most integrations use this section in the following order:
 1. Start with [Creating Quotes](./creating-quotes) once you have the swapper instance initialized and are ready to get your first swap quote.
 2. Continue with [Executing Swaps](./executing-swaps) once you are ready to move from inspecting the quote to the full swap flow and need to understand the expected signer or wallet inputs for each swap protocol.
 
+### Swap Management
+
+:::info
+This is still a core responsibility of an app integrating the SDK. The common swap path may complete automatically, but real integrations still need to detect when a saved swap requires explicit user action and guide the user through refund or claim recovery flows.
+:::
+
+1. Use [Historical Swaps](./historical-swaps) to load previously created swaps from storage, either by ID or as a filtered list for a chain or signer.
+2. Check whether any saved **Smart Chain → Bitcoin/Lightning** swaps have become refundable, then use [Refunds](./refunds) to return those funds to the source wallet.
+3. Check whether any saved **Bitcoin/Lightning → Smart Chain** swaps have become claimable, then use [Claiming](./claiming) to settle those funds to the destination wallet.
+
 ## Network Availability
 
 Not all chains are available on all Bitcoin testnets. Use the table below to pick the right `bitcoinNetwork` setting for your chain combination:

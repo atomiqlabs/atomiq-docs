@@ -92,7 +92,7 @@ For more details about the swap, swap states, going through swap steps manually 
 Typical usage of the [execute()](/sdk-reference/api/atomiq-sdk/src/classes/SpvFromBTCSwap#execute) function:
 
 ```typescript
-// Returns whether the swap was successfully executed automatically, if not the user can claim manually
+// Returns whether the swap was successfully executed automatically (via watchtowers - this should usually happen within a minute), if not the user can claim manually
 const automaticallySettled = await swap.execute(bitcoinWallet, callbacks?, options?);
 // Claim on failure, this settles the funds to the destination chain signer
 if (!automaticallySettled) await swap.claim(destinationSmartChainSigner);
@@ -142,7 +142,7 @@ For more details about the swap, swap states, going through swap steps manually 
 Typical usage of the [execute()](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCLNAutoSwap#execute) function:
 
 ```typescript
-// Returns whether the swap was successfully executed automatically, if not the user can claim manually
+// Returns whether the swap was successfully executed automatically (via watchtowers - this should usually happen within a minute), if not the user can claim manually
 const automaticallySettled = await swap.execute(lightningWalletOrLnurlWithdraw?, callbacks?, options?);
 // Claim on failure, this settles the funds to the destination chain signer
 if (!automaticallySettled) await swap.claim(destinationSmartChainSigner);
@@ -204,7 +204,7 @@ These swaps use the legacy protocol in the Bitcoin/Lightning → Solana directio
 Typical usage of the [execute()](/sdk-reference/api/atomiq-sdk/src/classes/FromBTCSwap#execute) function:
 
 ```typescript
-// Returns whether the swap was successfully executed automatically, if not the user can claim manually
+// Returns whether the swap was successfully executed automatically (via watchtowers - this should usually happen within a minute), if not the user can claim manually
 const automaticallySettled = await swap.execute(dstSigner, bitcoinWallet?, callbacks?, options?);
 // Claim on failure, this settles the funds to the destination chain signer
 if (!automaticallySettled) await swap.claim(dstSigner);
@@ -325,7 +325,22 @@ When `execute()` returns `false` and does not fully finish the swap automaticall
 | BTC L1 → Solana (legacy) | Swap wasn't settled automatically | `swap.claim(destinationSigner)` |
 | Lightning → Solana (legacy) | None | - |
 
+---
+
+:::info
+- **Refunds** usually become available instantly if the LP is online and cooperates, unilateral refunds are possible in 4-5 days for Lightning or 12 hours for BTC L1.
+- **Claims/Settlements** first wait for the automatic settlement via watchtowers (which is usually done in less than a minute), with the manual settlement path becoming available immediately after.
+:::
+
 ## Next Steps
+
+### Swap Management
+
+Retrieve & query past swaps, handle refundable and claimable swaps. This is an important next step for integration, as it ensures existing refundable/claimable swaps can be handled automatically or user prompted to refund, claim/settle them manually.
+
+**[Swap Management →](/sdk-guide/swap-management/)**
+
+---
 
 ### Detailed Swap Type Descriptions
 
@@ -340,13 +355,5 @@ Explain each swap type in-depth, go through manually processing the swap & expla
 SDK-exposed utilities allow you to parse addresses (including LNURL links), fetch token balances, list supported tokens and swap types.
 
 **[Utilities →](/sdk-guide/utilities/)**
-
----
-
-### Swap Management
-
-Retrieve & query past swaps, handle refundable and claimable swaps.
-
-**[Swap Management →](/sdk-guide/swap-management/)**
 
 ---
