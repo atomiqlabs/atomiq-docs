@@ -202,7 +202,7 @@ const config = {
           'Bitcoin light client, submarine swaps (HTLCs), and a Request-for-Quote ' +
           'Liquidity Provider network. Two integration surfaces exist: the ' +
           'TypeScript SDK (preferred for JavaScript/TypeScript environments) and ' +
-          'a self-hostable REST API (use when the SDK cannot run — non-JS runtimes ' +
+          'a public or self-hosted REST API (use when the SDK cannot run — non-JS runtimes ' +
           'or environments without local persistence).',
         depth: 2,
         enableDescriptions: true,
@@ -221,21 +221,33 @@ const config = {
             '/search/**',
             '/superpowers/**',
             '/developers/**',
+            '/sdk-reference/**',
+            '/rest-api-reference/**',
           ],
         },
         optionalLinks: [
           {
-            title: 'Atomiq REST API — OpenAPI 3.1 spec (JSON)',
-            url: 'https://docs.atomiq.exchange/rest-api-reference/openapi.json',
-            description:
-              'Machine-readable OpenAPI specification for the Atomiq REST API. ' +
-              'Use this as the source of truth for endpoint shapes, parameters, ' +
-              'and error responses when generating client code.',
-          },
-          {
             title: 'Atomiq SDK on npm',
             url: 'https://www.npmjs.com/package/@atomiqlabs/sdk',
             description: 'TypeScript SDK package for integrating Atomiq swaps.',
+          },
+          {
+            title: 'Atomiq SDK code examples',
+            url: 'https://github.com/atomiqlabs/atomiq-sdk-demo',
+            description: 'TypeScript SDK integration examples.'
+          },
+          {
+            title: 'Atomiq REST API — OpenAPI 3.1 spec (JSON)',
+            url: 'https://docs.atomiq.exchange/rest-api-reference/openapi.json',
+            description:
+                'Machine-readable OpenAPI specification for the Atomiq REST API. ' +
+                'Use this as the source of truth for endpoint shapes, parameters, ' +
+                'and error responses when generating client code.',
+          },
+          {
+            title: 'Atomiq REST API code examples',
+            url: 'https://github.com/atomiqlabs/atomiq-api-docker/tree/main/scripts',
+            description: 'REST API integration examples.'
           },
           {
             title: 'Atomiq GitHub organization',
@@ -249,9 +261,7 @@ const config = {
           '/overview/**',
           '/guides/**',
           '/sdk-guide/**',
-          '/sdk-reference/**',
           '/rest-api-guide/**',
-          '/rest-api-reference/**',
         ],
       },
     ],
