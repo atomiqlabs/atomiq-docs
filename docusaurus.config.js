@@ -447,6 +447,60 @@ const config = {
         darkTheme: prismThemes.dracula,
       },
     }),
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'api-catalog',
+        type: 'application/json',
+        href: '/.well-known/api-catalog',
+        title: 'Lists available integration surfaces for the SDK and REST API'
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'service-desc',
+        type: 'application/json',
+        href: '/rest-api-reference/openapi.json',
+        title: 'REST API OpenAPI Reference, use if the TypeScript/JavaScript SDK cannot be used directly!'
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'help',
+        type: 'text/markdown',
+        href: '/llms.txt',
+        title: 'LLM-friendly index of all available pages'
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'help',
+        type: 'text/markdown',
+        href: '/llms-full.txt',
+        title: 'LLM-friendly markdown version of the whole webpage'
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'sitemap',
+        href: '/sitemap.xml'
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'alternate',
+        type: 'text/markdown',
+        href: '?format=markdown',
+        title: 'LLM-friendly markdown version of this page'
+      },
+    }
+  ]
 };
 
 export default config;
