@@ -48,6 +48,29 @@ function removeDocusaurusHashLinks() {
   };
 }
 
+function fixLlmsIndexMarkdownLinks() {
+  return (tree) => {
+    function visit(node) {
+      if (!node || typeof node !== 'object') {
+        return;
+      }
+
+      if (
+        (node.type === 'link' || node.type === 'definition') &&
+        typeof node.url === 'string'
+      ) {
+        node.url = node.url.replace(/\/\.md(?=([?#]|$))/g, '.md');
+      }
+
+      if (Array.isArray(node.children)) {
+        node.children.forEach(visit);
+      }
+    }
+
+    visit(tree);
+  };
+}
+
 // Shared TypeDoc options for consistent formatting
 const sharedTypedocOptions = {
   skipErrorChecking: true,
@@ -214,6 +237,7 @@ const config = {
           includePages: true,
           includeDocs: true,
           beforeDefaultRehypePlugins: [removeDocusaurusHashLinks],
+          remarkPlugins: [fixLlmsIndexMarkdownLinks],
           // Skip search, redirect aliases, and the unrelated `superpowers/`
           // build artefact so the index stays focused on canonical routes.
           excludeRoutes: [
