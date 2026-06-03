@@ -30,9 +30,9 @@ Most integrations use this section in the following order:
 This is still a core responsibility of an app integrating the SDK. The common swap path may complete automatically, but real integrations still need to detect when a saved swap requires explicit user action and guide the user through refund or claim recovery flows.
 :::
 
-1. Use [Historical Swaps](./historical-swaps) to load previously created swaps from storage, either by ID or as a filtered list for a chain or signer.
-2. Check whether any saved **Smart Chain → Bitcoin/Lightning** swaps have become refundable, then use [Refunds](./refunds) to return those funds to the source wallet.
-3. Check whether any saved **Bitcoin/Lightning → Smart Chain** swaps have become claimable, then use [Claiming](./claiming) to settle those funds to the destination wallet.
+1. Use [Historical Swaps](/sdk-guide/swap-management/historical-swaps) to load previously created swaps from storage, either by ID or as a filtered list for a chain or signer.
+2. Check whether any saved **Smart Chain → Bitcoin/Lightning** swaps have become refundable, then use [Refunds](/sdk-guide/swap-management/refunds) to return those funds to the source wallet.
+3. Check whether any saved **Bitcoin/Lightning → Smart Chain** swaps have become claimable, then use [Claiming](/sdk-guide/swap-management/claiming) to settle those funds to the destination wallet.
 
 ## Network Availability
 

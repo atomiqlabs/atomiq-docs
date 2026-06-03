@@ -242,6 +242,14 @@ Guides you through executing various swap types using the high-level `execute()`
 
 ---
 
+### Swap Management
+
+Retrieve & query past swaps, handle swaps which require manual refund or settlement fallback.
+
+**[Swap Management →](/sdk-guide/swap-management/)**
+
+---
+
 ### Swap Types
 
 Lower-level swap-specific guides providing in-depth explanations and manual swap signing flows for different swap types.
