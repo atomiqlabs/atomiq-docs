@@ -1,10 +1,10 @@
 # Lightning → Solana (legacy)
 
 :::info
-This is the legacy protocol only used on Solana, superseded by the [new Lightning → Smart chain swap](./lightning-sc-new.md) on all the other chains, which eliminates the need for users to hold smart chain tokens upfront.
+This is the legacy protocol only used on Solana, superseded by the [new Lightning → Smart chain swap](./lightning-sc-new) on all the other chains, which eliminates the need for users to hold smart chain tokens upfront.
 :::
 
-This swap uses an [HTLC](../core-primitives/htlc.md) to receive smart chain tokens via a Lightning payment. The user generates a secret preimage and payment hash, the LP creates a Lightning invoice with that hash, and the payer sends the Lightning payment. The user then locks up LP funds in an HTLC on the smart chain, and subsequently claims it by revealing the secret preimage — which also allows the LP to settle the Lightning payment. Unlike the current protocol, users must have native smart chain token balance in their destination wallet to pay for the initiate and claim transaction, creating a "cold start" barrier for new users.
+This swap uses an [HTLC](../core-primitives/htlc) to receive smart chain tokens via a Lightning payment. The user generates a secret preimage and payment hash, the LP creates a Lightning invoice with that hash, and the payer sends the Lightning payment. The user then locks up LP funds in an HTLC on the smart chain, and subsequently claims it by revealing the secret preimage — which also allows the LP to settle the Lightning payment. Unlike the current protocol, users must have native smart chain token balance in their destination wallet to pay for the initiate and claim transaction, creating a "cold start" barrier for new users.
 
 ## Parties
 

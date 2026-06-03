@@ -1,10 +1,10 @@
 # Bitcoin → Solana (legacy)
 
 :::info
-This is the legacy protocol only used on Solana, superseded by the [UTXO-controlled vault based Bitcoin → Smart chain swap](./bitcoin-sc-new.md) on all the other chains which eliminates the cold-start problem and watchtower dependency.
+This is the legacy protocol only used on Solana, superseded by the [UTXO-controlled vault based Bitcoin → Smart chain swap](./bitcoin-sc-new) on all the other chains which eliminates the cold-start problem and watchtower dependency.
 :::
 
-This swap uses a [PrTLC](../core-primitives/prtlc.md) in the reverse direction: the LP locks tokens on the smart chain, and the user sends BTC on-chain. A watchtower (or the user) then proves the Bitcoin payment through the [Bitcoin light client](../core-primitives/bitcoin-light-client.md) and claims the smart chain tokens. Because the user must post a bond and needs an existing smart chain balance to initiate the swap, this approach suffers from the "cold start" problem — users cannot onboard without already holding smart chain tokens.
+This swap uses a [PrTLC](../core-primitives/prtlc) in the reverse direction: the LP locks tokens on the smart chain, and the user sends BTC on-chain. A watchtower (or the user) then proves the Bitcoin payment through the [Bitcoin light client](../core-primitives/bitcoin-light-client) and claims the smart chain tokens. Because the user must post a bond and needs an existing smart chain balance to initiate the swap, this approach suffers from the "cold start" problem — users cannot onboard without already holding smart chain tokens.
 
 ## Parties
 

@@ -1,6 +1,6 @@
 # Solana Contracts
 
-The Solana deployment uses a **monolithic architecture**, where the protocol is implemented as two standalone Anchor programs — a swap program and a BTC relay program. Unlike the [modular EVM & Starknet contracts](../evm-starknet), all swap logic ([HTLC](../../core-primitives/htlc.md), [PrTLC](../../core-primitives/prtlc.md), and transaction verification) lives within a single swap program rather than being split into separate handler contracts. The [UTXO-controlled vault](../../core-primitives/utxo-controlled-vault.md) primitive is not implemented on Solana, meaning Solana can only process legacy swaps in the Bitcoin → Solana direction.
+The Solana deployment uses a **monolithic architecture**, where the protocol is implemented as two standalone Anchor programs — a swap program and a BTC relay program. Unlike the [modular EVM & Starknet contracts](../evm-starknet), all swap logic ([HTLC](../../core-primitives/htlc), [PrTLC](../../core-primitives/prtlc), and transaction verification) lives within a single swap program rather than being split into separate handler contracts. The [UTXO-controlled vault](../../core-primitives/utxo-controlled-vault) primitive is not implemented on Solana, meaning Solana can only process legacy swaps in the Bitcoin → Solana direction.
 
 This is the original contract design, built as the first implementation of the Atomiq protocol.
 

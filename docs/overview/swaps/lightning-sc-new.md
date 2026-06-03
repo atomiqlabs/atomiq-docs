@@ -1,6 +1,6 @@
 # Lightning → Smart chain
 
-This is the current protocol for receiving smart chain tokens via a Lightning payment. It uses an [HTLC](../core-primitives/htlc.md) created by the LP on the smart chain, solving the "cold start" problem of the [legacy approach](./lightning-sc-legacy.md) — users don't need any smart chain balance to receive funds. After the LP locks the HTLC, the user broadcasts the payment secret over [Nostr](https://github.com/nostr-protocol/nostr), and incentivized watchtowers claim the funds on the user's behalf, earning a small fee. The user can always self-claim as a fallback.
+This is the current protocol for receiving smart chain tokens via a Lightning payment. It uses an [HTLC](../core-primitives/htlc) created by the LP on the smart chain, solving the "cold start" problem of the [legacy approach](./lightning-sc-legacy) — users don't need any smart chain balance to receive funds. After the LP locks the HTLC, the user broadcasts the payment secret over [Nostr](https://github.com/nostr-protocol/nostr), and incentivized watchtowers claim the funds on the user's behalf, earning a small fee. The user can always self-claim as a fallback.
 
 The new swap protocol addresses the drawback of the legacy one, mainly around user UX and the "cold start" problem - inability to onboard users onto the smart chain without them holding smart chain tokens first. This is accomplished by letting the LP initiate the HTLC on the smart chain side and leveraging watchtowers to settle the HTLC.
 

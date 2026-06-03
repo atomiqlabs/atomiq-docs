@@ -2,7 +2,7 @@
 
 The Bitcoin light client (also called **bitcoin relay**) is a smart contract deployed on smart chains (Solana, Starknet, EVM, etc.) that verifies and stores Bitcoin block headers using the proof-of-work consensus algorithm. It acts as a **permissionless & trustless oracle** of Bitcoin's state — anyone can submit block headers and their validity is verified entirely on-chain. No trusted third party, signer set, or attestation is required.
 
-This contract is the cryptographic anchor of the Atomiq protocol. It enables swap contracts to verify that a specific Bitcoin transaction was confirmed, which is the foundation for both [PrTLCs](./prtlc.md) (proof-time locked contracts) and [UTXO-controlled vaults](./utxo-controlled-vault.md) — the two primitives upon which all Bitcoin on-chain swaps are built.
+This contract is the cryptographic anchor of the Atomiq protocol. It enables swap contracts to verify that a specific Bitcoin transaction was confirmed, which is the foundation for both [PrTLCs](./prtlc) (proof-time locked contracts) and [UTXO-controlled vaults](./utxo-controlled-vault) — the two primitives upon which all Bitcoin on-chain swaps are built.
 
 ## What is a light client?
 

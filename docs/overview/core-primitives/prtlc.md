@@ -4,7 +4,7 @@ A PrTLC is an escrow smart contract between two parties that uses a proof of a B
 
 PrTLCs are a novel primitive introduced by Atomiq to enable trustless [Smart chain → Bitcoin swaps](../swaps/sc-bitcoin), addressing key limitations of [HTLCs](./htlc) such as user liveness requirements and the free option problem. They leverage on-chain Bitcoin light client verification for secure cross-chain settlement. While PrTLCs are central to Atomiq's core protocol for this direction, the reverse (Bitcoin → smart chain) primarily uses [UTXO-controlled vaults](./utxo-controlled-vault), with PrTLCs serving as a legacy option.
 
-This primitive is used for [Smart chain → Bitcoin swaps](../swaps/sc-bitcoin.md) and [legacy Bitcoin → Smart chain swaps](../swaps/bitcoind-sc-legacy.md).
+This primitive is used for [Smart chain → Bitcoin swaps](../swaps/sc-bitcoin) and [legacy Bitcoin → Smart chain swaps](../swaps/bitcoind-sc-legacy).
 
 ## Mechanism
 
@@ -26,6 +26,6 @@ In Atomiq swaps using PrTLCs, one party locks assets in the PrTLC escrow on the 
 
 ## Limitations
 
-Using PrTLCs to swap in the Bitcoin → Smart chain direction, necessitate that the LPs pre-lock the swap funds in a PrTLC escrow before the user sends the Bitcoin transaction. If LPs were to do this "for free", it would open up a denial-of-service vector, where users could request the LP to pre-lock liquidity for many swaps and not execute any of them. The LP would end up with all the liquidity locked-up till the timeout, unable to process more swaps and earning nothing in return. The solution for PrTLC based [legacy Bitcoin → Smart chain swaps](../swaps/bitcoind-sc-legacy.md) was for the user to put up some deposit on the destination smart chain, that would be taken by the LP, should the user not execute the swap. This however introduces a "cold start" problem, where users have to hold funds on the destination chain prior to swapping, making on-boarding of new users impossible with such as system. 
+Using PrTLCs to swap in the Bitcoin → Smart chain direction, necessitate that the LPs pre-lock the swap funds in a PrTLC escrow before the user sends the Bitcoin transaction. If LPs were to do this "for free", it would open up a denial-of-service vector, where users could request the LP to pre-lock liquidity for many swaps and not execute any of them. The LP would end up with all the liquidity locked-up till the timeout, unable to process more swaps and earning nothing in return. The solution for PrTLC based [legacy Bitcoin → Smart chain swaps](../swaps/bitcoind-sc-legacy) was for the user to put up some deposit on the destination smart chain, that would be taken by the LP, should the user not execute the swap. This however introduces a "cold start" problem, where users have to hold funds on the destination chain prior to swapping, making on-boarding of new users impossible with such as system. 
 
 Due to this limitation, the use of PrTLCs in the Bitcoin → Smart chain direction was discontinued (only Solana still uses this legacy approach) and PrTLCs were superseded by the [UTXO-controlled vaults](./utxo-controlled-vault) based swaps in the Bitcoin → Smart chain direction, which resolve the "cold start" problem and the need for the LPs to pre-lock capital.
