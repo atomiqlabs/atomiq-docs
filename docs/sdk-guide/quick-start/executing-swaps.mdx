@@ -325,12 +325,24 @@ When `execute()` returns `false` and does not fully finish the swap automaticall
 | BTC L1 → Solana (legacy) | Swap wasn't settled automatically | `swap.claim(destinationSigner)` |
 | Lightning → Solana (legacy) | None | - |
 
----
+### Timing & Fallback Availability
 
-:::info
-- **Refunds** usually become available instantly if the LP is online and cooperates, unilateral refunds are possible in 4-5 days for Lightning or 12 hours for BTC L1.
-- **Claims/Settlements** first wait for the automatic settlement via watchtowers (which is usually done in less than a minute), with the manual settlement path becoming available immediately after.
-:::
+The `execute()` waits up to `maxWaitTillSwapProcessedSeconds` (default `120`) for the LP to process Smart chain → BTC/Lightning swaps, and up to `maxWaitTillAutomaticSettlementSeconds` (default `60`) for automatic settlement on incoming swaps. Past those limits it hands control back to you and the manual fallback applies.
+
+The manual fallback might then take additional time become available:
+
+| Manual fallback | When it becomes available | Typical timing |
+|-----------------|---------------------------|----------------|
+| Cooperative refund (LP online) | Immediately after the swap fails | Seconds — the LP co-signs |
+| Unilateral refund — Lightning | Only after the refund timeout | ~4–5 days |
+| Unilateral refund — BTC L1 | Only after the refund timeout | ~12 hours |
+| Claim / settlement | Immediately — no waiting period | Seconds — you broadcast your own tx |
+
+**Refunds:** `swap.refund()` first attempts the cooperative path, which settles in seconds whenever the LP is online. If the LP is unreachable it falls back to a unilateral refund, broadcastable only after the swap's on-chain timeout (~4–5 days Lightning, ~12 hours BTC L1).
+
+**Claims/settlements:** destination funds are claimable *immediately* — there is no lock-up. In practice watchtowers settle for you, usually in under a minute (which is why `execute()` waits ~60s before returning). You never depend on them: `swap.claim()` can be called at any time if you'd rather not wait or avoid an external dependency.
+
+For the full state machine and step-by-step manual processing, see [Swap Management → Refunds](/sdk-guide/swap-management/refunds) and [→ Claiming](/sdk-guide/swap-management/claiming), or the per-type pages under [Swap Types](/sdk-guide/swaps/).
 
 ## Next Steps
 
