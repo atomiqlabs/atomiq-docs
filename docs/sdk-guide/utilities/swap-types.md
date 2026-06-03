@@ -6,7 +6,7 @@ sidebar_position: 5
 
 `swapper.getSwapType()` is the SDK's protocol classifier for a token pair. Given a source [`Token`](/sdk-reference/api/atomiq-sdk/src/type-aliases/Token) and destination `Token`, it tells you which swap protocol the SDK will use. This is useful when you want to branch UI, show capability flags such as gas drop support, or understand which swap flow a later `swapper.swap(...)` quote will follow.
 
-For an overview and background on various swap types, see [Swap Types](/sdk-guide/swaps/).
+For an overview and background on various swap types, see [Swap Types](/sdk-guide/swaps).
 
 :::tip
 See the complete working example: [utils/swapTypes.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/utils/swapTypes.ts)
@@ -18,7 +18,7 @@ Use [Supported Tokens](/sdk-guide/utilities/supported-tokens) when you need LP-a
 
 ## Getting Swap Type
 
-[`getSwapType()`](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getswaptype) accepts the input and output token and infers the swap type that will be used to execute the swap between these tokens. It returns the [`SwapType`](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapType) enum. Check the [Swap Types](/sdk-guide/swaps/) page to understand the differences between the various swap types.
+[`getSwapType()`](/sdk-reference/api/atomiq-sdk/src/classes/Swapper#getswaptype) accepts the input and output token and infers the swap type that will be used to execute the swap between these tokens. It returns the [`SwapType`](/sdk-reference/api/atomiq-sdk/src/enumerations/SwapType) enum. Check the [Swap Types](/sdk-guide/swaps) page to understand the differences between the various swap types.
 
 ```typescript
 import {SwapType} from "@atomiqlabs/sdk";
@@ -147,6 +147,6 @@ Once you know the token pair and swap family, the next step is requesting a quot
 
 For the protocol-level background behind the swap types, see the overview docs covering legacy vs newer swap designs.
 
-**[Swaps Overview →](/overview/swaps/)**
+**[Swaps Overview →](/overview/swaps)**
 
 ---

@@ -108,7 +108,7 @@ const swapper = Factory.newSwapper({
 Use custom storage when you want the SDK to persist into your existing backend, such as AWS DynamoDB, Azure Cosmos DB, PostgreSQL, MySQL, MongoDB Atlas, or another hosted database service.
 
 :::info
-If you already have a simple key-value store and do not want to implement both interfaces from scratch, you can use the [`@atomiqlabs/storage-memory-indexed-kv`](/sdk-reference/api/atomiq-storage-memory-indexed-kv/src/) wrapper, which can use any simple key-value storage backend (synchronous or async). It keeps the indexes required for `query()` operations in memory and serializes writes through a single queue. It is meant for single-user, client-side style datasets, not shared multi-user backends or large server-side swap databases.
+If you already have a simple key-value store and do not want to implement both interfaces from scratch, you can use the [`@atomiqlabs/storage-memory-indexed-kv`](/sdk-reference/api/atomiq-storage-memory-indexed-kv/src) wrapper, which can use any simple key-value storage backend (synchronous or async). It keeps the indexes required for `query()` operations in memory and serializes writes through a single queue. It is meant for single-user, client-side style datasets, not shared multi-user backends or large server-side swap databases.
 :::
 
 `Factory.newSwapper()` expects two storage hooks:
@@ -324,6 +324,6 @@ For more runtime options affecting swapper behavior, continue with the configura
 
 Continue with the main quick start index to pick the setup flow for your environment.
 
-**[Quick Start →](/sdk-guide/quick-start/)**
+**[Quick Start →](/sdk-guide/quick-start)**
 
 ---

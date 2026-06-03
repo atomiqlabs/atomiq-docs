@@ -52,7 +52,7 @@ swapper.off("lpsAdded", handleLpsAdded);
 swap.events.off("swapState", handleSwapState);
 ```
 
-For the meaning of individual swap states, see the swap-specific guides under [Swap Tutorials](/sdk-guide/swaps/).
+For the meaning of individual swap states, see the swap-specific guides under [Swap Tutorials](/sdk-guide/swaps).
 
 ## Listening to a Single Swap
 

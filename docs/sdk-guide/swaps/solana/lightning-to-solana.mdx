@@ -7,7 +7,7 @@ import TabItem from '@theme/TabItem';
 
 # Lightning → Solana
 
-Swap Bitcoin Lightning to Solana tokens. Solana still uses the legacy [HTLC](/overview/core-primitives/htlc/) based Lightning → smart chain flow. The user pays a Lightning invoice first, then manually initializes and claims the destination-side HTLC on Solana, revealing the secret that lets the LP settle the Lightning payment.
+Swap Bitcoin Lightning to Solana tokens. Solana still uses the legacy [HTLC](/overview/core-primitives/htlc) based Lightning → smart chain flow. The user pays a Lightning invoice first, then manually initializes and claims the destination-side HTLC on Solana, revealing the secret that lets the LP settle the Lightning payment.
 
 Unlike the newer LP-initiated Lightning → smart chain protocol used on Starknet and EVM, this legacy Solana flow requires native SOL upfront for the destination transactions and a security deposit. There is no watchtower auto-claim path here: after the Lightning payment is received by the LP, the user must initialize and settle the swap on Solana themselves.
 

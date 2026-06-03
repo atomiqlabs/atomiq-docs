@@ -342,7 +342,7 @@ The manual fallback might then take additional time become available:
 
 **Claims/settlements:** destination funds are claimable *immediately* — there is no lock-up. In practice watchtowers settle for you, usually in under a minute (which is why `execute()` waits ~60s before returning). You never depend on them: `swap.claim()` can be called at any time if you'd rather not wait or avoid an external dependency.
 
-For the full state machine and step-by-step manual processing, see [Swap Management → Refunds](/sdk-guide/swap-management/refunds) and [→ Claiming](/sdk-guide/swap-management/claiming), or the per-type pages under [Swap Types](/sdk-guide/swaps/).
+For the full state machine and step-by-step manual processing, see [Swap Management → Refunds](/sdk-guide/swap-management/refunds) and [→ Claiming](/sdk-guide/swap-management/claiming), or the per-type pages under [Swap Types](/sdk-guide/swaps).
 
 ## Next Steps
 
@@ -350,7 +350,7 @@ For the full state machine and step-by-step manual processing, see [Swap Managem
 
 Retrieve & query past swaps, handle refundable and claimable swaps. This is an important next step for integration, as it ensures existing refundable/claimable swaps can be handled automatically or user prompted to refund, claim/settle them manually.
 
-**[Swap Management →](/sdk-guide/swap-management/)**
+**[Swap Management →](/sdk-guide/swap-management)**
 
 ---
 
@@ -358,7 +358,7 @@ Retrieve & query past swaps, handle refundable and claimable swaps. This is an i
 
 Explain each swap type in-depth, go through manually processing the swap & explain various swap states.
 
-**[Swap Types →](/sdk-guide/swaps/)**
+**[Swap Types →](/sdk-guide/swaps)**
 
 ---
 
@@ -366,6 +366,6 @@ Explain each swap type in-depth, go through manually processing the swap & expla
 
 SDK-exposed utilities allow you to parse addresses (including LNURL links), fetch token balances, list supported tokens and swap types.
 
-**[Utilities →](/sdk-guide/utilities/)**
+**[Utilities →](/sdk-guide/utilities)**
 
 ---

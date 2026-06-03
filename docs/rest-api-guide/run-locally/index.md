@@ -83,7 +83,7 @@ Whichever you pick, paste the URL into the matching key in `config.yaml`. Leave 
 
 A few things to double-check:
 
-- Make sure the **network of each RPC matches the rest of your config** — e.g. don't combine a mainnet Solana RPC with `bitcoinNetwork: TESTNET`. See the SDK [quick-start guide](/sdk-guide/quick-start/) for the supported network combinations.
+- Make sure the **network of each RPC matches the rest of your config** — e.g. don't combine a mainnet Solana RPC with `bitcoinNetwork: TESTNET`. See the SDK [quick-start guide](/sdk-guide/quick-start) for the supported network combinations.
 - **Mainnet Bitcoin** is configured by network name only (`bitcoinNetwork: MAINNET`) and does not need an RPC.
 
 ## 3. Run

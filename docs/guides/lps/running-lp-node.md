@@ -403,7 +403,7 @@ tar -zxvf atomiq-node.tar.gz update.bash && sudo ./update.bash
 Your atomiq node comes pre-configured with reasonable default, but in case you want to change the configuration you can find in `config/intermediary/config.yaml` (for mainnet) or `config-testnet/intermediary/config.yaml` (for testnet) folders.
 
 :::info
-You might want to change the RPC URLs, and use dedicated ones (from e.g. [Helius](https://www.helius.dev/) (Solana)- reasonable free tier, or [Alchemy](https://www.alchemy.com/rpc-api) (Starknet, EVM) - a reasonable pay-as-you go tier) - see the `SOLANA` and `STARKNET` section. Or change the minimums/maximums or fees charged for the swaps - see the `ONCHAIN` and `ONCHAIN_SPV` section.
+You might want to change the RPC URLs, and use dedicated ones (from e.g. [Helius](https://www.helius.dev) (Solana)- reasonable free tier, or [Alchemy](https://www.alchemy.com/rpc-api) (Starknet, EVM) - a reasonable pay-as-you go tier) - see the `SOLANA` and `STARKNET` section. Or change the minimums/maximums or fees charged for the swaps - see the `ONCHAIN` and `ONCHAIN_SPV` section.
 :::
 
 Default mainnet configuration:

@@ -6,7 +6,7 @@ sidebar_position: 1
 
 The **Atomiq REST API** is an HTTP interface for the Atomiq cross-chain DEX, covering trustless swaps between **Bitcoin / Lightning** and smart chains (**Starknet, Solana, Botanix, Citrea, Alpen, Goat**).
 
-You can either self-host the REST API on your own infrastructure using Docker (refer to **[Run REST API Locally](/rest-api-guide/run-locally/)**), or use the public API provided by Atomiq:
+You can either self-host the REST API on your own infrastructure using Docker (refer to **[Run REST API Locally](/rest-api-guide/run-locally)**), or use the public API provided by Atomiq:
 
 - Mainnet: `https://mainnet.swaps-api.atomiq.exchange/`
 - Testnet4: `https://testnet4.swaps-api.atomiq.exchange/`
@@ -14,7 +14,7 @@ You can either self-host the REST API on your own infrastructure using Docker (r
 :::warning
 By using the REST API you fully trust the backend to correctly validate swap data and serve properly constructed transactions to the clients. A compromised backend might drain your user's funds.
 
-Prefer the **[Atomiq SDK](/sdk-guide/)**, which verifies everything locally and doesn't rely on trusted external APIs. Use the REST API only when you cannot use the SDK: non-JS runtimes or environments without local persistence.
+Prefer the **[Atomiq SDK](/sdk-guide)**, which verifies everything locally and doesn't rely on trusted external APIs. Use the REST API only when you cannot use the SDK: non-JS runtimes or environments without local persistence.
 :::
 
 The API is **non-custodial**: it never holds user keys. All signing happens in the client wallet — the API builds unsigned transactions and submits signed ones.
@@ -81,4 +81,4 @@ Rate-limit (`429`) responses may include additional fields depending on how the 
 | **[Quoting Swaps](/rest-api-guide/quoting)** | Build the pre-swap form: list supported tokens, narrow compatible counter-tokens, estimate spendable balance, validate limits, and parse recipient addresses. |
 | **[Listing Swaps](/rest-api-guide/listing-swaps)** | Restore pending swaps after restart, list signer history, resume polling from list results, and handle refunds.                                               |
 | **[Bitcoin & Lightning Specifics](/rest-api-guide/bitcoin-and-lightning)** | Handle Bitcoin PSBT variants, Lightning HTLC-based hashes and swap secret reveal, BOLT11 invoices, LNURLs, and gas drops.                                     |
-| **[Run REST API Locally](/rest-api-guide/run-locally/)** | Self-host `atomiq-api-docker` with Docker Compose and configure chains, LP connectivity, storage, rate limits, and server settings.                           |
+| **[Run REST API Locally](/rest-api-guide/run-locally)** | Self-host `atomiq-api-docker` with Docker Compose and configure chains, LP connectivity, storage, rate limits, and server settings.                           |

@@ -72,7 +72,7 @@ Validates refunds after a specified expiry timestamp. This is the universal refu
 
 <p style={{marginTop: "-0.8em"}}>[EVM → contracts/spv_swap_vault](https://github.com/atomiqlabs/atomiq-contracts-evm/tree/main/contracts/spv_swap_vault)                                   | [Starknet → packages/spv_swap_vault](https://github.com/atomiqlabs/atomiq-contracts-starknet/tree/main/packages/spv_swap_vault)</p>
 
-Implements the [UTXO-controlled vault](/overview/core-primitives/utxo-controlled-vault/) primitive for **Bitcoin on-chain → Smart chain** swaps. The vault holds LP liquidity on the smart chain, and withdrawals are authorized solely by verified Bitcoin transactions using the BTC relay.
+Implements the [UTXO-controlled vault](/overview/core-primitives/utxo-controlled-vault) primitive for **Bitcoin on-chain → Smart chain** swaps. The vault holds LP liquidity on the smart chain, and withdrawals are authorized solely by verified Bitcoin transactions using the BTC relay.
 
 The vault tracks a specific Bitcoin UTXO as its ownership reference. Each withdrawal must spend the current UTXO and produce a new one, enforcing a strict linear sequence of operations via Bitcoin's consensus rules. Withdrawal parameters (recipient, amounts, fees) are encoded in the Bitcoin transaction's `OP_RETURN` output and `nSequence` fields.
 

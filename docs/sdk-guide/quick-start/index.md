@@ -7,7 +7,7 @@ sidebar_position: 2
 This section is the shortest path from an empty project to a working swap. The guides here help you pick the right runtime, initialize the SDK, connect wallets or signers, request a quote, and execute the route.
 
 :::info
-The Quick Start pages are meant for the default high-level SDK flow. If your integration later needs custom persistence, event handling, or manual transaction signing, continue with the [Advanced](/sdk-guide/advanced/) section after the basic flow is working.
+The Quick Start pages are meant for the default high-level SDK flow. If your integration later needs custom persistence, event handling, or manual transaction signing, continue with the [Advanced](/sdk-guide/advanced) section after the basic flow is working.
 :::
 
 ## Usage
@@ -50,10 +50,10 @@ Not all chains are available on all Bitcoin testnets. Use the table below to pic
 The `bitcoinNetwork` setting determines both the Bitcoin network and which smart chain network is used by the chain initializers.
 
 :::tip
-- **Bitcoin Testnet/Testnet4** - Use a [Bitcoin testnet faucet](https://bitcoinfaucet.uo1.net/) or [Bitcoin testnet4 faucet](https://mempool.space/testnet4/faucet)
-- **Solana Devnet** - Use Solana CLI's `solana airdrop 1` or the [Solana faucet](https://faucet.solana.com/)
-- **Starknet Sepolia** - Use the [Starknet faucet](https://starknet-faucet.vercel.app/)
-- **Botanix Testnet** - Use the [Botanix faucet](https://faucet.botanixlabs.dev/)
+- **Bitcoin Testnet/Testnet4** - Use a [Bitcoin testnet faucet](https://bitcoinfaucet.uo1.net) or [Bitcoin testnet4 faucet](https://mempool.space/testnet4/faucet)
+- **Solana Devnet** - Use Solana CLI's `solana airdrop 1` or the [Solana faucet](https://faucet.solana.com)
+- **Starknet Sepolia** - Use the [Starknet faucet](https://starknet-faucet.vercel.app)
+- **Botanix Testnet** - Use the [Botanix faucet](https://faucet.botanixlabs.dev)
 - **Alpen Testnet** - Use the [Alpen CLI](https://docs.alpenlabs.io/welcome/using-the-alpen-cli#user-content-request-btc)
 :::
 
