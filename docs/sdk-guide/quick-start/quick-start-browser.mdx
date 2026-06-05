@@ -172,6 +172,15 @@ await swapper.init();
 Initialize the swapper with `await swapper.init();` shown above once when your app starts. You should create **only one swapper instance** for your entire app, and use that instance for all your swaps. This checks existing in-progress swaps and does initial LP discovery.
 :::
 
+:::warning[Implement swap recovery — refunds & manual claims]
+If your app is interrupted mid-swap or the LP fails to deliver, user funds stay locked in the swap escrow until your app explicitly recovers them — this does **not** happen automatically. After `swapper.init()`, always check for and process:
+
+- [**Refundable swaps**](/sdk-guide/swap-management/refunds#get-all-refundable-swaps) — failed Smart Chain → BTC swaps where the user's locked funds must be refunded via `swapper.getRefundableSwaps()`.
+- [**Claimable swaps**](/sdk-guide/swap-management/claiming#get-all-claimable-swaps) — swaps where the user still needs to claim funds on the destination chain, retrieved via `swapper.getClaimableSwaps()`.
+
+Run these checks on every app start and periodically while running, otherwise funds can remain locked in swaps indefinitely.
+:::
+
 ## Setting Up Signers
 
 Atomiq's [`AbstractSigner`](/sdk-reference/api/atomiq-sdk/src/type-aliases/AbstractSigner) object wraps around the wallet object of the respective chain and makes it easy to approve transactions via it by passing it to the swap methods. You can alternatively skip this step, obtain the transactions required to be signed and [sign & send them manually](/sdk-guide/advanced/manual-transactions).
