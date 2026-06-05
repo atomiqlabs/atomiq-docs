@@ -194,6 +194,9 @@ See [wallets.ts](https://github.com/atomiqlabs/atomiq-sdk-demo/blob/main/src/wal
 
 ### Solana
 
+<details>
+<summary>Using Solana wallet with private key</summary>
+
 ```typescript
 import {Keypair} from "@solana/web3.js";
 import {SolanaKeypairWallet, SolanaSigner} from "@atomiqlabs/chain-solana";
@@ -208,7 +211,19 @@ const solanaSigner = new SolanaSigner(
 );
 ```
 
+</details>
+
+
 ### Starknet
+
+:::warning 
+On Starknet, accounts are smart contracts (account abstraction). An address is derived from the **account class hash + deployment salt + constructor calldata**, not from the private key alone. The same private key therefore produces a **different address for every account implementation**.
+:::
+
+<details>
+<summary>Using OpenZeppelin account</summary>
+
+`StarknetKeypairWallet` derives its address using its own bundled OpenZeppelin account class. If you import a private key from another wallet (Argent, Braavos, or a different OpenZeppelin version), you will get a **different, empty address**. Your funds still sit at the address derived by the original wallet.
 
 ```typescript
 import {StarknetSigner, StarknetKeypairWallet} from "@atomiqlabs/chain-starknet";
@@ -224,7 +239,38 @@ const starknetSigner = new StarknetSigner(
 );
 ```
 
+The account contract does not need to be deployed up front: the SDK automatically deploys it with the first swap transaction (paying the deployment fee from the account's balance).
+
+</details>
+
+
+<details>
+<summary>Using an existing Starknet account</summary>
+
+If you already have a deployed Starknet account, keep using it: don't pass its private key to `StarknetKeypairWallet`, wrap a plain starknet.js [`Account`](https://starknetjs.com/docs/API/classes/Account) with your **existing address** in `StarknetSigner` instead:
+
+```typescript
+import {StarknetSigner} from "@atomiqlabs/chain-starknet";
+import {Account, RpcProvider} from "starknet";
+
+const starknetProvider = new RpcProvider({nodeUrl: starknetRpc});
+const starknetSigner = new StarknetSigner(
+  new Account({
+    provider: starknetProvider,
+    address: "0x...", // your existing, already-deployed account address
+    signer: starknetKey,
+    cairoVersion: "1"
+  })
+);
+```
+
+</details>
+
 ### EVM (Citrea, etc.)
+
+
+<details>
+<summary>Using an EVM wallet with private key</summary>
 
 ```typescript
 import {BaseWallet, SigningKey, JsonRpcProvider, Wallet} from "ethers";
@@ -238,6 +284,8 @@ const evmProvider = new JsonRpcProvider(citreaRpc);
 const wallet = new BaseWallet(new SigningKey(evmKey), evmProvider);
 const evmWallet = new EVMSigner(wallet, wallet.address);
 ```
+
+</details>
 
 ## Your First Swap
 
