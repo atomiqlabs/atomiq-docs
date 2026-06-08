@@ -13,7 +13,7 @@ The service reads its entire runtime config from a single YAML file. The path is
 | `port` | number | **required** | TCP port the server binds to. |
 | `logLevel` | `error` \| `warn` \| `info` \| `debug` | `info` | `info` = morgan HTTP logs; `debug` = verbose per-request log line incl. IP, XFF, UA. |
 | `bitcoinNetwork` | `MAINNET` \| `TESTNET` \| `TESTNET3` \| `TESTNET4` | **required** | Which Bitcoin network the SDK connects to. `TESTNET` is an alias for `TESTNET3`. |
-| `starknetRpc` / `solanaRpc` / `botanixRpc` / `citreaRpc` / `alpenRpc` / `goatRpc` | string or null | null (disabled) | RPC URL per smart chain. Omit / set to null to disable that chain. |
+| `starknetRpc` / `solanaRpc` / `citreaRpc` / `alpenRpc` / `goatRpc` | string or null | null (disabled) | RPC URL per smart chain. Omit / set to null to disable that chain. |
 | `swapsSyncIntervalSeconds` | number | 300 | Interval between background `SwapperApi.sync()` calls (purges expired swaps, refreshes state). |
 | `reloadLpIntervalSeconds` | number | 300 | Interval between background LP reloads (re-discovers dropped LPs). |
 | `cors` | object or null | null (disabled) | Passed through to the [`cors`](https://github.com/expressjs/cors) middleware. |

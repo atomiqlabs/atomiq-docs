@@ -215,7 +215,7 @@ Uses a **JSON-stringified envelope**, with the shape `{ tx, signers, lastValidBl
 
 Uses a **JSON-stringified envelope**, with the shape `{ type, tx, details, ... }`. `type` is either `INVOKE` (regular call) or `DEPLOY_ACCOUNT` (first-time account deployment). For `INVOKE`, build the signed invocation from `tx` + `details`. For `DEPLOY_ACCOUNT`, you need to build the deployment payload yourself (the API can't know your account class) using the supplied `details` (fees, nonce). Convert every `resourceBounds.*.*` value to `BigInt` before signing. Populate `parsed.signed` and re-stringify (use a BigInt → string replacer).
 
-#### EVM (Botanix / Citrea / Alpen / Goat)
+#### EVM (Citrea / Alpen / Goat)
 
 Uses a hex-serialized unsigned EVM transaction, with pre-populated nonce and fees, ready to be signed by the EVM wallet.
 

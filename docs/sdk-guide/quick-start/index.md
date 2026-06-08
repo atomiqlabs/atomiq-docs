@@ -38,22 +38,20 @@ This is still a core responsibility of an app integrating the SDK. The common sw
 
 Not all chains are available on all Bitcoin testnets. Use the table below to pick the right `bitcoinNetwork` setting for your chain combination:
 
-| Chain | Mainnet | Testnet3 | Testnet4 |
+| Chain | Mainnet | Testnet4 | Testnet3 |
 |-------|---------|----------|----------|
-| **Solana** | Mainnet-beta | Devnet | - |
-| **Starknet** | Mainnet | Sepolia | Sepolia |
-| **Citrea** | Mainnet | - | Testnet |
-| **Botanix** | Mainnet | Testnet | - |
-| **Alpen** | - | Testnet | Testnet |
-| **GOAT Network** | - | Testnet | Testnet |
+| **Solana** | Mainnet-beta | Devnet   | Devnet   |
+| **Starknet** | Mainnet | Sepolia  | Sepolia  |
+| **Citrea** | Mainnet | Testnet  | -  |
+| **Alpen** | - | Testnet         | -  |
+| **GOAT Network** | - | Testnet        | -  |
 
 The `bitcoinNetwork` setting determines both the Bitcoin network and which smart chain network is used by the chain initializers.
 
 :::tip
-- **Bitcoin Testnet/Testnet4** - Use a [Bitcoin testnet faucet](https://bitcoinfaucet.uo1.net) or [Bitcoin testnet4 faucet](https://mempool.space/testnet4/faucet)
+- **Bitcoin Testnet3/Testnet4** - Use a [Bitcoin testnet faucet](https://bitcoinfaucet.uo1.net) or [Bitcoin testnet4 faucet](https://mempool.space/testnet4/faucet)
 - **Solana Devnet** - Use Solana CLI's `solana airdrop 1` or the [Solana faucet](https://faucet.solana.com)
 - **Starknet Sepolia** - Use the [Starknet faucet](https://starknet-faucet.vercel.app)
-- **Botanix Testnet** - Use the [Botanix faucet](https://faucet.botanixlabs.dev)
 - **Alpen Testnet** - Use the [Alpen CLI](https://docs.alpenlabs.io/welcome/using-the-alpen-cli#user-content-request-btc)
 :::
 

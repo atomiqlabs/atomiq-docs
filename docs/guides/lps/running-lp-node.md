@@ -447,25 +447,6 @@ STARKNET:
   #Starknet quotes timeout
   AUTHORIZATION_TIMEOUT: 90
 
-BOTANIX:
-  #If the LP node has below this amount it will stop processing new swaps
-  MIN_NATIVE_RESERVE: 0.0002
-  #Botanix RPC URL, can either be an http or ws RPC
-  RPC_URL: "wss://rpc.botanixlabs.com/ws"
-  #Maximum block range that the underlying RPC provider supports
-  MAX_LOGS_BLOCK_RANGE: 900
-  #Fees
-  MAX_FEE_GWEI: 2
-  FEE_TIP_GWEI: 0.001
-  #Botanix chain
-  CHAIN: "MAINNET"
-
-  #File with wallet mnemonic seed
-  MNEMONIC_FILE: "/mnt/share/wallet/mnemonic.txt"
-
-  #Botanix quotes timeout
-  AUTHORIZATION_TIMEOUT: 90
-
 #Required APY option premium to be paid by the users as security deposit with BTC -> Solana swaps
 SECURITY_DEPOSIT_APY: 80
 

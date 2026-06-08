@@ -51,7 +51,6 @@ logLevel: info
 
 starknetRpc: "https://rpc.starknet.lava.build/"
 solanaRpc:   "https://api.devnet.solana.com"
-botanixRpc: null
 citreaRpc: null
 alpenRpc: null
 goatRpc: null

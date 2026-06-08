@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # REST API Guide
 
-The **Atomiq REST API** is an HTTP interface for the Atomiq cross-chain DEX, covering trustless swaps between **Bitcoin / Lightning** and smart chains (**Starknet, Solana, Botanix, Citrea, Alpen, Goat**).
+The **Atomiq REST API** is an HTTP interface for the Atomiq cross-chain DEX, covering trustless swaps between **Bitcoin / Lightning** and smart chains (**Starknet, Solana, Citrea, Alpen, Goat**).
 
 You can either self-host the REST API on your own infrastructure using Docker (refer to **[Run REST API Locally](/rest-api-guide/run-locally)**), or use the public API provided by Atomiq:
 
@@ -41,7 +41,7 @@ Tokens are identified by a single string in the form `<network>-<ticker>`. Typic
 | `LIGHTNING-BTC` | Bitcoin over the Lightning Network |
 | `STARKNET-STRK`, `STARKNET-ETH`, `STARKNET-<erc20-address>` | Starknet native and ERC-20 tokens |
 | `SOLANA-SOL`, `SOLANA-<spl-mint>` | Solana native and SPL tokens |
-| `CITREA-CBTC`, `BOTANIX-BTC`, `ALPEN-BTC`, `GOAT-BTC` | Supported EVM chains |
+| `CITREA-CBTC`, `ALPEN-BTC`, `GOAT-BTC` | Supported EVM chains |
 
 You don't need to hard-code this list. Use [`GET /getSupportedTokens`](/rest-api-reference/get-supported-tokens) and [`GET /getSwapCounterTokens`](/rest-api-reference/get-swap-counter-tokens) to enumerate what the current LP network supports — see [Quoting Swaps](/rest-api-guide/quoting).
 
