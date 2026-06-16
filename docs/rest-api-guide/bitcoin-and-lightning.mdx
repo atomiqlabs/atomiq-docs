@@ -62,6 +62,7 @@ Lightning network swaps allow you to specify an additional set of fields when cr
 | `lightningInvoiceDescription` | **Lightning → Smart chain** | Optional custom description to include in the generated BOLT11 invoice. |
 | `lightningInvoiceDescriptionHash` | **Lightning → Smart chain** | Optional description-hash to use in the generated BOLT11 invoice, hex-encoded. |
 | `lightningPaymentHTLCTimeout` | **Smart chain → Lightning** | Optional HTLC timeout override in seconds. Longer = more routing hops available; shorter = faster lockup release if the LP misbehaves. |
+| `lightningPaymentMaxHTLCTimeout` | **Smart chain → Lightning** | Optional HTLC maximum timeout override in seconds. Allows `lightningPaymentHTLCTimeout` to be increased when paying invoices with `min_final_cltv_expiry` greater than 144, which is common for systems with longer potential settlement times. |
 
 ### Lightning → Smart chain swaps
 

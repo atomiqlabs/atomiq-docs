@@ -372,6 +372,7 @@ The overview of possible options you can pass to the swap via the `options` argu
 | Name | Type | Description |
 |------|------|-------------|
 | `expirySeconds` | `number` | HTLC expiration timeout, in seconds, offered to the LP. Larger values allow more Lightning routes, but also keep funds locked for longer if the LP does not cooperate.<br />Default: 5 days. |
+| `maxExpirySeconds` | `number` | Maximum HTLC expiration timeout, in seconds. Allows `expirySeconds` to be increased when paying invoices with `min_final_cltv_expiry` greater than 144, which is common for systems with longer potential settlement times.<br />Default: 10 days. |
 | `maxRoutingFeePercentage` | `number` | Caps the percentage component of the maximum Lightning routing fee.<br />Default: `0.2` (0.2% of the swap value). |
 | `maxRoutingBaseFee` | `bigint` | Caps the base component of the maximum Lightning routing fee, in sats.<br />Default: `10` sats. |
 | `comment` | `string` | Optional LNURL-pay comment. Only applies when the destination is an LNURL-pay endpoint and must fit the service's `commentAllowed` limit.<br />Default: none. |
