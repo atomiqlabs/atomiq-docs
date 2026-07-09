@@ -230,9 +230,9 @@ On Starknet, accounts are smart contracts (account abstraction). An address is d
 :::
 
 <details>
-<summary>Using OpenZeppelin account</summary>
+<summary>Using a new Starknet keypair account</summary>
 
-`StarknetKeypairWallet` derives its address using its own bundled OpenZeppelin account class. If you import a private key from another wallet (Argent, Braavos, or a different OpenZeppelin version), you will get a **different, empty address**. Your funds still sit at the address derived by the original wallet.
+For a programmatic integration driven by a raw private key, use `StarknetKeypairWallet` only for newly created accounts. It derives its address using its own bundled single-key OpenZeppelin account class. If you import a private key from another wallet account (Braavos, Xverse, Argent/Ready, or a different OpenZeppelin version), you will get a **different, empty address**. Your funds still sit at the address derived by the original wallet.
 
 ```typescript
 import {StarknetSigner, StarknetKeypairWallet} from "@atomiqlabs/chain-starknet";
@@ -241,37 +241,35 @@ import {RpcProvider} from "starknet";
 // Generate random private key
 const starknetKey: string = StarknetKeypairWallet.generateRandomPrivateKey();
 
-// From private key, this uses a simple openzeppelin account class with a single public key.
 const starknetProvider = new RpcProvider({nodeUrl: starknetRpc});
-const starknetSigner = new StarknetSigner(
-  new StarknetKeypairWallet(starknetProvider, starknetKey)
-);
+const wallet = new StarknetKeypairWallet(starknetProvider, starknetKey);
+const starknetSigner = new StarknetSigner(wallet);
 ```
 
-The account contract does not need to be deployed up front: the SDK automatically deploys it with the first swap transaction (paying the deployment fee from the account's balance).
+The account contract does not need to be deployed up front: the SDK automatically deploys it with the first swap transaction (paying the deployment fee from the account's STRK balance).
 
 </details>
 
 
 <details>
-<summary>Using an existing Starknet account</summary>
+<summary>Using an already-deployed Starknet account</summary>
 
-If you already have a deployed Starknet account, keep using it: don't pass its private key to `StarknetKeypairWallet`, wrap a plain starknet.js [`Account`](https://starknetjs.com/docs/API/classes/Account) with your **existing address** in `StarknetSigner` instead:
+For a programmatic integration driven by a raw private key controlling an already-deployed account, keep using that account's address: don't pass its private key to `StarknetKeypairWallet`. Use `DeployedStarkCurveWallet` instead. The address is passed explicitly because Starknet addresses depend on the account's class hash.
 
 ```typescript
-import {StarknetSigner} from "@atomiqlabs/chain-starknet";
-import {Account, RpcProvider} from "starknet";
+import {StarknetSigner, DeployedStarkCurveWallet} from "@atomiqlabs/chain-starknet";
+import {RpcProvider} from "starknet";
 
 const starknetProvider = new RpcProvider({nodeUrl: starknetRpc});
-const starknetSigner = new StarknetSigner(
-  new Account({
-    provider: starknetProvider,
-    address: "0x...", // your existing, already-deployed account address
-    signer: starknetKey,
-    cairoVersion: "1"
-  })
+const wallet = await DeployedStarkCurveWallet.createAndVerify(
+  starknetProvider,
+  starknetKey,
+  "0x..." // your existing, already-deployed account address
 );
+const starknetSigner = new StarknetSigner(wallet);
 ```
+
+Prefer `createAndVerify(...)` over using the constructor directly. It checks the account's own on-chain signature validation and throws `AccountNotDeployedError` if the account is not deployed, or `WalletVerificationError` if the key does not control it or the account requires a scheme a single Stark-curve key cannot satisfy, such as multisig.
 
 </details>
 
